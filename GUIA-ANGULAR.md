@@ -68,12 +68,12 @@ Ejemplo: abrís `#/angular/leccion/signals`.
 | `bootstrapApplication` | `main.ts` |
 | `ApplicationConfig`, providers | `app.config.ts` |
 | Rutas, `loadComponent`, `canActivate` | `app.routes.ts` |
-| Guard funcional, `inject()` en funciones | `core/curso.guards.ts` |
+| Guard funcional | `core/curso.guards.ts` |
 | `@Injectable`, `providedIn: 'root'` | `core/curso-actual.ts` |
 | `signal`, `computed`, `effect`, `linkedSignal`, `httpResource` | `core/curso-actual.ts` |
 | `inject()` en clases | `core/progreso/progreso.ts` |
 | `@Component`, `imports`, `host`, `protected` | `app.ts` |
-| Interpolación, `@if`, `(click)`, `routerLink`, `<router-outlet>` | `app.html` |
+| Interpolación, property binding, `[class.x]`, `@if`, `(click)`, `routerLink`, `<router-outlet>` | `app.html` |
 | `input()` / `input.required()` | `shared/bloques/bloques.ts` |
 | `@for` + `track`, `@switch`, `[innerHTML]` | `shared/bloques/bloques.html` |
 | `@Pipe` | `shared/texto-md.pipe.ts` |

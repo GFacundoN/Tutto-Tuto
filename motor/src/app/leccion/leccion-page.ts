@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, computed, inject, input, linkedSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { aplicarVariante, urlLeccion } from '../core/contenido/contenido-cursos';
 import { Leccion } from '../core/contenido/modelos';
@@ -72,7 +72,7 @@ export class LeccionPage {
   protected readonly preguntaActual = linkedSignal({ source: this.leccionId, computation: () => 0 });
   protected readonly preguntaRespondida = linkedSignal({ source: this.leccionId, computation: () => false });
   protected readonly aciertos = linkedSignal({ source: this.leccionId, computation: () => 0 });
-  protected readonly xpGanada = signal(0);
+  protected readonly xpGanada = linkedSignal({ source: this.leccionId, computation: () => 0 });
 
   protected readonly puedeAvanzar = computed(() => {
     switch (PASOS[this.paso()].id) {

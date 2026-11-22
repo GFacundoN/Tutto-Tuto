@@ -13,11 +13,17 @@
         </p>
 
         <div class="acciones">
+          <!-- Al empezar la sesión, el repaso del día es la acción principal; la lección pasa a secundaria. -->
           @if (ofrecerRepaso()) {
-            <a class="boton boton-secundario" [routerLink]="['/', cursoId(), 'repaso']">Repaso rápido (3 preguntas)</a>
+            <a class="boton boton-principal" [routerLink]="['/', cursoId(), 'repaso']">Empezar con el repaso (3 preguntas)</a>
           }
           @if (proxima(); as proxima) {
-            <a class="boton boton-principal" [routerLink]="['/', cursoId(), 'leccion', proxima]">
+            <a
+              class="boton"
+              [class.boton-principal]="!ofrecerRepaso()"
+              [class.boton-secundario]="ofrecerRepaso()"
+              [routerLink]="['/', cursoId(), 'leccion', proxima]"
+            >
               {{ totalCompletas() === 0 ? 'Empezar la primera lección' : 'Seguir donde quedaste' }}
             </a>
           } @else {

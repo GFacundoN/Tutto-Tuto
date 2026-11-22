@@ -15,11 +15,13 @@
       (En código viejo vas a ver *ngIf="curso() as curso", que hace lo mismo.)
     -->
     @if (curso(); as curso) {
+      <!-- [propiedad]="expresión": property binding. Evalúa TypeScript y lo asigna (acá, un array de ruta). -->
       <a class="curso" [routerLink]="['/', curso.id]">{{ curso.titulo }}</a>
       <dl class="stats" aria-label="Tu progreso">
         <div>
           <dt>Racha</dt>
           <!-- {{ }}: interpolación. Muestra el valor como texto (escapado, sin riesgo de XSS). -->
+          <!-- [class.activa]: agrega o saca la clase según el booleano. -->
           <dd [class.activa]="progreso.practicoHoy()">
             {{ progreso.racha() }} {{ progreso.racha() === 1 ? 'día' : 'días' }}
           </dd>
