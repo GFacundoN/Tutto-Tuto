@@ -1,37 +1,41 @@
 /*
   Estilos globales y tokens de diseño.
-  Paleta y tipografía del portfolio gfacundon.dev: azul noche con resplandores índigo,
-  Onest para textos y títulos, JetBrains Mono para código y datos.
-  Estructura de plataforma de cursos (temario por módulos, lección con barra lateral):
-  el contenido es protagonista y el color se usa solo para acciones y progreso.
-  El modo oscuro es el del portfolio; el claro es su versión de día.
+  Tipografía del portfolio gfacundon.dev (Onest + JetBrains Mono) y una estética de
+  fondo casi negro iluminado por focos de luz índigo y violeta: el color no está en las
+  superficies sino en la luz. Las tarjetas son oscuras y se iluminan cuando importan.
+  El modo claro es la misma idea de día: fondo gris muy claro, tarjetas blancas y focos suaves.
 */
 
 :root {
-  --fondo: #f7f8fc;
+  --fondo: #f5f6fa;
   --superficie: #ffffff;
-  --superficie-2: #f1f2fa;
-  --tinta: #10143a;
-  --tinta-suave: #4b5563;
-  --borde: #e5e7eb;
+  --superficie-2: #eef0f7;
+  --tinta: #0b0d1f;
+  --tinta-suave: #4b5263;
+  --borde: #e2e4ee;
   /* Borde de controles interactivos: 3:1 contra el fondo (WCAG 1.4.11). --borde es solo decorativo. */
   --borde-control: #7c81ab;
   --acento: #4f46e5;
   --acento-tinta: #ffffff;
-  --acento-suave: #eef0ff;
-  /* Botón principal: en oscuro es la píldora índigo clara del portfolio. */
-  --primario-fondo: #4f46e5;
+  --acento-suave: #eeedff;
+  /* Botón principal: píldora oscura de día, píldora clara de noche. */
+  --primario-fondo: #0b0d1f;
   --primario-tinta: #ffffff;
   --exito: #047857;
   --exito-fondo: #e6f7ef;
   --error: #be123c;
   --error-fondo: #fdecef;
   --aviso-fondo: #fff7e0;
-  --codigo-fondo: #10143a;
+  --codigo-fondo: #0b0d1f;
   --codigo-tinta: #e5e7eb;
   --foco: #4f46e5;
-  --sombra: 0 1px 2px rgb(16 20 58 / 0.06), 0 4px 16px rgb(16 20 58 / 0.05);
-  --resplandor: none;
+  --sombra: 0 1px 2px rgb(11 13 31 / 0.05), 0 8px 24px rgb(11 13 31 / 0.05);
+  /* Focos de luz del fondo de la página y de las tarjetas activas. */
+  --luz-1: rgb(139 92 246 / 0.16);
+  --luz-2: rgb(79 70 229 / 0.12);
+  --luz-3: rgb(99 102 241 / 0.1);
+  --panel-foco: rgb(139 92 246 / 0.32);
+  --panel-foco-2: rgb(196 181 253 / 0.4);
 
   --fuente-titulo: 'Onest', system-ui, sans-serif;
   --fuente-texto: 'Onest', system-ui, sans-serif;
@@ -57,55 +61,61 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --fondo: #070a1f;
-    --superficie: #0e1230;
-    --superficie-2: #151a3f;
+    --fondo: #04050f;
+    --superficie: #0b0d1f;
+    --superficie-2: #12152b;
     --tinta: #f3f4f6;
-    --tinta-suave: #9ca3af;
-    --borde: #1f2447;
+    --tinta-suave: #a3abbd;
+    --borde: #1b1e36;
     --borde-control: #5a62a8;
-    --acento: #818cf8;
-    --acento-tinta: #10143a;
-    --acento-suave: #1a1f4d;
-    --primario-fondo: #e9ebff;
-    --primario-tinta: #10143a;
+    --acento: #8b8ff9;
+    --acento-tinta: #0b0d1f;
+    --acento-suave: #17183a;
+    --primario-fondo: #ecebff;
+    --primario-tinta: #0b0d1f;
     --exito: #00ec7a;
-    --exito-fondo: #06281c;
+    --exito-fondo: #052418;
     --error: #fb7185;
-    --error-fondo: #2e0d18;
-    --aviso-fondo: #2a2410;
-    --codigo-fondo: #050716;
+    --error-fondo: #2b0b16;
+    --aviso-fondo: #261f0c;
+    --codigo-fondo: #020308;
     --foco: #a5b4fc;
     --sombra: none;
-    --resplandor: radial-gradient(60rem 40rem at 15% -10%, rgb(55 48 163 / 0.38), transparent 70%),
-      radial-gradient(50rem 35rem at 95% 10%, rgb(23 37 120 / 0.5), transparent 70%);
+    --luz-1: rgb(91 33 182 / 0.32);
+    --luz-2: rgb(55 48 163 / 0.3);
+    --luz-3: rgb(23 37 120 / 0.35);
+    --panel-foco: rgb(139 92 246 / 0.75);
+    --panel-foco-2: rgb(196 181 253 / 0.35);
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --fondo: #070a1f;
-  --superficie: #0e1230;
-  --superficie-2: #151a3f;
+  --fondo: #04050f;
+  --superficie: #0b0d1f;
+  --superficie-2: #12152b;
   --tinta: #f3f4f6;
-  --tinta-suave: #9ca3af;
-  --borde: #1f2447;
+  --tinta-suave: #a3abbd;
+  --borde: #1b1e36;
   --borde-control: #5a62a8;
-  --acento: #818cf8;
-  --acento-tinta: #10143a;
-  --acento-suave: #1a1f4d;
-  --primario-fondo: #e9ebff;
-  --primario-tinta: #10143a;
+  --acento: #8b8ff9;
+  --acento-tinta: #0b0d1f;
+  --acento-suave: #17183a;
+  --primario-fondo: #ecebff;
+  --primario-tinta: #0b0d1f;
   --exito: #00ec7a;
-  --exito-fondo: #06281c;
+  --exito-fondo: #052418;
   --error: #fb7185;
-  --error-fondo: #2e0d18;
-  --aviso-fondo: #2a2410;
-  --codigo-fondo: #050716;
+  --error-fondo: #2b0b16;
+  --aviso-fondo: #261f0c;
+  --codigo-fondo: #020308;
   --foco: #a5b4fc;
   --sombra: none;
-  --resplandor: radial-gradient(60rem 40rem at 15% -10%, rgb(55 48 163 / 0.38), transparent 70%),
-    radial-gradient(50rem 35rem at 95% 10%, rgb(23 37 120 / 0.5), transparent 70%);
+  --luz-1: rgb(91 33 182 / 0.32);
+  --luz-2: rgb(55 48 163 / 0.3);
+  --luz-3: rgb(23 37 120 / 0.35);
+  --panel-foco: rgb(139 92 246 / 0.75);
+  --panel-foco-2: rgb(196 181 253 / 0.35);
   color-scheme: dark;
 }
 
@@ -121,12 +131,28 @@ html {
 
 body {
   margin: 0;
-  background: var(--resplandor) no-repeat, var(--fondo);
+  background: var(--fondo);
   color: var(--tinta);
   font-family: var(--fuente-texto);
   font-size: var(--t-1);
   line-height: 1.6;
   min-height: 100dvh;
+}
+
+/*
+  Focos de luz de toda la página: una capa fija detrás del contenido. Es estática
+  (no se anima ni se repinta al hacer scroll), así que no cuesta rendimiento.
+*/
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(48rem 30rem at 8% -8%, var(--luz-2), transparent 70%),
+    radial-gradient(42rem 28rem at 100% 12%, var(--luz-1), transparent 70%),
+    radial-gradient(40rem 26rem at 30% 110%, var(--luz-3), transparent 70%);
 }
 
 h1,
