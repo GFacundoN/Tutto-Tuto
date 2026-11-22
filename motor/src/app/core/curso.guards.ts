@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { claveDe, guardar } from './almacenamiento';
 import { CursoActual } from './curso-actual';
 
 // Guard funcional: una función que devuelve true (pasa) o una UrlTree (redirige).
@@ -7,7 +8,10 @@ import { CursoActual } from './curso-actual';
 
 /** Registra el :cursoId de la URL en el servicio CursoActual. Siempre deja pasar. */
 export const seleccionarCursoGuard: CanActivateFn = (route) => {
-  inject(CursoActual).cursoId.set(route.paramMap.get('cursoId'));
+  const cursoId = route.paramMap.get('cursoId');
+  inject(CursoActual).cursoId.set(cursoId);
+  // Se recuerda para el botón "Seguir aprendiendo" del encabezado en el home.
+  if (cursoId) guardar(claveDe('ultimo-curso'), cursoId);
   return true;
 };
 

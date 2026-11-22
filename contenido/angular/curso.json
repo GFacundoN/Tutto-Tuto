@@ -3,6 +3,7 @@
   "titulo": "Angular",
   "descripcion": "Del primer componente a una app que consume tu API de Spring Boot. Angular 22 con signals y componentes standalone.",
   "color": "#c8235f",
+  "logo": "angular/logo.svg",
   "versionHerramienta": "Angular 22",
   "plantillaProyecto": "plantilla-proyecto.json",
   "versiones": [
