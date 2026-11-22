@@ -67,8 +67,8 @@
   z-index: 0;
   /* Focos de luz: violeta fuerte abajo a la derecha, índigo tenue arriba a la izquierda. */
   background:
-    radial-gradient(55% 45% at 100% 100%, var(--panel-foco), transparent 72%),
-    radial-gradient(35% 30% at 92% 96%, var(--panel-foco-2), transparent 70%),
+    radial-gradient(55% 45% at 100% 100%, color-mix(in oklab, var(--marca, var(--panel-foco)) 55%, transparent), transparent 72%),
+    radial-gradient(35% 30% at 92% 96%, color-mix(in oklab, var(--marca, var(--panel-foco-2)) 40%, transparent), transparent 70%),
     radial-gradient(45% 35% at 0% 0%, var(--luz-2), transparent 72%);
   opacity: 0;
   transition: opacity 0.35s var(--curva);
@@ -97,6 +97,11 @@
   flex-direction: column;
   gap: 12px;
   width: 100%;
+}
+.area {
+  margin: 0;
+  font: 500 0.78rem var(--fuente-codigo);
+  color: var(--tinta-suave);
 }
 .titulo {
   font-size: 1.25rem;
@@ -168,7 +173,12 @@
   text-decoration: none;
   transition: background var(--dur);
 }
-.ir:hover {
+.ir-proximo {
+  border-style: dashed;
+  color: var(--tinta-suave);
+  font-weight: 600;
+}
+a.ir:hover {
   background: color-mix(in oklab, var(--tinta) 8%, transparent);
 }
 
@@ -235,7 +245,7 @@
   .panel.activo {
     flex-grow: 2.9;
     background-color: var(--panel-activo);
-    border-color: color-mix(in oklab, var(--panel-foco) 70%, var(--borde));
+    border-color: color-mix(in oklab, var(--marca, var(--panel-foco)) 60%, var(--borde));
     color: var(--panel-tinta-activa);
   }
   .panel.activo::before {

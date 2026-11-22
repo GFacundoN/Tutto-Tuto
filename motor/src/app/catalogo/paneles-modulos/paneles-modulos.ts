@@ -1,26 +1,15 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { Component, ElementRef, input, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { map, switchMap } from 'rxjs';
-import { ContenidoCursos } from '../../core/contenido/contenido-cursos';
-import { Curso, Destacado } from '../../core/contenido/modelos';
-
-/** Tarjeta lista para mostrar: el destacado más los datos calculados de sus módulos. */
-interface Tarjeta extends Destacado {
-  /** Ej. "Módulos 2, 3 y 4" */
-  rotulo: string;
-  lecciones: number;
-  minutos: number;
-}
+import { TarjetaCurso } from '../tarjeta-curso';
 
 /**
- * Paneles expandibles (estilo "expanding panels"):
+ * Paneles expandibles (estilo "expanding panels"), uno por curso del índice:
  * - Desktop (≥1025px): fila de tarjetas con alturas escalonadas alineadas abajo. La activa
- *   (hover, foco o clic) se ensancha, crece al alto completo, toma el color de marca y recién
- *   entonces muestra su detalle.
+ *   (hover, foco o clic) se ensancha, crece al alto completo, se ilumina con el color del
+ *   curso y recién entonces muestra su detalle.
  * - Celular/tablet: carrusel horizontal con flechas y puntos; todas las tarjetas completas.
- * Los datos son los "destacados" del curso.json (o sus niveles, si no tiene destacados).
+ * Los datos vienen del home (cursos.json + lo calculado de cada curso.json): agregar un
+ * curso al índice agrega su panel, sin tocar código.
  */
 @Component({
   selector: 'app-paneles-modulos',
@@ -29,40 +18,9 @@ interface Tarjeta extends Destacado {
   styleUrl: './paneles-modulos.css',
 })
 export class PanelesModulos {
-  readonly cursoId = input.required<string>();
-  private readonly http = inject(HttpClient);
-  private readonly contenido = inject(ContenidoCursos);
-
-  // curso.json y después las lecciones del primer recorrido, para sumar cantidad y minutos.
-  private readonly datos = rxResource({
-    params: () => this.cursoId(),
-    stream: ({ params: cursoId }) =>
-      this.http.get<Curso>(`contenido/${cursoId}/curso.json`).pipe(
-        switchMap((curso) => {
-          const niveles = curso.versiones[0]?.niveles ?? [];
-          const destacados: Destacado[] =
-            curso.destacados ??
-            niveles.slice(0, 5).map((n) => ({ titulo: n.titulo, descripcion: n.descripcion, usas: [], logros: [], modulos: [n.id] }));
-          return this.contenido.lecciones(cursoId, niveles.flatMap((n) => n.lecciones)).pipe(
-            map((lecciones) => {
-              const minutos = new Map(lecciones.map((l) => [l.id, l.minutos]));
-              return destacados.map<Tarjeta>((d) => {
-                const indices = (d.modulos ?? []).map((id) => niveles.findIndex((n) => n.id === id)).filter((i) => i >= 0);
-                const ids = indices.flatMap((i) => niveles[i].lecciones);
-                return {
-                  ...d,
-                  rotulo: rotular(indices.map((i) => i + 1)),
-                  lecciones: ids.length,
-                  minutos: ids.reduce((total, id) => total + (minutos.get(id) ?? 0), 0),
-                };
-              });
-            }),
-          );
-        }),
-      ),
-  });
-
-  protected readonly paneles = computed(() => (this.datos.hasValue() ? this.datos.value() : []));
+  // input(): propiedad que recibe un valor del padre (<app-paneles-modulos [cursos]="...">). Es un signal.
+  readonly cursos = input.required<TarjetaCurso[]>();
+  protected readonly paneles = this.cursos;
   protected readonly activo = signal(0);
 
   private readonly pista = viewChild<ElementRef<HTMLElement>>('pista');
@@ -103,9 +61,3 @@ export class PanelesModulos {
   }
 }
 
-/** [2, 3, 4] -> "Módulos 2, 3 y 4"; [1] -> "Módulo 1"; [] -> "" */
-function rotular(numeros: number[]): string {
-  if (numeros.length === 0) return '';
-  if (numeros.length === 1) return `Módulo ${numeros[0]}`;
-  return `Módulos ${numeros.slice(0, -1).join(', ')} y ${numeros.at(-1)}`;
-}

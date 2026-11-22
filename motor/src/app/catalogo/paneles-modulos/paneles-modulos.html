@@ -14,34 +14,39 @@
     </button>
   </div>
 
-  <ul class="pista" #pista (scroll)="alDesplazar()" aria-label="Lo que vas a poder hacer">
-    @for (p of paneles(); track p.titulo; let i = $index) {
-      <li class="panel" [class.activo]="activo() === i" (mouseenter)="alPasar(i)" (focusin)="activar(i)">
+  <ul class="pista" #pista (scroll)="alDesplazar()" aria-label="Cursos por área">
+    @for (p of paneles(); track p.resumen.id; let i = $index) {
+      <li class="panel" [class.activo]="activo() === i" [style.--marca]="p.resumen.color" (mouseenter)="alPasar(i)" (focusin)="activar(i)">
         <!-- Toda la tarjeta es clickeable para abrirla; el botón es lo que se enfoca con teclado. -->
         <button
           type="button"
           class="cubierta"
           (click)="activar(i)"
           [attr.aria-expanded]="activo() === i"
-          [attr.aria-label]="p.titulo"
+          [attr.aria-label]="p.resumen.titulo"
         ></button>
         <div class="interior">
-          <h3 class="titulo">{{ p.titulo }}</h3>
-          @if (p.lecciones) {
-            <p class="meta">{{ p.rotulo }} · {{ p.lecciones }} lecciones · {{ p.minutos }} min</p>
+          @if (p.resumen.area) {
+            <p class="area">{{ p.resumen.area }}</p>
           }
-          <p class="desc">{{ p.descripcion }}</p>
-          @if (p.usas.length) {
+          <h3 class="titulo">{{ p.resumen.titulo }}</h3>
+          @if (p.disponible) {
+            <p class="meta">{{ p.lecciones }} lecciones · {{ p.modulos }} módulos · {{ p.recorridos.length }} recorridos</p>
+          } @else {
+            <p class="meta">Próximamente</p>
+          }
+          <p class="desc">{{ p.resumen.descripcion }}</p>
+          @if (p.resumen.usas?.length) {
             <div class="usas">
               <span>Usás:</span>
-              @for (u of p.usas; track u) {
+              @for (u of p.resumen.usas; track u) {
                 <span class="chip">{{ u }}</span>
               }
             </div>
           }
-          @if (p.logros.length) {
-            <ul class="logros">
-              @for (l of p.logros; track l) {
+          @if (p.resumen.logros?.length) {
+            <ul class="logros" aria-label="Vas a poder">
+              @for (l of p.resumen.logros; track l) {
                 <li>
                   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>
                   {{ l }}
@@ -50,7 +55,11 @@
             </ul>
           }
           <div class="pie">
-            <a class="ir" [routerLink]="['/', cursoId()]">Empezar</a>
+            @if (p.disponible) {
+              <a class="ir" [routerLink]="['/', p.resumen.id]">{{ p.completadas ? 'Continuar' : 'Empezar' }}</a>
+            } @else {
+              <span class="ir ir-proximo">En preparación</span>
+            }
           </div>
         </div>
       </li>
@@ -58,13 +67,13 @@
   </ul>
 
   <div class="puntos" role="group" aria-label="Elegir tarjeta">
-    @for (p of paneles(); track p.titulo; let i = $index) {
+    @for (p of paneles(); track p.resumen.id; let i = $index) {
       <button
         type="button"
         class="punto"
         [class.activo]="activo() === i"
         (click)="irA(i)"
-        [attr.aria-label]="'Ir a ' + p.titulo"
+        [attr.aria-label]="'Ir a ' + p.resumen.titulo"
         [attr.aria-current]="activo() === i ? 'true' : null"
       >
         <span aria-hidden="true"></span>
