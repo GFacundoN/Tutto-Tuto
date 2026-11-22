@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { cursoElegidoGuard, seleccionarCursoGuard } from './core/curso-elegido.guard';
+import { cursoElegidoGuard, seleccionarCursoGuard } from './core/curso.guards';
 
 // Routes: la tabla de rutas. Cada ruta asocia una URL con un componente.
 // loadComponent carga el componente recién cuando se visita la ruta (lazy loading):
