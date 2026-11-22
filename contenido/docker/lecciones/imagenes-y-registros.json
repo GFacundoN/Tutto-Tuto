@@ -1,0 +1,80 @@
+{
+  "id": "imagenes-y-registros",
+  "titulo": "Imágenes, etiquetas y registros",
+  "minutos": 11,
+  "objetivo": "elegir bien una imagen y su etiqueta, descargarla y limpiar las que no usás.",
+  "explicacion": [
+    { "tipo": "texto", "md": "El nombre completo de una imagen tiene tres partes: `registro/repositorio:etiqueta`. Por ejemplo `ghcr.io/miequipo/api:1.4.0`. Si no ponés registro, es **Docker Hub**; si no ponés etiqueta, es **`latest`**." },
+    { "tipo": "lista", "items": [
+      "`mysql:8.4`: MySQL 8.4 (versión con soporte largo). Siempre que puedas, fijá la versión.",
+      "`nginx:alpine`: nginx sobre **Alpine Linux**, una base mínima. La imagen pesa mucho menos.",
+      "`eclipse-temurin:21-jre`: Java 21, solo para **correr** (JRE). La variante `21-jdk` trae el compilador, más pesada.",
+      "`latest` no significa \"la última estable\": es solo una etiqueta, la que ese repositorio decidió. Hoy puede ser una versión y mañana otra."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Usar `latest` en un proyecto hace que dos compañeros terminen con versiones distintas sin darse cuenta. En el `Dockerfile` y en el `compose.yaml` del equipo, **siempre con versión**." },
+    { "tipo": "comando", "comando": "docker pull mysql:8.4", "salida": "8.4: Pulling from library/mysql\n...\nStatus: Downloaded newer image for mysql:8.4" },
+    { "tipo": "comando", "comando": "docker images", "salida": "REPOSITORY   TAG      IMAGE ID       CREATED       SIZE\nmysql        8.4      4f0e2b1a9c3d   2 weeks ago   780MB\nnginx        alpine   8d2c5a7b1e4f   3 weeks ago   52MB\nnginx        latest   1a2b3c4d5e6f   3 weeks ago   190MB" },
+    { "tipo": "texto", "md": "Una imagen está hecha de **capas** (*layers*): cada instrucción de su Dockerfile agrega una. Si dos imágenes comparten capas (la misma base, por ejemplo), se descargan y guardan una sola vez. `docker history` te muestra las capas y cuánto pesa cada una." },
+    { "tipo": "texto", "md": "Las imágenes se acumulan y ocupan disco. Para borrar:" },
+    { "tipo": "lista", "items": [
+      "`docker rmi nginx:latest`: borra esa imagen (si ningún contenedor la usa).",
+      "`docker image prune`: borra las imágenes *colgadas* (sin nombre, restos de builds viejos).",
+      "`docker image prune -a`: borra todas las que no use ningún contenedor. Cuidado: después hay que volver a descargarlas."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "En Docker Hub buscá las que dicen **Docker Official Image** o **Verified Publisher**: las mantienen los autores del software o Docker, y se actualizan por seguridad." }
+  ],
+  "recursos": {
+    "video": { "id": "Q0AIECxW8Fo", "titulo": "Imágenes de contenedor: pull, layers, rmi, search y prune (Curso Docker 6)", "canal": "Pabpereza", "inicio": 45, "fin": 628, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: ¿Qué es un registro?", "url": "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-registry/" },
+      { "titulo": "docs.docker.com: docker image prune", "url": "https://docs.docker.com/reference/cli/docker/image/prune/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Ordená las imágenes de tu PC: bajá la que usa el proyecto y borrá lo que sobra.",
+    "pasos": [
+      { "consigna": "Descargá la imagen de MySQL con la etiqueta `8.4`.", "soluciones": ["docker pull mysql:8.4"], "salida": "8.4: Pulling from library/mysql\nStatus: Downloaded newer image for mysql:8.4\ndocker.io/library/mysql:8.4" },
+      { "consigna": "Listá las imágenes que tenés.", "soluciones": ["docker images", "docker image ls"], "salida": "REPOSITORY   TAG      SIZE\nmysql        8.4      780MB\nnginx        alpine   52MB\nnginx        latest   190MB" },
+      { "consigna": "Borrá la imagen `nginx:latest`, que ya no usás.", "soluciones": ["docker rmi nginx:latest", "docker rmi nginx"], "salida": "Untagged: nginx:latest\nDeleted: sha256:1a2b3c4d5e6f..." },
+      { "consigna": "Borrá las imágenes colgadas (sin nombre) que dejan los builds.", "soluciones": ["docker image prune"], "salida": "WARNING! This will remove all dangling images.\nAre you sure you want to continue? [y/N] y\nTotal reclaimed space: 312MB" }
+    ],
+    "pistas": [
+      "Descargar es `docker pull` con el nombre y la etiqueta separados por dos puntos. Listar es `docker images`.",
+      "Borrar una imagen es `docker rmi` (rm de *image*). Las colgadas se limpian con `docker image prune`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Corré `docker pull nginx:alpine` y `docker pull nginx:latest` y compará los tamaños con `docker images`." },
+        { "tipo": "texto", "md": "Mirá las capas de una con `docker history nginx:alpine`." }
+      ],
+      "resultadoEsperado": "La variante alpine pesa varias veces menos que la latest."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué imagen descarga `docker pull nginx`?",
+      "opciones": [
+        { "texto": "`docker.io/library/nginx:latest`, la que tenga la etiqueta latest en Docker Hub.", "correcta": true, "explicacion": "Sin registro es Docker Hub; sin etiqueta, latest." },
+        { "texto": "La última versión estable, siempre.", "correcta": false, "explicacion": "latest es una etiqueta más: la define quien publica." },
+        { "texto": "La que ya tengas instalada.", "correcta": false, "explicacion": "pull consulta el registro." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué conviene `eclipse-temurin:21-jre` y no `21-jdk` para correr la API?",
+      "opciones": [
+        { "texto": "Para correr alcanza con el JRE; el JDK trae el compilador y hace la imagen más pesada.", "correcta": true, "explicacion": "El JDK se usa para compilar (lo vas a ver en multi-stage)." },
+        { "texto": "Porque el JDK no puede correr un .jar.", "correcta": false, "explicacion": "Puede, pero trae de más." },
+        { "texto": "Es lo mismo.", "correcta": false, "explicacion": "Cambian el tamaño y lo que trae adentro." }
+      ]
+    },
+    {
+      "pregunta": "Dos imágenes usan la misma imagen base. ¿Cuánto espacio ocupa esa base en tu disco?",
+      "opciones": [
+        { "texto": "Una sola vez: las capas compartidas no se duplican.", "correcta": true, "explicacion": "Es la gran ventaja del sistema de capas." },
+        { "texto": "Dos veces.", "correcta": false, "explicacion": "Docker guarda cada capa una sola vez." },
+        { "texto": "Ninguna: se descarga cada vez que corrés.", "correcta": false, "explicacion": "Queda en tu PC hasta que la borres." }
+      ]
+    }
+  ]
+}

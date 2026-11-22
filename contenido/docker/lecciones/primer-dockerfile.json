@@ -1,0 +1,83 @@
+{
+  "id": "primer-dockerfile",
+  "titulo": "Tu primer Dockerfile",
+  "minutos": 13,
+  "objetivo": "escribir un Dockerfile para una API de Spring Boot, construir la imagen y correrla.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **Dockerfile** es un archivo de texto (sin extensión, en la raíz del proyecto) con instrucciones que Docker ejecuta en orden para armar una imagen. Las más usadas:" },
+    { "tipo": "lista", "items": [
+      "`FROM imagen:etiqueta`: la imagen base de la que partís. Siempre es la primera.",
+      "`WORKDIR /app`: la carpeta de trabajo dentro de la imagen (la crea si no existe).",
+      "`COPY origen destino`: copia archivos de tu proyecto a la imagen.",
+      "`RUN comando`: corre un comando **al construir** (instalar algo, compilar).",
+      "`EXPOSE 8080`: documenta en qué puerto escucha la app. No publica nada: eso lo hace `-p`.",
+      "`ENTRYPOINT` / `CMD`: el comando que se corre **al arrancar** el contenedor."
+    ] },
+    { "tipo": "texto", "md": "Para una API de Spring Boot que ya compilaste con `./mvnw package` (el `.jar` queda en `target/`):" },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "Dockerfile", "codigo": "FROM eclipse-temurin:21-jre\nWORKDIR /app\nCOPY target/tareas-0.0.1-SNAPSHOT.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]" },
+    { "tipo": "texto", "md": "Construís la imagen con `docker build`. `-t` le pone nombre (y etiqueta) y el `.` final es el **contexto**: la carpeta cuyos archivos puede ver `COPY`." },
+    { "tipo": "comando", "comando": "docker build -t tareas-api:1.0 .", "salida": "[+] Building 4.2s (8/8) FINISHED\n => [1/3] FROM docker.io/library/eclipse-temurin:21-jre\n => [2/3] WORKDIR /app\n => [3/3] COPY target/tareas-0.0.1-SNAPSHOT.jar app.jar\n => exporting to image\n => => naming to docker.io/library/tareas-api:1.0" },
+    { "tipo": "comando", "comando": "docker run -d --name api -p 8080:8080 tareas-api:1.0", "salida": "Abrí http://localhost:8080/api/tareas" },
+    { "tipo": "nota", "variante": "dato", "md": "Usá la forma con corchetes (`[\"java\", \"-jar\", \"app.jar\"]`, llamada *exec form*). Así Java recibe directamente las señales de `docker stop` y se apaga ordenadamente." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`COPY failed: file not found`: la ruta de `COPY` es relativa al **contexto** (el `.` del build), no al Dockerfile ni a tu terminal. Si no compilaste antes, `target/` no existe. En la lección de multi-stage la compilación pasa a hacerse adentro de Docker." },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["semana"], "md": "El mismo patrón sirve para cualquier stack: cambian la imagen base y el comando. Para un front de Angular compilado, la base es `nginx:alpine` y se copia la carpeta `dist/<proyecto>/browser`." }
+  ],
+  "recursos": {
+    "video": { "id": "A8oXDTDhZWU", "titulo": "Dockerfile y docker build, construir imágenes (Curso Docker 7)", "canal": "Pabpereza", "inicio": 18, "fin": 364, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Escribir un Dockerfile", "url": "https://docs.docker.com/get-started/docker-concepts/building-images/writing-a-dockerfile/" },
+      { "titulo": "docs.docker.com: Referencia del Dockerfile", "url": "https://docs.docker.com/reference/dockerfile/" },
+      { "titulo": "spring.io: Spring Boot con Docker", "url": "https://spring.io/guides/gs/spring-boot-docker/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el Dockerfile de la API: parte de Java 21 (solo JRE), trabaja en `/app`, copia el `.jar`, documenta el puerto 8080 y arranca con `java -jar`.",
+    "lenguaje": "dockerfile",
+    "archivo": "Dockerfile",
+    "plantilla": "{{0}} eclipse-temurin:21-jre\n{{1}} /app\nCOPY target/tareas-0.0.1-SNAPSHOT.jar app.jar\n{{2}} 8080\nENTRYPOINT [{{3}}]",
+    "huecos": [
+      { "respuestas": ["FROM", "from"], "ancho": 5 },
+      { "respuestas": ["WORKDIR", "workdir"], "ancho": 8 },
+      { "respuestas": ["EXPOSE", "expose"], "ancho": 7 },
+      { "respuestas": ["\"java\", \"-jar\", \"app.jar\""], "ancho": 26 }
+    ],
+    "pistas": [
+      "La primera instrucción siempre dice de qué imagen partís; la segunda fija la carpeta de trabajo; la del puerto *expone* (en inglés).",
+      "El ENTRYPOINT en forma de lista lleva cada palabra entre comillas dobles (con simples Docker no lo entiende como lista), separadas por comas: el programa, la opción y el archivo."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En un proyecto Spring Boot (podés generar uno en start.spring.io con *Spring Web*), compilá con `./mvnw package -DskipTests` (en Windows `mvnw.cmd`)." },
+        { "tipo": "texto", "md": "Creá el `Dockerfile` en la raíz (cambiá el nombre del `.jar` por el tuyo) y corré `docker build -t tareas-api:1.0 .` y `docker run -d --name api -p 8080:8080 tareas-api:1.0`." }
+      ],
+      "resultadoEsperado": "docker logs api muestra \"Started ...Application\" y la API responde en http://localhost:8080."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué hace `EXPOSE 8080` en un Dockerfile?",
+      "opciones": [
+        { "texto": "Documenta que la app escucha en el 8080; para verla desde tu PC igual necesitás `-p`.", "correcta": true, "explicacion": "EXPOSE es informativo. La publicación la hace docker run -p (o ports en Compose)." },
+        { "texto": "Publica el puerto 8080 en tu PC.", "correcta": false, "explicacion": "No publica nada por sí solo." },
+        { "texto": "Cambia el puerto de Spring Boot a 8080.", "correcta": false, "explicacion": "El puerto de la app lo define la app (server.port)." }
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es la diferencia entre `RUN` y `ENTRYPOINT`/`CMD`?",
+      "opciones": [
+        { "texto": "RUN se ejecuta al construir la imagen; ENTRYPOINT/CMD, cada vez que arranca un contenedor.", "correcta": true, "explicacion": "RUN deja su resultado en una capa de la imagen." },
+        { "texto": "Son lo mismo.", "correcta": false, "explicacion": "Corren en momentos distintos." },
+        { "texto": "RUN corre al arrancar y ENTRYPOINT al construir.", "correcta": false, "explicacion": "Es al revés." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué significa el `.` al final de `docker build -t tareas-api:1.0 .`?",
+      "opciones": [
+        { "texto": "Que el contexto del build es la carpeta actual: COPY puede tomar archivos de ahí.", "correcta": true, "explicacion": "Docker manda esa carpeta al motor para construir." },
+        { "texto": "Que la imagen se guarda en la carpeta actual.", "correcta": false, "explicacion": "Las imágenes las guarda Docker, no quedan como archivo en tu carpeta." },
+        { "texto": "Nada, es opcional.", "correcta": false, "explicacion": "El contexto es obligatorio." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "id": "cache-y-dockerignore",
+  "titulo": "Builds rápidos: cache de capas y .dockerignore",
+  "minutos": 11,
+  "objetivo": "ordenar un Dockerfile para que Docker reutilice capas y no reinstale dependencias en cada cambio.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Cada instrucción del Dockerfile genera una **capa**, y Docker las guarda en **cache**. En el próximo build, si la instrucción y los archivos que usa no cambiaron, reutiliza la capa en vez de volver a ejecutarla. Pero en cuanto una capa cambia, **todas las de abajo se rehacen**." },
+    { "tipo": "texto", "md": "Por eso el orden importa. Este Dockerfile de un front de Angular reinstala todas las dependencias cada vez que tocás una línea de código:" },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "Dockerfile (lento)", "codigo": "FROM node:24-alpine\nWORKDIR /app\nCOPY . .            # cualquier cambio en el código invalida esta capa…\nRUN npm ci          # …y entonces se reinstala todo (minutos)\nRUN npx ng build" },
+    { "tipo": "texto", "md": "La regla: **primero lo que cambia poco, al final lo que cambia mucho**. Las dependencias (`package.json`) cambian poco; el código, todo el tiempo:" },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "Dockerfile (rápido)", "codigo": "FROM node:24-alpine\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci          # se reutiliza mientras no cambien las dependencias\nCOPY . .\nRUN npx ng build" },
+    { "tipo": "texto", "md": "Con Maven es igual: primero `pom.xml` y la descarga de dependencias, después `src/`." },
+    { "tipo": "texto", "md": "El otro truco es el **`.dockerignore`**: igual que `.gitignore`, lista lo que **no** se manda al build. Sin él, `COPY . .` copia `node_modules`, `target`, `.git`… y cualquier archivo nuevo ahí rompe la cache." },
+    { "tipo": "codigo", "lenguaje": "text", "archivo": ".dockerignore", "codigo": "node_modules\ndist\n.angular\ntarget\n.git\n.env\n*.log" },
+    { "tipo": "nota", "variante": "error-comun", "md": "Poné `.env` en el `.dockerignore`. Si no, `COPY . .` mete tus contraseñas dentro de la imagen, y cualquiera que la baje las puede leer." },
+    { "tipo": "nota", "variante": "dato", "md": "En la salida de `docker build` las capas reutilizadas dicen `CACHED`. Si ves que `npm ci` o la descarga de Maven no dicen CACHED después de tocar solo código, el orden está mal." }
+  ],
+  "recursos": {
+    "video": { "id": "A8oXDTDhZWU", "titulo": "Orden de las instrucciones y cache de capas (Curso Docker 7)", "canal": "Pabpereza", "inicio": 364, "fin": 635, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Usar la cache de build", "url": "https://docs.docker.com/get-started/docker-concepts/building-images/using-the-build-cache/" },
+      { "titulo": "docs.docker.com: Archivos .dockerignore", "url": "https://docs.docker.com/build/concepts/context/#dockerignore-files" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená el Dockerfile de la API (Maven) para que las dependencias queden en cache y solo se recompile tu código cuando lo cambiás.",
+    "lenguaje": "dockerfile",
+    "lineas": [
+      "FROM maven:3.9-eclipse-temurin-21",
+      "WORKDIR /app",
+      "COPY pom.xml .",
+      "RUN mvn dependency:go-offline",
+      "COPY src ./src",
+      "RUN mvn package -DskipTests"
+    ],
+    "pistas": [
+      "Arriba de todo la imagen base y la carpeta de trabajo. Al final, el comando que compila el código.",
+      "Lo que cambia poco va antes: primero el `pom.xml` y la descarga de dependencias, después recién `src`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Construí tu imagen dos veces seguidas con `docker build -t prueba .` y mirá cuántas capas dicen `CACHED` la segunda vez." },
+        { "tipo": "texto", "md": "Cambiá una línea del código, volvé a construir y fijate que la capa de dependencias siga en CACHED." }
+      ],
+      "resultadoEsperado": "Después de tocar solo código, la descarga de dependencias aparece como CACHED y el build tarda segundos."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Cambiaste un archivo de `src/`. ¿Qué capas se rehacen en el Dockerfile ordenado?",
+      "opciones": [
+        { "texto": "Desde `COPY src ./src` para abajo.", "correcta": true, "explicacion": "Las capas anteriores (base, pom.xml, dependencias) se reutilizan." },
+        { "texto": "Todas.", "correcta": false, "explicacion": "Solo se rehacen a partir de la primera que cambió." },
+        { "texto": "Ninguna.", "correcta": false, "explicacion": "El código cambió, así que esa capa y las siguientes sí." }
+      ]
+    },
+    {
+      "pregunta": "¿Para qué sirve `.dockerignore`?",
+      "opciones": [
+        { "texto": "Para que ciertos archivos (node_modules, target, .env…) no se manden al build ni terminen en la imagen.", "correcta": true, "explicacion": "Builds más rápidos, imágenes más chicas y sin secretos." },
+        { "texto": "Para que Git ignore el Dockerfile.", "correcta": false, "explicacion": "Eso sería .gitignore." },
+        { "texto": "Para que Docker ignore errores al construir.", "correcta": false, "explicacion": "No existe tal cosa." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué es peligroso no ignorar `.env`?",
+      "opciones": [
+        { "texto": "Porque `COPY . .` lo mete en la imagen y cualquiera que la tenga puede leer las contraseñas.", "correcta": true, "explicacion": "Las imágenes se comparten; los secretos no tienen que viajar adentro." },
+        { "texto": "Porque Docker no puede leer archivos que empiezan con punto.", "correcta": false, "explicacion": "Los puede leer sin problema." },
+        { "texto": "No es peligroso.", "correcta": false, "explicacion": "Es una filtración de secretos muy común." }
+      ]
+    }
+  ]
+}

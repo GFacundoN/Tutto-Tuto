@@ -1,0 +1,76 @@
+{
+  "id": "multi-stage",
+  "titulo": "Imágenes chicas con multi-stage",
+  "minutos": 13,
+  "objetivo": "compilar dentro de Docker y dejar en la imagen final solo lo necesario para correr.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Para compilar la API necesitás Maven y el JDK; para correrla, solo el JRE y el `.jar`. Si hacés todo en una sola imagen, la imagen final carga con Maven, el JDK, el código fuente y la cache de dependencias: cientos de MB que no sirven en producción." },
+    { "tipo": "texto", "md": "Un Dockerfile **multi-stage** tiene varios `FROM`. Cada uno arranca una **etapa** nueva. Le ponés nombre con `AS` y en la última copiás solo lo que necesitás con `COPY --from=etapa`:" },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "Dockerfile", "codigo": "# Etapa 1: compilar (Maven + JDK)\nFROM maven:3.9-eclipse-temurin-21 AS build\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline\nCOPY src ./src\nRUN mvn package -DskipTests\n\n# Etapa 2: correr (solo JRE + el .jar)\nFROM eclipse-temurin:21-jre\nWORKDIR /app\nCOPY --from=build /app/target/*.jar app.jar\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]" },
+    { "tipo": "lista", "items": [
+      "La imagen resultante es **solo la última etapa**. Lo de la etapa `build` se usa para construir y se descarta.",
+      "Ya no hace falta compilar antes en tu PC: con Docker instalado, `docker build` hace todo. Ni siquiera necesitás Java o Maven instalados.",
+      "El mismo Dockerfile sirve en tu PC, en el pipeline de CI y en el servidor: compila siempre con la misma versión de todo."
+    ] },
+    { "tipo": "texto", "md": "Para el front es igual: una etapa con `node` que corre `ng build` y una final con `nginx:alpine` que solo tiene los archivos estáticos:" },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "front/Dockerfile", "codigo": "FROM node:24-alpine AS build\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci\nCOPY . .\nRUN npx ng build\n\nFROM nginx:alpine\nCOPY --from=build /app/dist/tablero/browser /usr/share/nginx/html" },
+    { "tipo": "nota", "variante": "comparacion", "md": "Típicamente la imagen de la API pasa de unos 800 MB (con Maven y JDK) a unos 300 MB (solo JRE). La del front, de más de 1 GB (con node_modules) a unos 50 MB." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`COPY --from=build /app/target/*.jar`: si tu proyecto genera dos `.jar` (por ejemplo `-plain.jar` en Gradle), el comodín copia los dos y falla. Usá el nombre exacto o configurá el build para generar uno solo." }
+  ],
+  "recursos": {
+    "video": { "id": "6p-z8ozXlqM", "titulo": "Docker multi-stage y distroless: de 1 GB a 2 MB", "canal": "Pabpereza", "inicio": 32, "fin": 352, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Multi-stage builds", "url": "https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/" },
+      { "titulo": "spring.io: Spring Boot con Docker", "url": "https://spring.io/guides/gs/spring-boot-docker/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el Dockerfile multi-stage de la API: la primera etapa se llama `build` y compila; la segunda parte del JRE y copia el `.jar` desde `build`.",
+    "lenguaje": "dockerfile",
+    "archivo": "Dockerfile",
+    "plantilla": "FROM maven:3.9-eclipse-temurin-21 {{0}}\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline\nCOPY src ./src\nRUN mvn package -DskipTests\n\nFROM {{1}}\nWORKDIR /app\nCOPY {{2}} /app/target/*.jar app.jar\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]",
+    "huecos": [
+      { "respuestas": ["AS build", "as build"], "ancho": 8 },
+      { "respuestas": ["eclipse-temurin:21-jre"], "ancho": 22 },
+      { "respuestas": ["--from=build"], "ancho": 12 }
+    ],
+    "pistas": [
+      "La etapa se nombra al final del `FROM` con `AS nombre`. La segunda etapa parte de la imagen de Java que solo trae el JRE.",
+      "Para copiar desde otra etapa, `COPY` recibe la opción `--from=` con el nombre de la etapa."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Reemplazá el Dockerfile de tu API por la versión multi-stage y construí con `docker build -t tareas-api:2.0 .` (sin compilar antes)." },
+        { "tipo": "texto", "md": "Compará tamaños con `docker images tareas-api`." }
+      ],
+      "resultadoEsperado": "La imagen 2.0 se construye sin tener Maven en tu PC y no pesa más que la 1.0."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "En un Dockerfile con dos `FROM`, ¿qué queda en la imagen final?",
+      "opciones": [
+        { "texto": "Solo la última etapa, más lo que copiaste con `COPY --from`.", "correcta": true, "explicacion": "Las etapas anteriores se usan para construir y se descartan." },
+        { "texto": "Las dos etapas juntas.", "correcta": false, "explicacion": "Por eso la imagen queda chica: la etapa de compilación no viaja." },
+        { "texto": "Solo la primera.", "correcta": false, "explicacion": "La imagen es la última etapa." }
+      ]
+    },
+    {
+      "pregunta": "Con un Dockerfile multi-stage, ¿qué necesita tener instalado un compañero para construir la API?",
+      "opciones": [
+        { "texto": "Solo Docker.", "correcta": true, "explicacion": "Maven y el JDK vienen en la imagen de la etapa build." },
+        { "texto": "Docker, Java y Maven.", "correcta": false, "explicacion": "La compilación ocurre dentro de Docker." },
+        { "texto": "Java y Maven, pero no Docker.", "correcta": false, "explicacion": "Sin Docker no hay build de imagen." }
+      ]
+    },
+    {
+      "pregunta": "¿Para qué sirve `AS build` en `FROM maven:3.9-eclipse-temurin-21 AS build`?",
+      "opciones": [
+        { "texto": "Para ponerle nombre a la etapa y poder copiar de ella con `--from=build`.", "correcta": true, "explicacion": "Sin nombre tendrías que usar el número de etapa (--from=0)." },
+        { "texto": "Para que Docker corra mvn build.", "correcta": false, "explicacion": "Es solo un nombre." },
+        { "texto": "Para etiquetar la imagen final como build.", "correcta": false, "explicacion": "La etiqueta de la imagen la pone docker build -t." }
+      ]
+    }
+  ]
+}
