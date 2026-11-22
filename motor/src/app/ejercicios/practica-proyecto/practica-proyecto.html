@@ -102,7 +102,7 @@
     @for (r of lista; track $index) {
       <li [class.ok]="r.ok">
         <span class="icono" aria-hidden="true">{{ r.ok ? '✓' : '✗' }}</span>
-        <span class="solo-lectores">{{ r.ok ? 'Correcto:' : 'Falta:' }}</span>
+        <span class="solo-lectores">{{ r.ok ? 'Cumple:' : 'No cumple:' }}</span>
         {{ r.mensaje }}
       </li>
     }

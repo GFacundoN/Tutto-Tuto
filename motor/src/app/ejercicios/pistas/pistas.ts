@@ -11,9 +11,9 @@ import { TextoMdPipe } from '../../shared/texto-md.pipe';
   template: `
     @if (reveladas() > 0) {
       <ol class="pistas" aria-live="polite">
-        <!-- slice es un pipe incorporado: corta el array como Array.prototype.slice. -->
+        <!-- En el template se pueden llamar métodos de JavaScript, como slice() de los arrays. -->
         @for (pista of pistas().slice(0, reveladas()); track $index) {
-          <li><strong>Pista {{ $index + 1 }}.</strong> <span [innerHTML]="pista | textoMd"></span></li>
+          <li><strong>Pista {{ $index + 1 }}.</strong>{{ " " }}<span [innerHTML]="pista | textoMd"></span></li>
         }
       </ol>
     }
