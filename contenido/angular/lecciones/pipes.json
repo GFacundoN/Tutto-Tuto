@@ -1,0 +1,72 @@
+{
+  "id": "pipes",
+  "titulo": "Pipes: formatear en el template",
+  "minutos": 10,
+  "objetivo": "formatear fechas, monedas y textos con los pipes de Angular y crear un pipe propio.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **pipe** transforma un valor solo para mostrarlo, sin cambiar el dato original: `{{ valor | pipe:argumento }}`. Los más usados vienen en `@angular/common` y hay que importarlos en el componente:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "detalle-tarea.ts", "codigo": "import { CurrencyPipe, DatePipe, UpperCasePipe } from '@angular/common';\n\n@Component({\n  selector: 'app-detalle-tarea',\n  imports: [DatePipe, CurrencyPipe, UpperCasePipe],\n  template: `\n    <h2>{{ tarea().titulo | uppercase }}</h2>\n    <p>Vence: {{ tarea().vence | date: 'dd/MM/yyyy' }}</p>\n    <p>Presupuesto: {{ tarea().costo | currency: 'ARS' : 'symbol-narrow' }}</p>\n  `,\n})" },
+    { "tipo": "texto", "md": "Para crear uno propio: `ng g pipe shared/iniciales`. Es una clase con `@Pipe` y un método `transform`:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "shared/iniciales-pipe.ts", "codigo": "import { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({ name: 'iniciales' })\nexport class InicialesPipe implements PipeTransform {\n  transform(nombre: string): string {\n    return nombre.split(' ').map(p => p[0]).join('').toUpperCase();\n  }\n}\n// uso: {{ 'Ana Gómez' | iniciales }}  ->  AG" },
+    { "tipo": "nota", "variante": "dato", "md": "Los pipes son **puros** por defecto: Angular solo vuelve a ejecutarlos si cambia la entrada. Por eso son más eficientes que llamar a un método en el template (`{{ formatear(x) }}`), que se ejecuta en cada detección de cambios." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Si usás `| date` y ves *\"No pipe found with name 'date'\"*, te falta `DatePipe` en `imports`. Mismo error que con componentes." },
+    { "tipo": "nota", "variante": "dato", "md": "Para que `date` y `currency` usen el formato argentino (`22/11/2026`, `$ 1.234,50`), registrá el locale: `registerLocaleData(localeEsAr)` y `{ provide: LOCALE_ID, useValue: 'es-AR' }` en `app.config.ts`." }
+  ],
+  "recursos": {
+    "video": { "id": "zjBLY3TjrMk", "titulo": "Crear un Custom Pipe en Angular (video de 2020: hoy el pipe se importa en el componente, sin NgModule)", "canal": "Pedro de Leon", "inicio": 0, "fin": 538, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Pipes", "url": "https://angular.dev/guide/templates/pipes" },
+      { "titulo": "angular.dev: Crear pipes propios", "url": "https://angular.dev/guide/templates/pipes#creating-custom-pipes" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "Creá el pipe `iniciales` en `src/app/iniciales-pipe.ts` que convierta \"Ana Gómez\" en \"AG\", y usalo en `App` junto con `date` para mostrar la fecha de vencimiento como `dd/MM/yyyy`.",
+    "archivos": {
+      "src/app/iniciales-pipe.ts": "import { Pipe, PipeTransform } from '@angular/core';\n\n// TODO: decorá la clase con @Pipe({ name: 'iniciales' }) e implementá transform\nexport class InicialesPipe implements PipeTransform {\n  transform(nombre: string): string {\n    return nombre;\n  }\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  imports: [],\n  template: `\n    <h1>{{ tarea.titulo }}</h1>\n    <p>Responsable: {{ tarea.responsable }}</p>\n    <p>Vence: {{ tarea.vence }}</p>\n  `,\n})\nexport class App {\n  tarea = { titulo: 'Dockerizar el front', responsable: 'Ana Gómez', vence: new Date(2026, 11, 5) };\n}\n"
+    },
+    "abrirArchivo": "src/app/iniciales-pipe.ts,src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/iniciales-pipe.ts", "patron": "@Pipe\\s*\\(\\s*\\{\\s*name\\s*:\\s*['\"]iniciales['\"]", "mensaje": "El pipe se llama 'iniciales'." },
+      { "archivo": "src/app/iniciales-pipe.ts", "patron": "\\[0\\]|charAt\\(0\\)|substring\\(0,\\s*1\\)|slice\\(0,\\s*1\\)|at\\(0\\)", "mensaje": "transform toma la primera letra de cada palabra." },
+      { "archivo": "src/app/app.ts", "patron": "imports\\s*:\\s*\\[[^\\]]*InicialesPipe", "mensaje": "App importa InicialesPipe." },
+      { "archivo": "src/app/app.ts", "patron": "imports\\s*:\\s*\\[[^\\]]*DatePipe", "mensaje": "App importa DatePipe." },
+      { "archivo": "src/app/app.ts", "patron": "tarea\\.responsable\\s*\\|\\s*iniciales", "mensaje": "El responsable se muestra con | iniciales." },
+      { "archivo": "src/app/app.ts", "patron": "tarea\\.vence\\s*\\|\\s*date\\s*:\\s*['\"]dd/MM/yyyy['\"]", "mensaje": "La fecha usa | date: 'dd/MM/yyyy'." }
+    ],
+    "pistas": [
+      "En el pipe: `@Pipe({ name: 'iniciales' })` arriba de la clase, y en `transform`: `nombre.split(' ').map(p => p[0]).join('')`.",
+      "En App: `import { DatePipe } from '@angular/common';`, `import { InicialesPipe } from './iniciales-pipe';`, ambos en `imports`, y en el template `{{ tarea.responsable | iniciales }}` y `{{ tarea.vence | date: 'dd/MM/yyyy' }}`."
+    ],
+    "solucion": {
+      "src/app/iniciales-pipe.ts": "import { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({ name: 'iniciales' })\nexport class InicialesPipe implements PipeTransform {\n  transform(nombre: string): string {\n    return nombre\n      .split(' ')\n      .map((p) => p[0])\n      .join('')\n      .toUpperCase();\n  }\n}\n",
+      "src/app/app.ts": "import { DatePipe } from '@angular/common';\nimport { Component } from '@angular/core';\nimport { InicialesPipe } from './iniciales-pipe';\n\n@Component({\n  selector: 'app-root',\n  imports: [DatePipe, InicialesPipe],\n  template: `\n    <h1>{{ tarea.titulo }}</h1>\n    <p>Responsable: {{ tarea.responsable | iniciales }}</p>\n    <p>Vence: {{ tarea.vence | date: 'dd/MM/yyyy' }}</p>\n  `,\n})\nexport class App {\n  tarea = { titulo: 'Dockerizar el front', responsable: 'Ana Gómez', vence: new Date(2026, 11, 5) };\n}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "comando", "comando": "ng g pipe iniciales --flat" },
+        { "tipo": "texto", "md": "Implementá `transform` y usalo en `App` con el objeto `tarea` del enunciado." }
+      ],
+      "resultadoEsperado": "Ves \"Responsable: AG\" y \"Vence: 05/12/2026\"."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué conviene un pipe puro en vez de `{{ formatear(fecha) }}`?",
+      "opciones": [
+        { "texto": "Porque el pipe solo se reejecuta si cambia la entrada; el método se llama en cada detección de cambios.", "correcta": true, "explicacion": "Con listas grandes, la diferencia se nota." },
+        { "texto": "Porque los métodos no se pueden llamar en templates.", "correcta": false, "explicacion": "Se puede, pero es menos eficiente." },
+        { "texto": "Porque el pipe modifica el dato original.", "correcta": false, "explicacion": "Al revés: los pipes no modifican el dato, solo cómo se muestra." }
+      ]
+    },
+    {
+      "pregunta": "Ves *\"No pipe found with name 'currency'\"*. ¿Qué falta?",
+      "opciones": [
+        { "texto": "Agregar `CurrencyPipe` a `imports` del componente.", "correcta": true, "explicacion": "Los pipes, como los componentes, se importan donde se usan." },
+        { "texto": "Instalar un paquete de npm.", "correcta": false, "explicacion": "Viene en `@angular/common`." },
+        { "texto": "Registrar el pipe en `angular.json`.", "correcta": false, "explicacion": "`angular.json` no registra pipes." }
+      ]
+    }
+  ]
+}

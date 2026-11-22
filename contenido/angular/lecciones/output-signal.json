@@ -1,0 +1,55 @@
+{
+  "id": "output-signal",
+  "titulo": "Avisar al padre con output()",
+  "minutos": 9,
+  "objetivo": "emitir eventos desde un componente hijo con output() y manejarlos en el padre.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Los datos bajan con inputs; los **eventos suben** con outputs. El hijo no cambia el estado del padre: le avisa \"pasó esto\" y el padre decide qué hacer." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tarjeta-tarea.ts", "codigo": "import { Component, input, output } from '@angular/core';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `\n    <h3>{{ tarea().titulo }}</h3>\n    <button (click)=\"completar.emit(tarea().id)\">Marcar como hecha</button>\n  `,\n})\nexport class TarjetaTarea {\n  readonly tarea = input.required<Tarea>();\n  readonly completar = output<number>();   // emite el id\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "tablero.html", "codigo": "@for (t of tareas(); track t.id) {\n  <app-tarjeta-tarea [tarea]=\"t\" (completar)=\"marcarHecha($event)\" />\n}" },
+    { "tipo": "texto", "md": "En el padre, `$event` es el valor que se emitió (acá, el id). El método del padre actualiza su signal:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tablero.ts", "codigo": "marcarHecha(id: number) {\n  this.tareas.update(lista => lista.map(t => t.id === id ? { ...t, hecha: true } : t));\n}" },
+    { "tipo": "nota", "variante": "version", "md": "La forma anterior es `@Output() completar = new EventEmitter<number>();`. Se usa igual desde el template y el `.emit()` es el mismo." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Es lo mismo que pasar un callback `onCompletar={id => …}` en React, pero declarado como evento del componente.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "video": { "id": "M6_e-3ZtNDM", "titulo": "Output | Emitir valores", "canal": "Fernando Herrera", "inicio": 0, "fin": 440, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Outputs", "url": "https://angular.dev/guide/components/outputs" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "La tarjeta tiene que avisar al padre cuando se elimina, mandando el id. Completá el hijo y el padre.",
+    "lenguaje": "typescript",
+    "plantilla": "// tarjeta-tarea.ts\nreadonly eliminar = {{0}}<number>();\n// en el template del hijo:\n<button (click)=\"eliminar.{{1}}(tarea().id)\">Eliminar</button>\n\n// en el template del padre:\n<app-tarjeta-tarea [tarea]=\"t\" ({{2}})=\"borrar({{3}})\" />",
+    "huecos": [
+      { "respuestas": ["output"], "ancho": 7 },
+      { "respuestas": ["emit"], "ancho": 5 },
+      { "respuestas": ["eliminar"], "ancho": 9 },
+      { "respuestas": ["$event"], "ancho": 7 }
+    ],
+    "pistas": [
+      "Se declara con la función que es la \"pareja\" de `input()`, y se dispara con un método de 4 letras.",
+      "Las respuestas son `output`, `emit`, el nombre del output (`eliminar`) y `$event` para recibir el id."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué el hijo emite un evento en vez de modificar directamente la lista de tareas?",
+      "opciones": [
+        { "texto": "Porque el estado es del padre: el hijo avisa y el padre decide. Así el hijo se puede reutilizar.", "correcta": true, "explicacion": "Flujo de datos en un solo sentido: inputs hacia abajo, eventos hacia arriba." },
+        { "texto": "Porque Angular no permite arrays en hijos.", "correcta": false, "explicacion": "No hay tal restricción." },
+        { "texto": "Por rendimiento.", "correcta": false, "explicacion": "Es por diseño y mantenibilidad, no por rendimiento." }
+      ]
+    },
+    {
+      "pregunta": "En `(completar)=\"marcarHecha($event)\"`, ¿qué es `$event`?",
+      "opciones": [
+        { "texto": "El valor que el hijo pasó a `completar.emit(...)`.", "correcta": true, "explicacion": "Con outputs, `$event` es lo emitido, no un evento del DOM." },
+        { "texto": "Siempre un MouseEvent.", "correcta": false, "explicacion": "Solo en eventos del DOM como `click`." },
+        { "texto": "El componente hijo.", "correcta": false, "explicacion": "No; es el valor emitido." }
+      ]
+    }
+  ]
+}

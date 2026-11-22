@@ -1,0 +1,55 @@
+{
+  "id": "model-y-ng-content",
+  "titulo": "model() y <ng-content>",
+  "minutos": 10,
+  "objetivo": "hacer un binding de dos vías con model() y armar componentes \"contenedor\" con <ng-content>.",
+  "explicacion": [
+    { "tipo": "texto", "md": "**`model()`** es un input que el hijo también puede escribir. Sirve para controles propios (un selector, un toggle) donde el padre y el hijo comparten un valor. Se usa con la sintaxis \"banana en una caja\" `[( )]`:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "selector-estado.ts", "codigo": "@Component({\n  selector: 'app-selector-estado',\n  template: `\n    @for (e of estados; track e) {\n      <button [class.activo]=\"estado() === e\" (click)=\"estado.set(e)\">{{ e }}</button>\n    }\n  `,\n})\nexport class SelectorEstado {\n  readonly estado = model<'pendiente' | 'en-curso' | 'hecha'>('pendiente');\n  readonly estados = ['pendiente', 'en-curso', 'hecha'] as const;\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "filtro-tareas.html", "codigo": "<!-- filtro es un signal del padre: se actualiza cuando el hijo hace estado.set(...) -->\n<app-selector-estado [(estado)]=\"filtro\" />\n<p>Mostrando: {{ filtro() }}</p>" },
+    { "tipo": "texto", "md": "**`<ng-content>`** (proyección de contenido) deja un \"hueco\" en el template del hijo donde se dibuja lo que el padre pone **entre las etiquetas**. Ideal para tarjetas, modales y layouts:" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "panel.html + uso", "codigo": "<!-- panel.html -->\n<section class=\"panel\">\n  <header><ng-content select=\"[titulo]\" /></header>\n  <ng-content />\n</section>\n\n<!-- uso -->\n<app-panel>\n  <h2 titulo>Pendientes</h2>\n  <app-lista-tareas />\n</app-panel>" },
+    { "tipo": "nota", "variante": "comparacion", "md": "`<ng-content />` es `props.children` de React, y `select=\"[titulo]\"` es como tener varias props de tipo nodo (slots con nombre).", "soloVersiones": ["semana"] },
+    { "tipo": "nota", "variante": "version", "md": "`model()` es de Angular 17.2+. Antes se hacía a mano: un `@Input() estado` más un `@Output() estadoChange`. Ese par con el sufijo `Change` es lo que hace funcionar `[( )]`, también con `ngModel`." }
+  ],
+  "recursos": {
+    "video": { "id": "IfP2ii9kW4E", "titulo": "Cómo usar model signal para el binding bidireccional (desde \"Banana in a box\")", "canal": "llatzer developer", "inicio": 254, "fin": 348, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Model inputs (two-way binding)", "url": "https://angular.dev/guide/components/inputs#model-inputs" },
+      { "titulo": "angular.dev: Proyección de contenido con ng-content", "url": "https://angular.dev/guide/components/content-projection" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá: un toggle con `model()` usado con binding de dos vías, y una tarjeta que proyecta lo que le ponen adentro.",
+    "lenguaje": "typescript",
+    "plantilla": "// toggle-urgente.ts\nreadonly urgente = {{0}}(false);\n// template del toggle:\n<button (click)=\"urgente.set(!urgente())\">Urgente</button>\n\n// en el padre (esUrgente es un signal):\n<app-toggle-urgente {{1}}=\"esUrgente\" />\n\n// tarjeta.html: acá se dibuja lo que va entre <app-tarjeta> y </app-tarjeta>\n<div class=\"tarjeta\"><{{2}} /></div>",
+    "huecos": [
+      { "respuestas": ["model"], "ancho": 6 },
+      { "respuestas": ["[(urgente)]"], "ancho": 12 },
+      { "respuestas": ["ng-content"], "ancho": 11 }
+    ],
+    "pistas": [
+      "El primero es la función de input escribible. El segundo usa la \"banana en una caja\": corchetes y paréntesis juntos.",
+      "Las respuestas son `model`, `[(urgente)]` y `ng-content`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué diferencia hay entre `input()` y `model()`?",
+      "opciones": [
+        { "texto": "`model()` también se puede escribir desde el hijo y le avisa al padre (two-way binding).", "correcta": true, "explicacion": "Por dentro, un model es un input más un output `<nombre>Change`." },
+        { "texto": "`model()` es para formularios y `input()` para todo lo demás.", "correcta": false, "explicacion": "Sirve para cualquier valor compartido, no solo formularios." },
+        { "texto": "Ninguna; son alias.", "correcta": false, "explicacion": "Un input es de solo lectura en el hijo; un model no." }
+      ]
+    },
+    {
+      "pregunta": "Querés un componente `<app-modal>` donde el padre decide el contenido. ¿Qué usás?",
+      "opciones": [
+        { "texto": "`<ng-content />` en el template del modal.", "correcta": true, "explicacion": "Proyecta lo que el padre escribe entre las etiquetas." },
+        { "texto": "Un input de tipo string con HTML.", "correcta": false, "explicacion": "Perdés bindings y componentes, y es inseguro." },
+        { "texto": "Un output.", "correcta": false, "explicacion": "Los outputs son para eventos, no para contenido." }
+      ]
+    }
+  ]
+}

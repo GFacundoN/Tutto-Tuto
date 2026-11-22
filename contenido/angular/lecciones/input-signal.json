@@ -1,0 +1,82 @@
+{
+  "id": "input-signal",
+  "titulo": "Pasar datos al hijo con input()",
+  "minutos": 12,
+  "objetivo": "recibir datos del componente padre con input() e input.required(), y usarlos en el hijo.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un componente reutilizable no debería tener los datos \"hardcodeados\": los recibe del padre. Para eso declarás **inputs** con la función `input()`. Cada input es un signal de solo lectura." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tarjeta-tarea.ts", "codigo": "import { Component, computed, input } from '@angular/core';\nimport { Tarea } from './tarea';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `\n    <article [class.urgente]=\"urgente()\">\n      <h3>{{ tarea().titulo }}</h3>\n      <small>{{ etiqueta() }}</small>\n    </article>\n  `,\n})\nexport class TarjetaTarea {\n  readonly tarea = input.required<Tarea>();   // obligatorio\n  readonly urgente = input(false);            // opcional, con valor por defecto\n  readonly etiqueta = computed(() => this.tarea().responsable ?? 'Sin asignar');\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "lista-tareas.html", "codigo": "@for (t of tareas(); track t.id) {\n  <app-tarjeta-tarea [tarea]=\"t\" [urgente]=\"t.prioridad === 'alta'\" />\n}" },
+    { "tipo": "lista", "items": [
+      "`input.required<T>()`: si el padre no lo pasa, el **compilador** avisa. Usalo para los datos sin los cuales el componente no tiene sentido.",
+      "`input(valorPorDefecto)`: opcional.",
+      "Como es un signal, se lee con `tarea()` y se puede usar dentro de `computed`.",
+      "El hijo **no** puede modificar un input (no tiene `.set`). Si necesita cambiarlo, avisa al padre con un output (próxima lección)."
+    ] },
+    { "tipo": "nota", "variante": "version", "md": "Antes de Angular 17.1 se usaba el decorador: `@Input() tarea!: Tarea;` y `@Input({ required: true })`. Lo vas a ver muchísimo en código existente; funciona igual, pero no es un signal (no se puede usar en `computed`)." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Los inputs son las **props** de React. `[tarea]=\"t\"` equivale a `tarea={t}`.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "video": { "id": "yfSzRMV_MLc", "titulo": "Función input | Comunicación entre componentes", "canal": "Fernando Herrera", "inicio": 0, "fin": 564, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Inputs", "url": "https://angular.dev/guide/components/inputs" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "`TarjetaTarea` tiene el título fijo. Hacé que reciba `titulo` como input **obligatorio** de tipo `string` y que `App` muestre dos tarjetas: \"Configurar CI\" y \"Login con JWT\".",
+    "archivos": {
+      "src/app/tarjeta-tarea.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `<article><h3>{{ titulo }}</h3></article>`,\n  styles: `article { border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; margin: 8px 0; }`,\n})\nexport class TarjetaTarea {\n  // TODO: convertilo en un input obligatorio\n  titulo = 'Título fijo';\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\nimport { TarjetaTarea } from './tarjeta-tarea';\n\n@Component({\n  selector: 'app-root',\n  imports: [TarjetaTarea],\n  template: `\n    <h1>Tablero</h1>\n    <app-tarjeta-tarea />\n  `,\n})\nexport class App {}\n"
+    },
+    "abrirArchivo": "src/app/tarjeta-tarea.ts,src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/tarjeta-tarea.ts", "patron": "titulo\\s*=\\s*input\\.required\\s*<\\s*string\\s*>\\s*\\(\\s*\\)", "mensaje": "titulo = input.required<string>()." },
+      { "archivo": "src/app/tarjeta-tarea.ts", "patron": "import\\s*\\{[^}]*\\binput\\b[^}]*\\}\\s*from\\s*['\"]@angular/core['\"]", "mensaje": "Importás input desde @angular/core." },
+      { "archivo": "src/app/tarjeta-tarea.ts", "patron": "\\{\\{\\s*titulo\\(\\)\\s*\\}\\}", "mensaje": "El template lee titulo() como signal." },
+      { "archivo": "src/app/app.ts", "patron": "<app-tarjeta-tarea[^>]*titulo\\s*=\\s*\"Configurar CI\"|<app-tarjeta-tarea[^>]*\\[titulo\\]\\s*=\\s*\"'Configurar CI'\"", "mensaje": "App pasa el título \"Configurar CI\"." },
+      { "archivo": "src/app/app.ts", "patron": "<app-tarjeta-tarea[^>]*titulo\\s*=\\s*\"Login con JWT\"|<app-tarjeta-tarea[^>]*\\[titulo\\]\\s*=\\s*\"'Login con JWT'\"", "mensaje": "App pasa el título \"Login con JWT\"." }
+    ],
+    "pistas": [
+      "En el hijo: `readonly titulo = input.required<string>();` y en el template `{{ titulo() }}`.",
+      "En el padre podés pasar un string literal sin corchetes: `<app-tarjeta-tarea titulo=\"Configurar CI\" />`, o con corchetes y comillas simples adentro: `[titulo]=\"'Configurar CI'\"`."
+    ],
+    "solucion": {
+      "src/app/tarjeta-tarea.ts": "import { Component, input } from '@angular/core';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `<article><h3>{{ titulo() }}</h3></article>`,\n  styles: `article { border: 1px solid #ccc; border-radius: 8px; padding: 8px 12px; margin: 8px 0; }`,\n})\nexport class TarjetaTarea {\n  readonly titulo = input.required<string>();\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\nimport { TarjetaTarea } from './tarjeta-tarea';\n\n@Component({\n  selector: 'app-root',\n  imports: [TarjetaTarea],\n  template: `\n    <h1>Tablero</h1>\n    <app-tarjeta-tarea titulo=\"Configurar CI\" />\n    <app-tarjeta-tarea titulo=\"Login con JWT\" />\n  `,\n})\nexport class App {}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Usá tu componente `tarjeta-tarea` de la lección anterior. Convertí `titulo` en input obligatorio y renderizá dos tarjetas desde `app.html` (o el template de `app.ts`)." },
+        { "tipo": "texto", "md": "Probá sacar el atributo `titulo` de una de las tarjetas: `ng serve` tiene que mostrar un error de compilación (*Required input 'titulo' from component TarjetaTarea must be specified*)." }
+      ],
+      "resultadoEsperado": "Ves dos tarjetas con títulos distintos, y si falta el input, el compilador te avisa."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué ventaja tiene `input.required<Tarea>()` sobre `input<Tarea>()`?",
+      "opciones": [
+        { "texto": "El compilador falla si el padre no pasa el valor, y el tipo no incluye undefined.", "correcta": true, "explicacion": "Detectás el olvido al compilar, no en producción." },
+        { "texto": "Es más rápido en tiempo de ejecución.", "correcta": false, "explicacion": "No hay diferencia de rendimiento." },
+        { "texto": "Permite que el hijo lo modifique.", "correcta": false, "explicacion": "Ningún input se puede modificar desde el hijo." }
+      ]
+    },
+    {
+      "pregunta": "En el hijo, ¿cómo leés el valor de `readonly tarea = input.required<Tarea>()`?",
+      "opciones": [
+        { "texto": "`this.tarea()`", "correcta": true, "explicacion": "Es un signal: se lee llamándolo." },
+        { "texto": "`this.tarea`", "correcta": false, "explicacion": "Eso es el signal en sí, no su valor." },
+        { "texto": "`this.tarea.value`", "correcta": false, "explicacion": "Los signals no tienen `.value`; se llaman como función." }
+      ]
+    },
+    {
+      "pregunta": "En código de la empresa ves `@Input() tarea!: Tarea;`. ¿Qué es?",
+      "opciones": [
+        { "texto": "La forma anterior (con decorador) de declarar un input; funciona igual pero no es un signal.", "correcta": true, "explicacion": "Convive con `input()`. Se puede migrar con `ng generate @angular/core:signal-input-migration`." },
+        { "texto": "Un error: los decoradores ya no existen.", "correcta": false, "explicacion": "Siguen soportados." },
+        { "texto": "Un input que el hijo puede modificar.", "correcta": false, "explicacion": "Técnicamente se puede reasignar, pero es mala práctica: el padre lo pisa en el próximo cambio." }
+      ]
+    }
+  ]
+}
