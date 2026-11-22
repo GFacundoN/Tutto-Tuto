@@ -1,8 +1,8 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { ContenidoCursos } from '../core/contenido/contenido-cursos';
-import { CursoActual } from '../core/curso-actual';
+import { ContenidoCursos } from './contenido-cursos';
+import { CursoActual } from '../curso-actual';
 
 /**
  * Títulos y duración de las lecciones del recorrido, para dibujar el mapa.

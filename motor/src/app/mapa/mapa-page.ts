@@ -3,11 +3,11 @@ import { RouterLink } from '@angular/router';
 import { CursoActual } from '../core/curso-actual';
 import { estaDesbloqueada, fechaLocal } from '../core/progreso/calculos';
 import { Progreso } from '../core/progreso/progreso';
-import { TitulosLecciones } from './titulos-lecciones';
+import { TitulosLecciones } from '../core/contenido/titulos-lecciones';
 
 type EstadoEstacion = 'completa' | 'actual' | 'disponible' | 'bloqueada';
 
-/** El recorrido del curso dibujado como una línea de subte: niveles = tramos, lecciones = estaciones. */
+/** Página del curso: encabezado, temario por módulos (niveles) y tarjeta lateral de progreso. */
 @Component({
   selector: 'app-mapa-page',
   imports: [RouterLink],
@@ -44,8 +44,16 @@ export class MapaPage {
         return { id, estado };
       });
       const completas = estaciones.filter((e) => e.estado === 'completa').length;
-      return { ...nivel, estaciones, completas, porcentaje: Math.round((completas / nivel.lecciones.length) * 100) };
+      const minutos = nivel.lecciones.reduce((total, id) => total + (this.titulosLecciones()[id]?.minutos ?? 0), 0);
+      const tieneLaProxima = !!proxima && nivel.lecciones.includes(proxima);
+      return { ...nivel, estaciones, completas, minutos, tieneLaProxima };
     });
+  });
+
+  protected readonly minutosTotales = computed(() => this.niveles().reduce((t, n) => t + n.minutos, 0));
+  protected readonly porcentaje = computed(() => {
+    const total = this.cursoActual.ordenLecciones().length;
+    return total ? Math.round((this.totalCompletas() / total) * 100) : 0;
   });
 
   protected readonly totalCompletas = computed(
