@@ -301,3 +301,45 @@ pre {
   border-radius: var(--radio);
   box-shadow: var(--sombra);
 }
+
+/* Esqueleto de carga: anticipa la forma del contenido en vez de un "Cargando…".
+   El brillo se mueve con transform (no repinta el layout). */
+.esqueleto {
+  display: grid;
+  gap: 14px;
+  padding-block: 32px;
+}
+.esqueleto > span {
+  position: relative;
+  display: block;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--superficie-2);
+  overflow: hidden;
+}
+.esqueleto > span.alto {
+  height: 40px;
+  width: 60%;
+}
+.esqueleto > span.bloque {
+  height: 180px;
+  border-radius: var(--radio);
+}
+.esqueleto > span::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--tinta) 6%, transparent), transparent);
+  transform: translateX(-100%);
+  animation: brillo 1.3s ease-in-out infinite;
+}
+@keyframes brillo {
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .esqueleto > span::after {
+    display: none;
+  }
+}

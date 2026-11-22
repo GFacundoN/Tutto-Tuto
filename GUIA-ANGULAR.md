@@ -81,6 +81,8 @@ Ejemplo: abrís `#/angular/leccion/signals`.
 | `model()`, `output()` | `ejercicios/pistas/pistas.ts` |
 | `viewChild()`, `import()` dinámico | `ejercicios/practica-proyecto/practica-proyecto.ts` |
 | `@let` | `quiz/pregunta/pregunta.html` |
+| Directiva propia, `afterNextRender`, `DestroyRef` | `shared/al-aparecer.ts` |
+| `animate.enter` (animaciones sin librería) | `leccion/leccion-page.html` |
 | `HttpClient`, `forkJoin`, `catchError`, `shareReplay` | `core/contenido/contenido-cursos.ts` |
 | `rxResource` | `core/contenido/titulos-lecciones.ts` |
 | `toObservable`, `switchMap`, `toSignal` | `repaso/repaso-page.ts` |
