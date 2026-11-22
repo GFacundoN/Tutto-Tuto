@@ -1,0 +1,70 @@
+@if (paneles().length) {
+  <div class="controles">
+    <button type="button" class="flecha" (click)="irA(activo() - 1)" [disabled]="activo() === 0" aria-label="Módulo anterior">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </button>
+    <button
+      type="button"
+      class="flecha"
+      (click)="irA(activo() + 1)"
+      [disabled]="activo() === paneles().length - 1"
+      aria-label="Módulo siguiente"
+    >
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" /></svg>
+    </button>
+  </div>
+
+  <!-- (scroll) con passive implícito: solo leemos la posición, no frenamos el desplazamiento. -->
+  <ol class="pista" #pista (scroll)="alDesplazar()" aria-label="Módulos del curso">
+    @for (p of paneles(); track p.id; let i = $index) {
+      <li
+        class="panel"
+        [class.activo]="activo() === i"
+        (mouseenter)="activar(i)"
+        (focusin)="activar(i)"
+      >
+        <button
+          type="button"
+          class="cabecera"
+          (click)="activar(i)"
+          [attr.aria-expanded]="activo() === i"
+          [attr.aria-controls]="'panel-' + p.id"
+        >
+          <span class="numero" aria-hidden="true">{{ p.numero < 10 ? '0' + p.numero : p.numero }}</span>
+          <span class="titulo-corto">{{ p.titulo }}</span>
+        </button>
+
+        <div class="detalle" [id]="'panel-' + p.id">
+          <p class="dato">Módulo {{ p.numero }}@if (p.dia) { · {{ p.dia }}}</p>
+          <h3>{{ p.titulo }}</h3>
+          <p class="desc">{{ p.descripcion }}</p>
+          <p class="dato vas">Vas a aprender:</p>
+          <ul class="lista">
+            @for (l of p.lecciones; track l) {
+              <li>
+                <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>
+                {{ l }}
+              </li>
+            }
+          </ul>
+          <a class="boton boton-secundario ir" [routerLink]="['/', cursoId()]">Ver el curso</a>
+        </div>
+      </li>
+    }
+  </ol>
+
+  <div class="puntos" role="group" aria-label="Elegir módulo">
+    @for (p of paneles(); track p.id; let i = $index) {
+      <button
+        type="button"
+        class="punto"
+        [class.activo]="activo() === i"
+        (click)="irA(i)"
+        [attr.aria-label]="'Ir al módulo ' + p.numero + ': ' + p.titulo"
+        [attr.aria-current]="activo() === i ? 'true' : null"
+      >
+        <span aria-hidden="true"></span>
+      </button>
+    }
+  </div>
+}

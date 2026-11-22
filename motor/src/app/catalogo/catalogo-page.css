@@ -229,3 +229,34 @@ progress::-moz-progress-bar {
   border-radius: var(--radio-chico);
   background: var(--error-fondo);
 }
+
+/* Sección de módulos: título grande con segunda línea atenuada y descripción al costado. */
+.modulos {
+  margin: 8px 0 72px;
+}
+.titular {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 8px;
+  align-items: end;
+}
+@media (min-width: 900px) {
+  .titular {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+.titular h2 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  margin: 0;
+}
+.atenuado {
+  color: var(--tinta-suave);
+}
+.titular-desc {
+  font-size: 1.05rem;
+  color: var(--tinta-suave);
+  margin: 0;
+}

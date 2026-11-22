@@ -9,6 +9,7 @@ import { CursoActual } from '../core/curso-actual';
 import { AlAparecer } from '../shared/al-aparecer';
 import { IconoPaso } from '../shared/ilustraciones/icono-paso';
 import { IlustracionHero } from '../shared/ilustraciones/ilustracion-hero';
+import { PanelesModulos } from './paneles-modulos/paneles-modulos';
 
 /** Lo que muestra cada tarjeta del home. */
 interface TarjetaCurso {
@@ -26,7 +27,7 @@ interface TarjetaCurso {
  */
 @Component({
   selector: 'app-catalogo-page',
-  imports: [RouterLink, IlustracionHero, IconoPaso, AlAparecer],
+  imports: [RouterLink, IlustracionHero, IconoPaso, AlAparecer, PanelesModulos],
   templateUrl: './catalogo-page.html',
   styleUrl: './catalogo-page.css',
 })
