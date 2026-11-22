@@ -4,6 +4,77 @@
     "titulo": "Angular",
     "descripcion": "Del primer componente a una app que consume tu API de Spring Boot. Angular 22 con signals y componentes standalone.",
     "color": "#c8235f",
-    "logo": "angular/logo.svg"
+    "logo": "angular/logo.svg",
+    "portada": "angular/portada.svg",
+    "estado": "disponible",
+    "area": "Frontend",
+    "usas": ["Componentes", "Signals", "HttpClient"],
+    "logros": [
+      "Armar pantallas con componentes standalone y signals",
+      "Navegar entre pantallas y proteger rutas",
+      "Consumir tu API con HttpClient e interceptors",
+      "Formularios con validaciones y errores claros",
+      "Tests con Vitest y build con Docker"
+    ]
+  },
+  {
+    "id": "java-spring",
+    "titulo": "Java y Spring Boot",
+    "descripcion": "La API que consume el frontend: controladores REST, servicios, JPA, validaciones y seguridad con JWT.",
+    "color": "#3d8b37",
+    "estado": "proximamente",
+    "area": "Backend",
+    "usas": ["Spring Web", "JPA", "Spring Security"],
+    "logros": [
+      "Endpoints REST con validaciones",
+      "Persistencia con Spring Data JPA",
+      "Login con JWT y roles",
+      "Tests de integración"
+    ]
+  },
+  {
+    "id": "sql",
+    "titulo": "SQL y bases relacionales",
+    "descripcion": "Diseñar tablas, consultar y unir datos con MySQL: lo que está debajo de cada pantalla de la app.",
+    "color": "#00758f",
+    "estado": "proximamente",
+    "area": "Datos",
+    "usas": ["MySQL", "JOIN", "Índices"],
+    "logros": [
+      "Modelar tablas y relaciones",
+      "Consultas con JOIN, GROUP BY y subconsultas",
+      "Transacciones e índices",
+      "Migraciones sin romper datos"
+    ]
+  },
+  {
+    "id": "docker",
+    "titulo": "Docker",
+    "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
+    "color": "#1d63ed",
+    "estado": "proximamente",
+    "area": "Infraestructura",
+    "usas": ["Dockerfile", "Compose", "Volúmenes"],
+    "logros": [
+      "Imágenes con Dockerfile multi-stage",
+      "Levantar todo el sistema con docker compose",
+      "Variables de entorno y volúmenes",
+      "Leer logs y depurar contenedores"
+    ]
+  },
+  {
+    "id": "git-equipo",
+    "titulo": "Git y trabajo en equipo",
+    "descripcion": "Ramas, pull requests y revisiones de código, con el tablero de tareas del equipo en Trello.",
+    "color": "#f05032",
+    "estado": "proximamente",
+    "area": "Equipo",
+    "usas": ["Git", "Pull requests", "Trello"],
+    "logros": [
+      "Ramas, merge y rebase sin miedo",
+      "Pull requests y code review",
+      "Resolver conflictos",
+      "Organizar el trabajo en un tablero"
+    ]
   }
 ]

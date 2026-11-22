@@ -137,8 +137,11 @@ function validarLeccion(cursoId, id, plantilla, versiones) {
 }
 
 const indice = leerJson(join(raiz, 'cursos.json')) ?? [];
-for (const { id: cursoId, logo } of indice) {
+for (const { id: cursoId, logo, portada, estado } of indice) {
   if (logo && !existsSync(join(raiz, logo))) error(cursoId, `el logo "${logo}" no existe en contenido/`);
+  if (portada && !existsSync(join(raiz, portada))) error(cursoId, `la portada "${portada}" no existe en contenido/`);
+  // Los cursos anunciados todavía no tienen curso.json ni lecciones.
+  if (estado === 'proximamente') continue;
   const curso = leerJson(join(raiz, cursoId, 'curso.json'));
   if (!curso) continue;
   const plantilla = leerCarpeta(join(raiz, cursoId, 'plantilla-proyecto'));
