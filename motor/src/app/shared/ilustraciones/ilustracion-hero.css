@@ -1,0 +1,194 @@
+:host {
+  display: block;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.sup {
+  fill: var(--superficie);
+  stroke: var(--borde);
+}
+.sup-2 {
+  fill: var(--superficie-2);
+}
+.punto {
+  fill: var(--borde-control);
+  opacity: 0.6;
+}
+.pestana {
+  fill: var(--acento-suave);
+}
+.kw {
+  fill: var(--acento);
+  opacity: 0.85;
+}
+.tx {
+  fill: var(--tinta-suave);
+  opacity: 0.35;
+}
+.st {
+  fill: var(--exito);
+  opacity: 0.6;
+}
+.hueco {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+.respuesta {
+  fill: var(--acento);
+}
+.cursor {
+  fill: var(--tinta);
+}
+.chip-fondo {
+  fill: var(--superficie);
+  stroke: var(--borde);
+}
+.chip-tx {
+  fill: var(--tinta-suave);
+  opacity: 0.5;
+}
+.ok-fondo {
+  fill: var(--exito);
+}
+.ok-trazo {
+  fill: none;
+  stroke: var(--fondo);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+}
+.xp {
+  font: 700 16px var(--fuente-codigo);
+  fill: var(--acento);
+}
+.anillo-base {
+  fill: none;
+  stroke: var(--superficie-2);
+  stroke-width: 6;
+}
+.anillo {
+  fill: none;
+  stroke: var(--exito);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 30;
+  transform: rotate(-90deg);
+  transform-origin: 356px 58px;
+}
+
+/*
+  Coreografía de entrada (una sola vez, al cargar): ventana → respuesta en el hueco
+  → chip de "correcto" → XP → anillo. Después solo quedan el cursor parpadeando y
+  una flotación muy lenta en los chips.
+*/
+.entra {
+  animation: entrar 600ms var(--ease-salida) both;
+}
+.chip-ok {
+  animation-delay: 1300ms;
+}
+.chip-xp {
+  animation-delay: 1550ms;
+}
+.chip-anillo {
+  animation-delay: 1750ms;
+}
+.respuesta {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: escribir 700ms 500ms steps(8, end) both;
+}
+.cursor {
+  animation:
+    mover-cursor 700ms 500ms steps(8, end) both,
+    parpadeo 1.1s 1.2s steps(1) infinite;
+}
+.ok-trazo {
+  animation: dibujar 400ms 1650ms ease-out both;
+}
+.anillo {
+  animation: llenar 900ms 1900ms var(--ease-salida) both;
+}
+.chip {
+  transform-box: fill-box;
+}
+.chip-ok,
+.chip-xp {
+  animation-name: entrar, flotar;
+  animation-duration: 600ms, 6s;
+  animation-timing-function: var(--ease-salida), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-fill-mode: both, none;
+}
+.chip-ok {
+  animation-delay: 1300ms, 2s;
+}
+.chip-xp {
+  animation-delay: 1550ms, 3s;
+}
+.halo {
+  animation: aparecer 1200ms ease-out both;
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes escribir {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes mover-cursor {
+  from {
+    transform: translateX(-72px);
+  }
+}
+@keyframes parpadeo {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes dibujar {
+  from {
+    stroke-dashoffset: 20;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes llenar {
+  from {
+    stroke-dashoffset: 100;
+  }
+}
+@keyframes flotar {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+  .ok-trazo {
+    stroke-dashoffset: 0;
+  }
+}

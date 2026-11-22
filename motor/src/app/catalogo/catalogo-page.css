@@ -4,8 +4,21 @@
 }
 
 .portada {
-  max-width: 760px;
+  display: grid;
+  gap: 24px;
+  align-items: center;
   margin-bottom: 56px;
+}
+@media (min-width: 900px) {
+  .portada {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 48px;
+  }
+}
+.portada-ilustracion {
+  max-width: 460px;
+  width: 100%;
+  justify-self: center;
 }
 .portada h1 {
   font-size: clamp(2.4rem, 7vw, 3.6rem);
@@ -169,6 +182,46 @@ progress::-moz-progress-bar {
 }
 .pasos strong {
   font-size: 1.1rem;
+}
+.icono-paso {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 6px;
+  border-radius: 12px;
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+/* Las tarjetas entran en cascada la primera vez que se ven (la directiva agrega .dibujar). */
+.pasos li {
+  opacity: 0;
+}
+.pasos.dibujar li {
+  animation: subir 500ms var(--ease-salida) both;
+}
+.pasos.dibujar li:nth-child(2) {
+  animation-delay: 90ms;
+}
+.pasos.dibujar li:nth-child(3) {
+  animation-delay: 180ms;
+}
+.pasos.dibujar li:nth-child(4) {
+  animation-delay: 270ms;
+}
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pasos li {
+    opacity: 1;
+  }
 }
 
 .aviso {

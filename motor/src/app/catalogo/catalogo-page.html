@@ -1,5 +1,6 @@
 <div class="contenedor">
   <section class="portada" aria-labelledby="titulo-home">
+    <div class="portada-texto">
     <p class="dato">Tutto-Tuto · Cursos interactivos en español</p>
     <h1 id="titulo-home">Aprendé haciendo, de a 10 minutos.</h1>
     <p class="bajada">
@@ -12,6 +13,8 @@
       <li>Gratis y sin registrarte</li>
       <li>Practicás en el navegador o en tu PC</li>
     </ul>
+    </div>
+    <app-ilustracion-hero class="portada-ilustracion" />
   </section>
 
   <section aria-labelledby="titulo-cursos">
@@ -20,7 +23,7 @@
     @if (cursos.error()) {
       <p class="aviso" role="alert">No pude cargar la lista de cursos. Revisá tu conexión y recargá la página.</p>
     } @else if (cursos.isLoading()) {
-      <p class="tinta-suave" role="status">Cargando cursos…</p>
+      <div class="esqueleto" role="status" aria-label="Cargando cursos"><span class="bloque" style="max-width:380px"></span></div>
     } @else {
       <ul class="cursos">
         @for (c of lista(); track c.resumen.id) {
@@ -70,23 +73,27 @@
 
   <section class="como" aria-labelledby="titulo-como">
     <h2 id="titulo-como">Cómo es cada lección</h2>
-    <ol class="pasos">
+    <ol class="pasos" appAlAparecer>
       <li class="tarjeta">
+        <span class="icono-paso"><app-icono-paso tipo="aprender" [tamano]="24" /></span>
         <span class="dato">Lectura</span>
         <strong>Leés lo justo</strong>
         <span class="tinta-suave">Una explicación corta con un ejemplo de trabajo real, sin relleno.</span>
       </li>
       <li class="tarjeta">
+        <span class="icono-paso"><app-icono-paso tipo="ver" [tamano]="24" /></span>
         <span class="dato">Video</span>
         <strong>Lo ves en acción</strong>
         <span class="tinta-suave">El tramo exacto de un video que lo explica, y la documentación oficial.</span>
       </li>
       <li class="tarjeta">
+        <span class="icono-paso"><app-icono-paso tipo="practicar" [tamano]="24" /></span>
         <span class="dato">Práctica</span>
         <strong>Lo hacés vos</strong>
         <span class="tinta-suave">Un ejercicio que se corrige solo, con pistas de a una si te trabás.</span>
       </li>
       <li class="tarjeta">
+        <span class="icono-paso"><app-icono-paso tipo="quiz" [tamano]="24" /></span>
         <span class="dato">Quiz</span>
         <strong>Lo confirmás</strong>
         <span class="tinta-suave">Preguntas que explican por qué cada respuesta está bien o mal.</span>

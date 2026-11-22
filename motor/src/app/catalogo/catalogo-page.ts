@@ -6,6 +6,9 @@ import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { claveDe, leer } from '../core/almacenamiento';
 import { Curso, CursoResumen } from '../core/contenido/modelos';
 import { CursoActual } from '../core/curso-actual';
+import { AlAparecer } from '../shared/al-aparecer';
+import { IconoPaso } from '../shared/ilustraciones/icono-paso';
+import { IlustracionHero } from '../shared/ilustraciones/ilustracion-hero';
 
 /** Lo que muestra cada tarjeta del home. */
 interface TarjetaCurso {
@@ -23,7 +26,7 @@ interface TarjetaCurso {
  */
 @Component({
   selector: 'app-catalogo-page',
-  imports: [RouterLink],
+  imports: [RouterLink, IlustracionHero, IconoPaso, AlAparecer],
   templateUrl: './catalogo-page.html',
   styleUrl: './catalogo-page.css',
 })
