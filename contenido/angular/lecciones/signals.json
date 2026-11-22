@@ -1,0 +1,85 @@
+{
+  "id": "signals",
+  "titulo": "Signals: estado que se actualiza solo",
+  "minutos": 14,
+  "objetivo": "guardar estado con signal(), derivar valores con computed() y saber cuándo (y cuándo no) usar effect().",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **signal** es una caja con un valor que avisa cuando cambia. Todo lo que lo lee (el template, un `computed`) se actualiza solo. Es la base del Angular moderno y lo que permite que funcione sin zone.js." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tablero.ts", "codigo": "import { Component, computed, signal } from '@angular/core';\n\ninterface Tarea { id: number; titulo: string; hecha: boolean; }\n\n@Component({\n  selector: 'app-tablero',\n  template: `\n    <p>{{ pendientes() }} pendientes de {{ tareas().length }}</p>\n    <button (click)=\"agregar('Revisar PR')\">Agregar</button>\n  `,\n})\nexport class Tablero {\n  readonly tareas = signal<Tarea[]>([]);\n  readonly pendientes = computed(() => this.tareas().filter(t => !t.hecha).length);\n\n  agregar(titulo: string) {\n    this.tareas.update(lista => [...lista, { id: Date.now(), titulo, hecha: false }]);\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "**Leer**: se llama como función, `tareas()`. En el template también: `{{ tareas().length }}`.",
+      "**Escribir**: `set(valorNuevo)` o `update(anterior => nuevo)`.",
+      "**`computed(() => …)`**: valor derivado, de solo lectura. Se recalcula solo cuando cambian los signals que usa, y queda en cache mientras tanto.",
+      "**`effect(() => …)`**: corre código cuando cambian los signals que lee. Es para efectos **hacia afuera** (guardar en localStorage, loguear, llamar a una librería que no es Angular)."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "**Nunca mutes** el valor: `this.tareas().push(nueva)` cambia el array pero el signal no se entera (sigue siendo el mismo objeto) y la pantalla no se actualiza. Siempre devolvé uno nuevo: `update(l => [...l, nueva])`." },
+    { "tipo": "nota", "variante": "error-comun", "md": "No uses `effect` para calcular un valor y guardarlo en otro signal: para eso está `computed`. Un `effect` que escribe signals es la causa más común de bucles y estados inconsistentes." },
+    { "tipo": "nota", "variante": "comparacion", "md": "`signal` ≈ `useState`, `computed` ≈ `useMemo` (pero sin lista de dependencias: las detecta solo) y `effect` ≈ `useEffect`. La gran diferencia: el componente **no se vuelve a ejecutar entero** cuando cambia un signal; solo se actualiza lo que lo lee.", "soloVersiones": ["semana"] },
+    { "tipo": "nota", "variante": "version", "md": "Signals llegó en Angular 16 y es estable desde la 17 (`effect` y `linkedSignal` desde la 20). En proyectos más viejos el estado son propiedades comunes (`tareas: Tarea[] = []`) y zone.js detecta los cambios." }
+  ],
+  "recursos": {
+    "video": { "id": "6wD-xcQ_1a8", "titulo": "Señales", "canal": "Fernando Herrera", "inicio": 0, "fin": 445, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Signals (guía)", "url": "https://angular.dev/guide/signals" },
+      { "titulo": "angular.dev: Signals (Essentials)", "url": "https://angular.dev/essentials/signals" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "En `src/app/app.ts` hay un contador de tareas hecho con propiedades comunes. Convertilo a signals: `tareas` tiene que ser un `signal`, `cantidad` un `computed`, y `agregar()` tiene que usar `update` sin mutar el array. En la vista previa, el contador tiene que subir al tocar el botón.",
+    "archivos": {
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas: {{ cantidad }}</h1>\n    <button (click)=\"agregar()\">Agregar tarea</button>\n    <ul>\n      @for (t of tareas; track $index) {\n        <li>{{ t }}</li>\n      }\n    </ul>\n  `,\n})\nexport class App {\n  // TODO: convertí esto a signals\n  tareas: string[] = ['Configurar CI'];\n  cantidad = this.tareas.length;\n\n  agregar() {\n    this.tareas.push('Tarea ' + (this.tareas.length + 1));\n  }\n}\n"
+    },
+    "abrirArchivo": "src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/app.ts", "patron": "import\\s*\\{[^}]*\\bsignal\\b[^}]*\\}\\s*from\\s*['\"]@angular/core['\"]", "mensaje": "Importás signal desde @angular/core." },
+      { "archivo": "src/app/app.ts", "patron": "tareas\\s*=\\s*signal\\s*(<[^>]*>)?\\s*\\(", "mensaje": "tareas es un signal." },
+      { "archivo": "src/app/app.ts", "patron": "cantidad\\s*=\\s*computed\\s*\\(", "mensaje": "cantidad es un computed." },
+      { "archivo": "src/app/app.ts", "patron": "\\.update\\s*\\(", "mensaje": "agregar() usa tareas.update(...)." },
+      { "archivo": "src/app/app.ts", "patron": "\\.push\\s*\\(", "debeCoincidir": false, "mensaje": "No mutás el array con push." },
+      { "archivo": "src/app/app.ts", "patron": "\\{\\{\\s*cantidad\\(\\)\\s*\\}\\}", "mensaje": "El template lee cantidad() como función." },
+      { "archivo": "src/app/app.ts", "patron": "of\\s+tareas\\(\\)", "mensaje": "El @for recorre tareas()." }
+    ],
+    "pistas": [
+      "Los signals se leen llamándolos: en el template va `cantidad()` y `tareas()`. `cantidad` se declara con `computed(() => this.tareas().length)`.",
+      "Para agregar sin mutar: `this.tareas.update(lista => [...lista, 'Tarea ' + (lista.length + 1)])`. Acordate de importar `signal` y `computed`."
+    ],
+    "solucion": {
+      "src/app/app.ts": "import { Component, computed, signal } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas: {{ cantidad() }}</h1>\n    <button (click)=\"agregar()\">Agregar tarea</button>\n    <ul>\n      @for (t of tareas(); track $index) {\n        <li>{{ t }}</li>\n      }\n    </ul>\n  `,\n})\nexport class App {\n  readonly tareas = signal<string[]>(['Configurar CI']);\n  readonly cantidad = computed(() => this.tareas().length);\n\n  agregar() {\n    this.tareas.update((lista) => [...lista, 'Tarea ' + (lista.length + 1)]);\n  }\n}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Reemplazá tu `src/app/app.ts` por el código de partida (abajo, en la solución vas a ver el final) y quitá el `templateUrl` si lo tenía. Código de partida:" },
+        { "tipo": "codigo", "lenguaje": "typescript", "archivo": "src/app/app.ts", "codigo": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas: {{ cantidad }}</h1>\n    <button (click)=\"agregar()\">Agregar tarea</button>\n    <ul>\n      @for (t of tareas; track $index) {\n        <li>{{ t }}</li>\n      }\n    </ul>\n  `,\n})\nexport class App {\n  tareas: string[] = ['Configurar CI'];\n  cantidad = this.tareas.length;\n\n  agregar() {\n    this.tareas.push('Tarea ' + (this.tareas.length + 1));\n  }\n}" },
+        { "tipo": "texto", "md": "Con `ng serve` corriendo, tocá el botón: el contador **no sube** (y en Angular 22, sin zone.js, puede que ni la lista se actualice). Convertilo a signals y probá de nuevo." }
+      ],
+      "resultadoEsperado": "Cada clic agrega un ítem a la lista y el título muestra la cantidad correcta."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Tenés `tareas = signal<Tarea[]>([])`. ¿Por qué `this.tareas().push(nueva)` no actualiza la pantalla?",
+      "opciones": [
+        { "texto": "Porque mutás el mismo array y el signal no detecta el cambio; hay que usar update con un array nuevo.", "correcta": true, "explicacion": "El signal compara por referencia. `update(l => [...l, nueva])` crea un array nuevo y notifica." },
+        { "texto": "Porque los signals no pueden guardar arrays.", "correcta": false, "explicacion": "Pueden guardar cualquier valor." },
+        { "texto": "Porque falta llamar a detectChanges().", "correcta": false, "explicacion": "Con signals no hace falta; el problema es la mutación." }
+      ]
+    },
+    {
+      "pregunta": "Necesitás mostrar el total de tareas pendientes, que depende de `tareas`. ¿Qué usás?",
+      "opciones": [
+        { "texto": "`computed(() => this.tareas().filter(t => !t.hecha).length)`", "correcta": true, "explicacion": "Es un valor derivado: computed lo recalcula solo y lo cachea." },
+        { "texto": "Un `effect` que hace `pendientes.set(...)`.", "correcta": false, "explicacion": "Funciona, pero es el antipatrón clásico: más código, riesgo de bucles y un instante de valor desactualizado." },
+        { "texto": "Un método `pendientes()` que recorre la lista cada vez.", "correcta": false, "explicacion": "Funciona, pero se recalcula en cada detección de cambios; computed lo cachea." }
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es un buen uso de `effect()`?",
+      "opciones": [
+        { "texto": "Guardar en localStorage cada vez que cambian las tareas.", "correcta": true, "explicacion": "Es un efecto hacia afuera de Angular: el caso típico." },
+        { "texto": "Calcular el total de tareas en otro signal.", "correcta": false, "explicacion": "Eso es un valor derivado: computed." },
+        { "texto": "Reemplazar todos los computed para que se lean más fácil.", "correcta": false, "explicacion": "effect no devuelve un valor; no reemplaza a computed." }
+      ]
+    }
+  ]
+}

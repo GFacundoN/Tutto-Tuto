@@ -1,0 +1,73 @@
+{
+  "id": "interpolacion-y-property-binding",
+  "titulo": "Mostrar datos: interpolación y property binding",
+  "minutos": 8,
+  "objetivo": "mostrar datos del componente en el template con {{ }} y atar propiedades de elementos con [ ].",
+  "explicacion": [
+    { "tipo": "texto", "md": "El template ve todas las propiedades **públicas o protected** de la clase. Hay dos formas de mostrarlas:" },
+    { "tipo": "lista", "items": [
+      "**Interpolación** `{{ expresion }}`: pone el resultado como **texto**. Angular lo escapa, así que no hay riesgo de inyectar HTML.",
+      "**Property binding** `[propiedad]=\"expresion\"`: asigna el valor a una **propiedad del DOM** o a un input de otro componente. Sirve para `src`, `disabled`, `value`, `href`, etc."
+    ] },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "tarjeta-tarea.html", "codigo": "<article>\n  <h3>{{ titulo }}</h3>\n  <p>Vence: {{ vencimiento.toLocaleDateString() }}</p>\n  <img [src]=\"avatarUrl\" [alt]=\"'Foto de ' + responsable\" />\n  <button [disabled]=\"estado === 'hecha'\">Mover</button>\n</article>" },
+    { "tipo": "texto", "md": "Los corchetes hacen que lo de la derecha se evalúe como **TypeScript**. Sin corchetes, es un string literal: `disabled=\"false\"` deja el botón **deshabilitado**, porque el atributo existe." },
+    { "tipo": "nota", "variante": "error-comun", "md": "No mezcles las dos cosas: `[src]=\"{{ url }}\"` es un error. Dentro de `[ ]` ya estás en TypeScript: `[src]=\"url\"`." },
+    { "tipo": "texto", "md": "Para clases y estilos hay atajos muy usados: `[class.vencida]=\"estaVencida\"` agrega la clase si es `true`, y `[style.width.%]=\"progreso\"` pone un estilo con unidad." },
+    { "tipo": "nota", "variante": "comparacion", "md": "`{{ x }}` es como `{x}` en JSX y `[src]=\"x\"` es como `src={x}`. La diferencia: en Angular el template es HTML con una sintaxis propia, no JavaScript.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "video": { "id": "WOogryLKdr0", "titulo": "Angular desde cero: Property Binding paso a paso", "canal": "Jimmy Javier Dev", "inicio": 0, "fin": 570, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Mostrar texto con interpolación", "url": "https://angular.dev/guide/templates/binding" },
+      { "titulo": "angular.dev: Templates (Essentials)", "url": "https://angular.dev/essentials/templates" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el template de la tarjeta: el título como texto, la URL del avatar en `src`, y el botón deshabilitado cuando la tarea ya está hecha.",
+    "lenguaje": "html",
+    "archivo": "tarjeta-tarea.html",
+    "plantilla": "<h3>{{0}}</h3>\n<img {{1}}=\"avatarUrl\" alt=\"\" />\n<button [disabled]=\"{{2}}\">Mover</button>",
+    "huecos": [
+      { "respuestas": ["{{ titulo }}", "{{titulo}}"], "ancho": 14 },
+      { "respuestas": ["[src]"], "ancho": 6 },
+      { "respuestas": ["estado === 'hecha'", "estado == 'hecha'", "'hecha' === estado"], "ancho": 20 }
+    ],
+    "pistas": [
+      "El título va como texto: usá interpolación con llaves dobles. El `src` necesita evaluar una variable: usá corchetes.",
+      "Las respuestas son `{{ titulo }}`, `[src]` y una comparación como `estado === 'hecha'`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En tu componente `tarjeta-tarea`, agregá `estado = 'hecha';` y `avatarUrl = 'https://i.pravatar.cc/48';` a la clase, y usá el template del ejercicio." }
+      ],
+      "resultadoEsperado": "Se ve el título, la foto y el botón Mover gris (deshabilitado). Si cambiás estado a 'pendiente', el botón se habilita."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué pasa con `<button disabled=\"false\">`?",
+      "opciones": [
+        { "texto": "El botón queda deshabilitado.", "correcta": true, "explicacion": "Sin corchetes es un atributo con el string \"false\". En HTML, la sola presencia de `disabled` deshabilita. Lo correcto es `[disabled]=\"false\"`." },
+        { "texto": "El botón queda habilitado.", "correcta": false, "explicacion": "Eso pasaría con `[disabled]=\"false\"`, que evalúa el booleano." },
+        { "texto": "Angular tira un error de compilación.", "correcta": false, "explicacion": "Es HTML válido; compila, pero no hace lo que querías." }
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es la forma correcta de atar la URL de una imagen?",
+      "opciones": [
+        { "texto": "`<img [src]=\"url\" />`", "correcta": true, "explicacion": "Property binding: lo de la derecha es una expresión TypeScript." },
+        { "texto": "`<img [src]=\"{{ url }}\" />`", "correcta": false, "explicacion": "No se mezclan corchetes e interpolación." },
+        { "texto": "`<img src=\"url\" />`", "correcta": false, "explicacion": "Eso busca una imagen literalmente llamada \"url\"." }
+      ]
+    },
+    {
+      "pregunta": "Querés agregar la clase `vencida` solo si `estaVencida` es true. ¿Qué escribís?",
+      "opciones": [
+        { "texto": "`[class.vencida]=\"estaVencida\"`", "correcta": true, "explicacion": "Es el atajo de class binding: agrega o saca una clase según un booleano." },
+        { "texto": "`class=\"{{ estaVencida }}\"`", "correcta": false, "explicacion": "Pondría la clase \"true\" o \"false\", no \"vencida\"." },
+        { "texto": "`[vencida]=\"estaVencida\"`", "correcta": false, "explicacion": "Intentaría atar una propiedad `vencida` que el elemento no tiene." }
+      ]
+    }
+  ]
+}

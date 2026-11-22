@@ -1,0 +1,56 @@
+{
+  "id": "event-binding",
+  "titulo": "Responder a eventos",
+  "minutos": 7,
+  "objetivo": "ejecutar métodos del componente cuando el usuario hace clic, escribe o envía un formulario.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Con **event binding** `(evento)=\"metodo()\"` Angular escucha un evento del DOM y ejecuta la expresión. Los paréntesis indican \"esto va del template hacia la clase\" (al revés que los corchetes)." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "nueva-tarea.ts", "codigo": "@Component({\n  selector: 'app-nueva-tarea',\n  template: `\n    <input (input)=\"alEscribir($event)\" (keyup.enter)=\"guardar()\" />\n    <button type=\"button\" (click)=\"guardar()\">Agregar</button>\n  `,\n})\nexport class NuevaTarea {\n  titulo = '';\n\n  alEscribir(evento: Event) {\n    this.titulo = (evento.target as HTMLInputElement).value;\n  }\n\n  guardar() {\n    console.log('Guardar', this.titulo);\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "`$event` es el objeto del evento del DOM (un `MouseEvent`, `KeyboardEvent`, etc.).",
+      "`(keyup.enter)` es un atajo de Angular: solo dispara con la tecla Enter. También existen `keydown.escape`, `keyup.shift.a`, etc.",
+      "`(submit)` en un `<form>` captura el envío. En formularios de Angular se usa `(ngSubmit)`, que ya evita recargar la página."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Escribí `(click)=\"guardar()\"` **con** paréntesis del método. `(click)=\"guardar\"` no llama a nada: solo evalúa la referencia a la función." },
+    { "tipo": "nota", "variante": "comparacion", "md": "`(click)=\"guardar()\"` equivale a `onClick={() => guardar()}` en React. En Angular no pasás la función: escribís la llamada.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "docs": [
+      { "titulo": "angular.dev: Event listeners", "url": "https://angular.dev/guide/templates/event-listeners" },
+      { "titulo": "angular.dev: Templates (Essentials, sección de eventos)", "url": "https://angular.dev/essentials/templates" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Hacé que el botón llame a `archivar()` al hacer clic, y que el input llame a `buscar()` solo cuando se presiona Enter.",
+    "lenguaje": "html",
+    "plantilla": "<input placeholder=\"Buscar tarea\" ({{0}})=\"buscar()\" />\n<button type=\"button\" ({{1}})=\"{{2}}\">Archivar</button>",
+    "huecos": [
+      { "respuestas": ["keyup.enter", "keydown.enter"], "ancho": 12 },
+      { "respuestas": ["click"], "ancho": 6 },
+      { "respuestas": ["archivar()"], "ancho": 11 }
+    ],
+    "pistas": [
+      "Angular tiene un atajo para teclas: `evento.tecla`, por ejemplo con la tecla Enter.",
+      "Los huecos son `keyup.enter`, `click` y la llamada `archivar()` con paréntesis."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué hace `(click)=\"guardar\"` (sin paréntesis en guardar)?",
+      "opciones": [
+        { "texto": "Nada útil: evalúa la referencia a la función pero no la llama.", "correcta": true, "explicacion": "En Angular escribís la expresión a ejecutar, así que hay que llamarla: `guardar()`." },
+        { "texto": "Llama a guardar, igual que en React.", "correcta": false, "explicacion": "En React pasás la función; en Angular escribís la llamada." },
+        { "texto": "Da error de compilación.", "correcta": false, "explicacion": "Compila sin error: es una expresión válida, solo que no hace nada." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué es `$event` dentro de `(input)=\"alEscribir($event)\"`?",
+      "opciones": [
+        { "texto": "El objeto del evento del DOM que se disparó.", "correcta": true, "explicacion": "Para `input` es un `Event` cuyo `target` es el `<input>`." },
+        { "texto": "El valor del input ya como string.", "correcta": false, "explicacion": "Hay que leerlo de `$event.target.value`." },
+        { "texto": "Una variable que tenés que declarar en la clase.", "correcta": false, "explicacion": "`$event` es implícita en los event bindings." }
+      ]
+    }
+  ]
+}

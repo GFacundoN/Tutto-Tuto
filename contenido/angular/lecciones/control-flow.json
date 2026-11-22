@@ -1,0 +1,75 @@
+{
+  "id": "control-flow",
+  "titulo": "@if, @for y @switch",
+  "minutos": 10,
+  "objetivo": "mostrar u ocultar partes del template y repetir elementos de una lista con el control flow de Angular.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Desde Angular 17 el template tiene bloques de control propios, con una sintaxis parecida a TypeScript:" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "lista-tareas.html", "codigo": "@if (cargando) {\n  <p>Cargando tareas…</p>\n} @else if (error) {\n  <p class=\"error\">{{ error }}</p>\n} @else {\n  <ul>\n    @for (tarea of tareas; track tarea.id) {\n      <li>{{ $index + 1 }}. {{ tarea.titulo }}</li>\n    } @empty {\n      <li>No hay tareas. Creá la primera.</li>\n    }\n  </ul>\n}" },
+    { "tipo": "lista", "items": [
+      "`@if` / `@else if` / `@else`: muestran un bloque según una condición. Con `@if (usuario(); as u)` guardás el valor en una variable local.",
+      "`@for (x of lista; track x.id)`: repite el bloque. **`track` es obligatorio**: le dice a Angular cómo reconocer cada elemento para no recrear todo el DOM cuando la lista cambia.",
+      "`@empty`: se muestra cuando la lista está vacía.",
+      "Variables implícitas de `@for`: `$index`, `$first`, `$last`, `$even`, `$odd`, `$count`.",
+      "`@switch (valor) { @case ('a') { … } @default { … } }` para elegir entre varios bloques."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Usá un id estable en `track` (`track tarea.id`). `track $index` funciona, pero si reordenás o borrás elementos, Angular reutiliza el DOM equivocado y se pierden cosas como el foco o lo escrito en un input." },
+    { "tipo": "nota", "variante": "version", "md": "En código anterior a Angular 17 vas a ver `<li *ngFor=\"let t of tareas; trackBy: porId\">`, `<p *ngIf=\"cargando; else lista\">` y `[ngSwitch]`. Hacen lo mismo. La CLI migra automáticamente con `ng generate @angular/core:control-flow`." },
+    { "tipo": "nota", "variante": "comparacion", "md": "`@for` reemplaza al `tareas.map(t => <li key={t.id}>…)` de React, y `track` cumple el rol de `key`.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "video": { "id": "6yWSbsw4XvI", "titulo": "@for | Realizar iteraciones de elementos", "canal": "Fernando Herrera", "inicio": 0, "fin": 490, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Control flow", "url": "https://angular.dev/guide/templates/control-flow" },
+      { "titulo": "angular.dev: Migración a control flow", "url": "https://angular.dev/reference/migrations/control-flow" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá la lista de tareas: recorré `tareas` identificando cada una por su `id`, y mostrá un mensaje cuando no haya ninguna.",
+    "lenguaje": "html",
+    "archivo": "lista-tareas.html",
+    "plantilla": "<ul>\n  {{0}} (tarea of tareas; {{1}}) {\n    <li>{{ tarea.titulo }}</li>\n  } {{2}} {\n    <li>No hay tareas.</li>\n  }\n</ul>",
+    "huecos": [
+      { "respuestas": ["@for"], "ancho": 5 },
+      { "respuestas": ["track tarea.id"], "ancho": 15 },
+      { "respuestas": ["@empty"], "ancho": 7 }
+    ],
+    "pistas": [
+      "El bloque para repetir empieza con `@`. Necesita `track` con una propiedad que identifique cada tarea.",
+      "Las respuestas son `@for`, `track tarea.id` y `@empty`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En tu componente `lista-tareas`, agregá a la clase `tareas = [{ id: 1, titulo: 'Configurar CI' }, { id: 2, titulo: 'Login con JWT' }];` y usá el template del ejercicio. Después probá con `tareas = [];`." }
+      ],
+      "resultadoEsperado": "Con datos ves dos ítems; con el array vacío ves \"No hay tareas.\"."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Para qué sirve `track` en `@for`?",
+      "opciones": [
+        { "texto": "Para que Angular identifique cada elemento y reutilice su DOM cuando la lista cambia.", "correcta": true, "explicacion": "Exacto: con un id estable, Angular solo agrega, mueve o borra los nodos que cambiaron." },
+        { "texto": "Para ordenar la lista.", "correcta": false, "explicacion": "`track` no ordena; ordenás vos el array antes." },
+        { "texto": "Es opcional y solo mejora un poco el rendimiento.", "correcta": false, "explicacion": "En `@for` es obligatorio (en `*ngFor`, `trackBy` era opcional)." }
+      ]
+    },
+    {
+      "pregunta": "Encontrás `<div *ngIf=\"usuario\">` en el proyecto de la empresa. ¿Cuál es el equivalente moderno?",
+      "opciones": [
+        { "texto": "`@if (usuario) { <div>…</div> }`", "correcta": true, "explicacion": "Es la sintaxis de control flow de Angular 17+." },
+        { "texto": "`<div [if]=\"usuario\">`", "correcta": false, "explicacion": "No existe una propiedad `if`." },
+        { "texto": "`<div v-if=\"usuario\">`", "correcta": false, "explicacion": "Eso es de Vue." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué muestra `@empty`?",
+      "opciones": [
+        { "texto": "Su contenido cuando la lista del `@for` no tiene elementos.", "correcta": true, "explicacion": "Ideal para el estado vacío (\"No hay tareas\")." },
+        { "texto": "Un elemento vacío entre cada ítem.", "correcta": false, "explicacion": "No; es un bloque alternativo para la lista vacía." },
+        { "texto": "Su contenido mientras la lista está cargando.", "correcta": false, "explicacion": "Para \"cargando\" usás un `@if` con tu propio flag o el estado de un resource." }
+      ]
+    }
+  ]
+}
