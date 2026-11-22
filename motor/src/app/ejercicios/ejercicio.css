@@ -63,3 +63,43 @@
 .veredicto .mal {
   color: var(--error);
 }
+
+/* Feedback inmediato: el hueco mal hecho se sacude una vez; el correcto "late". */
+.hueco.mal {
+  animation: sacudir 320ms ease-out;
+}
+.hueco.ok {
+  animation: latir 280ms ease-out;
+}
+.veredicto > span {
+  display: inline-block;
+  animation: aparecer-veredicto 220ms var(--ease-salida);
+}
+@keyframes sacudir {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+@keyframes latir {
+  50% {
+    transform: scale(1.06);
+  }
+}
+@keyframes aparecer-veredicto {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hueco.mal,
+  .hueco.ok,
+  .veredicto > span {
+    animation: none;
+  }
+}

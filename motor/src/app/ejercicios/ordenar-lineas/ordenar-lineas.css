@@ -57,3 +57,24 @@
 .completo li {
   outline: 2px solid var(--exito);
 }
+
+/* Al resolver, las líneas se marcan en cascada. */
+.completo li {
+  animation: confirmar 400ms ease-out both;
+}
+.completo li:nth-child(2) { animation-delay: 50ms; }
+.completo li:nth-child(3) { animation-delay: 100ms; }
+.completo li:nth-child(4) { animation-delay: 150ms; }
+.completo li:nth-child(5) { animation-delay: 200ms; }
+.completo li:nth-child(n + 6) { animation-delay: 250ms; }
+@keyframes confirmar {
+  from {
+    outline-color: transparent;
+    transform: translateX(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .completo li {
+    animation: none;
+  }
+}

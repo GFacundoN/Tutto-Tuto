@@ -82,3 +82,43 @@ legend {
 .mal {
   color: var(--error);
 }
+
+/* Al responder: la elegida incorrecta se sacude, la correcta late; las explicaciones entran suave. */
+.opcion.incorrecta {
+  animation: sacudir 320ms ease-out;
+}
+.opcion.correcta {
+  animation: latir 300ms ease-out;
+}
+.explicacion,
+.veredicto > span {
+  animation: aparecer 240ms var(--ease-salida);
+}
+@keyframes sacudir {
+  20%,
+  60% {
+    transform: translateX(-5px);
+  }
+  40%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+@keyframes latir {
+  50% {
+    transform: scale(1.015);
+  }
+}
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opcion,
+  .explicacion,
+  .veredicto > span {
+    animation: none !important;
+  }
+}
