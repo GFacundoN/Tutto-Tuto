@@ -4,9 +4,7 @@
   "scripts": {
     "ng": "ng",
     "contenido": "node scripts/copiar-contenido.mjs",
-    "contenido:watch": "node scripts/copiar-contenido.mjs --watch",
-    "prestart": "npm run contenido",
-    "start": "ng serve",
+    "start": "node scripts/copiar-contenido.mjs --watch -- ng serve",
     "prebuild": "npm run contenido",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",

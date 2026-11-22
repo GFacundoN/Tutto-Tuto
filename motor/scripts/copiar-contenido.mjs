@@ -4,9 +4,11 @@
 // plantilla-proyecto.json (los archivos base del proyecto que se abre en StackBlitz).
 //   node scripts/copiar-contenido.mjs            -> copia una vez
 //   node scripts/copiar-contenido.mjs --watch    -> copia y vuelve a copiar al guardar cambios
+//   node scripts/copiar-contenido.mjs --watch -- ng serve   -> además corre ese comando (lo usa npm start)
 import { cpSync, existsSync, readdirSync, readFileSync, rmSync, statSync, watch, writeFileSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { spawn } from 'node:child_process';
 
 const origen = fileURLToPath(new URL('../../contenido', import.meta.url));
 const destino = fileURLToPath(new URL('../public/contenido', import.meta.url));
@@ -49,4 +51,12 @@ if (process.argv.includes('--watch')) {
       console.log('Contenido actualizado');
     }, 150);
   });
+}
+
+// Lo que viene después de -- se ejecuta como comando (ej. ng serve), en paralelo con el watch.
+const separador = process.argv.indexOf('--');
+if (separador !== -1) {
+  const [comando, ...args] = process.argv.slice(separador + 1);
+  const hijo = spawn(comando, args, { stdio: 'inherit', shell: true });
+  hijo.on('exit', (codigo) => process.exit(codigo ?? 0));
 }
