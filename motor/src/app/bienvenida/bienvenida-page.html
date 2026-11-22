@@ -32,14 +32,15 @@
             <input type="radio" name="camino" value="navegador" [checked]="camino() === 'navegador'" (change)="camino.set('navegador')" />
             <span class="titulo">En el navegador</span>
             <span class="detalle">
-              Sin instalar nada. Los ejercicios grandes abren un proyecto Angular real en StackBlitz.
+              <!-- ?. y ??: si el curso no define su texto, queda el de siempre (el del curso de Angular). -->
+              {{ curso.caminos?.navegador ?? 'Sin instalar nada. Los ejercicios grandes abren un proyecto Angular real en StackBlitz.' }}
             </span>
           </label>
           <label class="opcion" [class.elegida]="camino() === 'local'">
             <input type="radio" name="camino" value="local" [checked]="camino() === 'local'" (change)="camino.set('local')" />
             <span class="titulo">En mi PC con Windows</span>
             <span class="detalle">
-              Instalás Node y Angular CLI y hacés los ejercicios en tu editor, como en el trabajo.
+              {{ curso.caminos?.local ?? 'Instalás Node y Angular CLI y hacés los ejercicios en tu editor, como en el trabajo.' }}
               <a [routerLink]="['/', cursoId(), 'instalacion']">Ver la guía de instalación</a>
             </span>
           </label>
