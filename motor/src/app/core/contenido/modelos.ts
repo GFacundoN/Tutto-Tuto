@@ -35,6 +35,8 @@ export interface Destacado {
   usas: string[];
   /** Lo que vas a poder hacer, en frases cortas. */
   logros: string[];
+  /** Ids de los niveles que abarca (para contar lecciones y minutos). */
+  modulos?: string[];
 }
 
 /** Un mismo curso puede tener recorridos distintos (ej. "en una semana" y "desde cero"). */
