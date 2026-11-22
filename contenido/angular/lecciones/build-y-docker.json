@@ -1,0 +1,79 @@
+{
+  "id": "build-y-docker",
+  "titulo": "Build de producción y Docker",
+  "minutos": 13,
+  "objetivo": "generar el build de producción y empaquetarlo en una imagen Docker con nginx.",
+  "explicacion": [
+    { "tipo": "texto", "md": "`ng build` genera archivos estáticos (HTML, JS, CSS) en `dist/<proyecto>/browser`. No hace falta Node para servirlos: alcanza con cualquier servidor web. En empresas lo típico es **nginx dentro de un contenedor Docker**." },
+    { "tipo": "comando", "comando": "ng build", "salida": "Initial chunk files | Names  |  Raw size | Estimated transfer size\nmain-XXXX.js        | main   | 210.33 kB |                58.12 kB\nOutput location: C:\\...\\dist\\tablero" },
+    { "tipo": "texto", "md": "Un **Dockerfile multi-stage**: la primera etapa compila con Node; la segunda copia solo el resultado en una imagen de nginx (liviana, sin Node ni código fuente)." },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "Dockerfile", "codigo": "# Etapa 1: compilar\nFROM node:24-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npx ng build\n\n# Etapa 2: servir\nFROM nginx:alpine\nCOPY --from=build /app/dist/tablero/browser /usr/share/nginx/html\nCOPY nginx.conf /etc/nginx/conf.d/default.conf\nEXPOSE 80" },
+    { "tipo": "codigo", "lenguaje": "nginx", "archivo": "nginx.conf", "codigo": "server {\n  listen 80;\n  root /usr/share/nginx/html;\n  index index.html;\n\n  location / {\n    try_files $uri $uri/ /index.html;   # cualquier ruta de la SPA devuelve index.html\n  }\n}" },
+    { "tipo": "comando", "comando": "docker build -t tablero-front .\ndocker run --rm -p 8081:80 tablero-front", "salida": "Abrí http://localhost:8081" },
+    { "tipo": "lista", "items": [
+      "`COPY package*.json` + `npm ci` **antes** de copiar el resto: Docker cachea esa capa y no reinstala dependencias si solo cambió el código.",
+      "Agregá un `.dockerignore` con `node_modules`, `dist` y `.angular` para que el contexto de build sea chico.",
+      "`try_files ... /index.html` es clave: sin eso, recargar en `/tareas/3` da 404 porque ese archivo no existe en el servidor."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Si la app carga en blanco y la consola dice 404 en `main-XXXX.js`, revisá la ruta del `COPY --from=build`: desde Angular 17 el build va a `dist/<proyecto>/browser`, no a `dist/<proyecto>`." },
+    { "tipo": "nota", "variante": "dato", "md": "En la empresa probablemente haya un `docker-compose.yml` que levante el front, el back de Spring y la base de datos juntos. El servicio del front se define con este mismo Dockerfile." }
+  ],
+  "recursos": {
+    "video": { "id": "RxKRH7wQqeg", "titulo": "Angular Docker: guía (video de 2020; hoy la carpeta de salida es dist/<proyecto>/browser)", "canal": "Jesus Matiz", "inicio": 0, "fin": 735, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Deploy de una app", "url": "https://angular.dev/tools/cli/deployment" },
+      { "titulo": "docs.docker.com: Multi-stage builds", "url": "https://docs.docker.com/build/building/multi-stage/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená las líneas del Dockerfile multi-stage para que aproveche la cache de Docker y la imagen final solo tenga nginx con los archivos compilados.",
+    "lenguaje": "dockerfile",
+    "lineas": [
+      "FROM node:24-alpine AS build",
+      "WORKDIR /app",
+      "COPY package*.json ./",
+      "RUN npm ci",
+      "COPY . .",
+      "RUN npx ng build",
+      "FROM nginx:alpine",
+      "COPY --from=build /app/dist/tablero/browser /usr/share/nginx/html"
+    ],
+    "pistas": [
+      "Primero la etapa de Node: imagen base, carpeta de trabajo, dependencias (package.json + npm ci) y después el resto del código y el build.",
+      "La segunda etapa arranca con `FROM nginx:alpine` y copia desde la etapa `build` la carpeta `dist/tablero/browser`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Si tenés Docker Desktop instalado, creá el `Dockerfile` y el `nginx.conf` en la raíz de tu proyecto (cambiá `tablero` por el nombre de tu proyecto) y corré los comandos `docker build` y `docker run` de la explicación." }
+      ],
+      "resultadoEsperado": "En http://localhost:8081 ves tu app. Si navegás a una ruta y recargás, sigue funcionando (no da 404)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué se copia `package*.json` y se corre `npm ci` antes de `COPY . .`?",
+      "opciones": [
+        { "texto": "Para que Docker reutilice la capa de dependencias cuando solo cambia el código.", "correcta": true, "explicacion": "El build pasa de minutos a segundos." },
+        { "texto": "Porque npm ci necesita que el código no exista todavía.", "correcta": false, "explicacion": "No hay tal requisito." },
+        { "texto": "Es indistinto.", "correcta": false, "explicacion": "Cambia mucho el tiempo de build." }
+      ]
+    },
+    {
+      "pregunta": "La app en nginx funciona en la home, pero al recargar en `/tareas/3` da 404. ¿Qué falta?",
+      "opciones": [
+        { "texto": "`try_files $uri $uri/ /index.html;` en la config de nginx.", "correcta": true, "explicacion": "Así cualquier ruta de la SPA devuelve index.html y el router de Angular se encarga." },
+        { "texto": "Agregar la ruta en app.routes.ts.", "correcta": false, "explicacion": "La ruta existe en Angular; el problema es que nginx busca un archivo que no existe." },
+        { "texto": "Usar EXPOSE 443.", "correcta": false, "explicacion": "El puerto no tiene que ver." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué la imagen final no incluye Node?",
+      "opciones": [
+        { "texto": "Porque el build ya generó archivos estáticos y nginx los sirve; Node solo hace falta para compilar.", "correcta": true, "explicacion": "La imagen queda mucho más chica y con menos superficie de ataque." },
+        { "texto": "Porque nginx trae Node adentro.", "correcta": false, "explicacion": "nginx no trae Node." },
+        { "texto": "Por error: sin Node la app no arranca.", "correcta": false, "explicacion": "Una SPA compilada no necesita Node para servirse." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "id": "debugging",
+  "titulo": "Depurar como en el trabajo",
+  "minutos": 10,
+  "objetivo": "encontrar un error de Angular sin ayuda: leer el mensaje, ubicar el archivo, revisar la red y usar Angular DevTools.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Cuando algo no anda, seguí siempre el mismo orden. No adivines: cada paso descarta una causa." },
+    { "tipo": "lista", "ordenada": true, "items": [
+      "**Leé el error completo** en la terminal de `ng serve` (errores de compilación) o en la consola del navegador con F12 (errores en ejecución). Los errores de Angular tienen código: `NG0100`, `NG8001`… y un enlace a la explicación en angular.dev.",
+      "**Ubicá el archivo y la línea**: el mensaje los indica. En la consola, hacé clic en el enlace del archivo para ir al código (con source maps ves tu TypeScript, no el JS compilado).",
+      "**Revisá la pestaña Network** si hay datos de por medio: ¿salió el pedido?, ¿qué status devolvió?, ¿qué body? Un 401, un 404 o un error de CORS se ven ahí.",
+      "**Inspeccioná el estado con Angular DevTools** (extensión para Chrome/Edge): árbol de componentes, valores de inputs y signals, y el profiler de detección de cambios.",
+      "**Poné un breakpoint**: escribí `debugger;` en el código o hacé clic en el número de línea en la pestaña Sources, y avanzá paso a paso."
+    ] },
+    { "tipo": "texto", "md": "Los errores que más vas a ver al principio:" },
+    { "tipo": "lista", "items": [
+      "`NG8001: 'app-x' is not a known element` → falta el componente en `imports`.",
+      "`NG8002: Can't bind to 'formGroup'…` → falta `ReactiveFormsModule` (o el input no existe en ese componente).",
+      "`NG0203: inject() must be called from an injection context` → `inject()` fuera de la inicialización de la clase.",
+      "`NullInjectorError: No provider for HttpClient` → falta `provideHttpClient()` en `app.config.ts`.",
+      "`NG0100: ExpressionChangedAfterItHasBeenChecked` → un valor cambia mientras Angular está dibujando; casi siempre es estado derivado que debería ser `computed`.",
+      "`Cannot read properties of undefined (reading 'titulo')` → leés un dato antes de que llegue: usá `@if` o el estado de carga."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "Antes de pedir ayuda, escribí en una línea qué esperabas, qué pasó y qué ya probaste. La mitad de las veces, al escribirlo, encontrás el problema." }
+  ],
+  "variantes": {
+    "principiantes": {
+      "objetivo": "encontrar un error de Angular por tu cuenta: leer el mensaje, ubicar el archivo y revisar qué pidió la página."
+    }
+  },
+  "recursos": {
+    "video": { "id": "xOOYx1wpVYs", "titulo": "Angular DevTools, la extensión oficial de Angular", "canal": "Domini Code", "inicio": 0, "fin": 348, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Angular DevTools", "url": "https://angular.dev/tools/devtools" },
+      { "titulo": "angular.dev: Referencia de errores (NGxxxx)", "url": "https://angular.dev/errors" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "La lista de tareas aparece vacía y no sabés por qué. Ordená los pasos de depuración, del más rápido al más profundo.",
+    "lenguaje": "texto",
+    "lineas": [
+      "Leer la consola del navegador (F12) y la terminal de ng serve",
+      "Ir al archivo y la línea que indica el error",
+      "Revisar en Network si el GET salió y qué status devolvió",
+      "Ver con Angular DevTools el valor del signal de tareas",
+      "Poner un breakpoint y avanzar paso a paso"
+    ],
+    "pistas": [
+      "Empezá por lo que ya te está diciendo algo (los mensajes de error) antes de herramientas más lentas.",
+      "Orden: consola → archivo y línea → Network → DevTools → breakpoint."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "Ves `NullInjectorError: No provider for HttpClient!`. ¿Qué falta?",
+      "opciones": [
+        { "texto": "`provideHttpClient()` en los providers de `app.config.ts`.", "correcta": true, "explicacion": "Sin eso, Angular no sabe crear HttpClient." },
+        { "texto": "Importar HttpClient en el componente.", "correcta": false, "explicacion": "El import de TS ya está; falta registrarlo en la configuración." },
+        { "texto": "Instalar el paquete http.", "correcta": false, "explicacion": "Viene en @angular/common." }
+      ]
+    },
+    {
+      "pregunta": "La lista no muestra datos y en Network el pedido devuelve 401. ¿Dónde está el problema?",
+      "opciones": [
+        { "texto": "En la autenticación: el pedido no lleva un token válido (revisá el interceptor o el login).", "correcta": true, "explicacion": "401 = el backend no te reconoce." },
+        { "texto": "En el template.", "correcta": false, "explicacion": "El template no tiene datos porque el backend los negó." },
+        { "texto": "En CORS.", "correcta": false, "explicacion": "Un error de CORS aparece como error de red en la consola, no como 401." }
+      ]
+    },
+    {
+      "pregunta": "`Cannot read properties of undefined (reading 'titulo')` en el template. ¿Causa más probable?",
+      "opciones": [
+        { "texto": "Leés `tarea.titulo` antes de que la tarea haya llegado de la API.", "correcta": true, "explicacion": "Protegelo con `@if (tarea(); as t)` o mostrando el estado de carga." },
+        { "texto": "Falta la propiedad titulo en la interface.", "correcta": false, "explicacion": "Eso sería un error de compilación, no de ejecución." },
+        { "texto": "El pipe uppercase no funciona.", "correcta": false, "explicacion": "El error es por leer algo de undefined." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "id": "codigo-legacy",
+  "titulo": "Leer código Angular \"clásico\"",
+  "minutos": 12,
+  "objetivo": "traducir mentalmente el código de proyectos Angular 12–16 (NgModules, *ngIf, decoradores, constructor) al Angular moderno, y conocer las migraciones automáticas.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Es muy probable que el proyecto de la empresa tenga partes escritas antes de Angular 17. No hace falta reescribirlas: hay que poder **leerlas**. Esta es la tabla de traducción:" },
+    { "tipo": "lista", "items": [
+      "`@NgModule({ declarations: [...], imports: [...] })` → componentes standalone con `imports` propios.",
+      "`AppModule` + `platformBrowserDynamic().bootstrapModule(AppModule)` → `bootstrapApplication(App, appConfig)`.",
+      "`*ngIf=\"x; else otro\"` → `@if (x) { } @else { }`.",
+      "`*ngFor=\"let t of tareas; trackBy: porId\"` → `@for (t of tareas; track t.id) { }`.",
+      "`@Input() tarea!: Tarea;` / `@Output() cambio = new EventEmitter()` → `input.required<Tarea>()` / `output()`.",
+      "`constructor(private api: TareasApi) {}` → `private readonly api = inject(TareasApi);`.",
+      "`ngOnInit() { this.api.listar().subscribe(t => this.tareas = t); }` → `tareas = toSignal(this.api.listar())` o `httpResource`.",
+      "`HttpClientModule`, `RouterModule.forRoot(routes)` → `provideHttpClient()`, `provideRouter(routes)`.",
+      "`class AuthGuard implements CanActivate` → `authGuard: CanActivateFn`.",
+      "zone.js en `polyfills` → zoneless (default desde Angular 21)."
+    ] },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tareas.component.ts (estilo Angular 14)", "codigo": "@Component({\n  selector: 'app-tareas',\n  templateUrl: './tareas.component.html',\n})\nexport class TareasComponent implements OnInit, OnDestroy {\n  @Input() equipoId!: string;\n  tareas: Tarea[] = [];\n  private destroy$ = new Subject<void>();\n\n  constructor(private api: TareasApi) {}\n\n  ngOnInit() {\n    this.api.listar(this.equipoId).pipe(takeUntil(this.destroy$))\n      .subscribe(t => (this.tareas = t));\n  }\n\n  ngOnDestroy() {\n    this.destroy$.next();\n  }\n}" },
+    { "tipo": "texto", "md": "Los **ciclos de vida** (`ngOnInit`, `ngOnChanges`, `ngOnDestroy`, `ngAfterViewInit`) siguen existiendo y se usan. `ngOnInit` corre una vez cuando los inputs ya tienen valor; `ngOnDestroy` al destruir el componente (hoy se reemplaza a menudo con `DestroyRef` o `takeUntilDestroyed`)." },
+    { "tipo": "texto", "md": "La CLI trae **migraciones automáticas**. Se corren de a una, en una rama, y se revisa el diff:" },
+    { "tipo": "comando", "comando": "ng generate @angular/core:standalone" },
+    { "tipo": "comando", "comando": "ng generate @angular/core:control-flow" },
+    { "tipo": "comando", "comando": "ng generate @angular/core:inject" },
+    { "tipo": "comando", "comando": "ng generate @angular/core:signal-input-migration" },
+    { "tipo": "nota", "variante": "dato", "md": "Para actualizar de versión: `ng update @angular/core @angular/cli`, **de a una versión mayor por vez** (19 → 20 → 21 → 22). La guía interactiva oficial te dice qué cambiar en cada salto." }
+  ],
+  "recursos": {
+    "video": { "id": "cWB2p_kxbS4", "titulo": "De Módulos a Standalone en Angular: migración paso a paso", "canal": "NgTutos 4U", "inicio": 0, "fin": 774, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Migraciones disponibles", "url": "https://angular.dev/reference/migrations" },
+      { "titulo": "angular.dev: Guía de actualización (update guide)", "url": "https://angular.dev/update-guide" },
+      { "titulo": "angular.dev: Ciclo de vida de los componentes", "url": "https://angular.dev/guide/components/lifecycle" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Traducí cada línea de código clásico a su equivalente moderno.",
+    "lenguaje": "typescript",
+    "plantilla": "// <li *ngFor=\"let t of tareas; trackBy: porId\">\n{{0}} (t of tareas; track t.id) { <li>…</li> }\n\n// @Input() equipoId!: string;\nreadonly equipoId = {{1}}<string>();\n\n// constructor(private api: TareasApi) {}\nprivate readonly api = {{2}}(TareasApi);\n\n// RouterModule.forRoot(routes)  (en app.config.ts)\n{{3}}(routes)",
+    "huecos": [
+      { "respuestas": ["@for"], "ancho": 5 },
+      { "respuestas": ["input.required"], "ancho": 15 },
+      { "respuestas": ["inject"], "ancho": 7 },
+      { "respuestas": ["provideRouter"], "ancho": 14 }
+    ],
+    "pistas": [
+      "Todos son conceptos de lecciones anteriores: control flow, inputs con signals, inyección y configuración del router.",
+      "Las respuestas son `@for`, `input.required`, `inject` y `provideRouter`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "Te piden un cambio chico en un componente con `*ngIf` y `@Input()`. ¿Qué hacés?",
+      "opciones": [
+        { "texto": "Hacés el cambio respetando el estilo del archivo; la migración se hace aparte y acordada con el equipo.", "correcta": true, "explicacion": "Mezclar un cambio funcional con una migración hace el PR difícil de revisar." },
+        { "texto": "Reescribís todo el componente al estilo moderno en el mismo PR.", "correcta": false, "explicacion": "Agranda el diff y el riesgo sin que nadie lo haya pedido." },
+        { "texto": "Lo dejás porque no sabés Angular viejo.", "correcta": false, "explicacion": "Con la tabla de traducción lo podés leer." }
+      ]
+    },
+    {
+      "pregunta": "El proyecto está en Angular 19 y quieren ir a 22. ¿Cómo se hace?",
+      "opciones": [
+        { "texto": "Con `ng update`, de a una versión mayor por vez (19→20→21→22), probando en cada paso.", "correcta": true, "explicacion": "Las migraciones automáticas de cada versión asumen la anterior." },
+        { "texto": "Cambiando a mano todos los números en package.json a 22.", "correcta": false, "explicacion": "Te salteás las migraciones automáticas y aparecen errores difíciles de rastrear." },
+        { "texto": "Creando un proyecto nuevo y copiando el código.", "correcta": false, "explicacion": "Innecesario y riesgoso." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué es `ngOnInit`?",
+      "opciones": [
+        { "texto": "Un método de ciclo de vida que Angular llama una vez, cuando los inputs del componente ya tienen valor.", "correcta": true, "explicacion": "Por eso ahí se hacía la carga inicial de datos que depende de inputs." },
+        { "texto": "El constructor del componente.", "correcta": false, "explicacion": "El constructor corre antes, cuando los inputs todavía no tienen valor." },
+        { "texto": "Un método deprecado que ya no se llama.", "correcta": false, "explicacion": "Sigue existiendo y funcionando." }
+      ]
+    }
+  ]
+}

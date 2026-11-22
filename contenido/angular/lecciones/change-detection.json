@@ -1,0 +1,59 @@
+{
+  "id": "change-detection",
+  "titulo": "Detección de cambios: OnPush y zoneless",
+  "minutos": 11,
+  "objetivo": "explicar cuándo Angular actualiza la pantalla en Angular 22 (OnPush + zoneless) y por qué a veces \"no se actualiza\".",
+  "explicacion": [
+    { "tipo": "texto", "md": "La **detección de cambios** es el proceso por el que Angular revisa los templates y actualiza el DOM. Cambió mucho:" },
+    { "tipo": "lista", "items": [
+      "**Antes (con zone.js)**: zone.js \"parcheaba\" los eventos, timers y pedidos del navegador. Después de cualquiera de ellos, Angular revisaba **todos** los componentes. Funcionaba \"por magia\", pero a un costo alto.",
+      "**Zoneless (default desde Angular 21)**: Angular solo revisa cuando se lo avisan: un **signal** que cambia, un evento del template, un input nuevo, el pipe `async`.",
+      "**OnPush (default desde Angular 22)**: además, un componente solo se revisa si cambiaron sus inputs (por referencia), si ocurrió un evento en él o si cambió un signal que lee."
+    ] },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "contador.ts", "codigo": "export class Contador {\n  cantidad = 0;                    // propiedad común: NO avisa\n  readonly total = signal(0);      // signal: avisa\n\n  constructor() {\n    setInterval(() => {\n      this.cantidad++;             // la pantalla NO se actualiza (no hay zone.js que lo note)\n      this.total.update(t => t + 1); // la pantalla SÍ se actualiza\n    }, 1000);\n  }\n}" },
+    { "tipo": "nota", "variante": "error-comun", "md": "\"Cambié el valor y la pantalla no se actualiza\" casi siempre es una de dos: (1) es una propiedad común modificada fuera de un evento del template (timer, callback, subscribe), o (2) mutaste un objeto/array en vez de reemplazarlo. La solución: **signals** y **datos inmutables**." },
+    { "tipo": "nota", "variante": "version", "md": "En Angular 22 la estrategia vieja (revisar siempre) se llama `ChangeDetectionStrategy.Eager` (antes `Default`). Al actualizar un proyecto a la 22, la migración automática pone `Eager` en los componentes existentes para no romperlos. En proyectos viejos vas a ver `ChangeDetectorRef.markForCheck()` o `detectChanges()`: eran la forma manual de avisar." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Es parecido a React: allá un cambio de estado vuelve a renderizar el componente; acá un cambio de signal actualiza solo los bindings que lo leen. Mutar un array sin `setState` tampoco funciona en React, por la misma razón.", "soloVersiones": ["semana"] }
+  ],
+  "recursos": {
+    "video": { "id": "feJ-J-r63PE", "titulo": "Change detection y la estrategia OnPush", "canal": "Albury Code", "inicio": 0, "fin": 390, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Zoneless", "url": "https://angular.dev/guide/zoneless" },
+      { "titulo": "angular.dev: Saltear subárboles con OnPush", "url": "https://angular.dev/best-practices/skipping-subtrees" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Este componente actualiza datos desde un `setTimeout`. Arreglalo para que la pantalla se actualice en Angular 22: el estado tiene que ser un signal y la actualización tiene que crear un array nuevo.",
+    "lenguaje": "typescript",
+    "plantilla": "export class Notificaciones {\n  readonly mensajes = {{0}}<string[]>([]);\n\n  constructor() {\n    setTimeout(() => {\n      this.mensajes.{{1}}(lista => [{{2}}, 'Deploy terminado']);\n    }, 2000);\n  }\n}\n// template: @for (m of {{3}}; track $index) { <p>{{ m }}</p> }",
+    "huecos": [
+      { "respuestas": ["signal"], "ancho": 7 },
+      { "respuestas": ["update"], "ancho": 7 },
+      { "respuestas": ["...lista"], "ancho": 9 },
+      { "respuestas": ["mensajes()"], "ancho": 11 }
+    ],
+    "pistas": [
+      "Sin zone.js, Angular se entera del cambio solo si es un signal. Para agregar sin mutar, usá el spread del array anterior.",
+      "Las respuestas son `signal`, `update`, `...lista` y `mensajes()`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "En Angular 22, actualizás `this.cantidad++` (propiedad común) dentro de un `setInterval`. ¿Qué pasa?",
+      "opciones": [
+        { "texto": "La pantalla no se actualiza, porque nada le avisa a Angular.", "correcta": true, "explicacion": "Sin zone.js, un timer no dispara detección de cambios. Con un signal sí." },
+        { "texto": "Se actualiza cada segundo.", "correcta": false, "explicacion": "Eso pasaba con zone.js." },
+        { "texto": "Angular tira un error.", "correcta": false, "explicacion": "No hay error; simplemente no se redibuja." }
+      ]
+    },
+    {
+      "pregunta": "Un componente OnPush recibe `[tarea]=\"t\"` y el padre hace `t.titulo = 'Nuevo'`. ¿Se actualiza el hijo?",
+      "opciones": [
+        { "texto": "No, porque la referencia del objeto no cambió; hay que pasar un objeto nuevo `{ ...t, titulo: 'Nuevo' }`.", "correcta": true, "explicacion": "OnPush compara los inputs por referencia." },
+        { "texto": "Sí, siempre.", "correcta": false, "explicacion": "Solo con la estrategia Eager." },
+        { "texto": "Solo si el hijo usa ngOnChanges.", "correcta": false, "explicacion": "ngOnChanges tampoco se dispara si la referencia es la misma." }
+      ]
+    }
+  ]
+}

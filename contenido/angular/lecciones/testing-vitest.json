@@ -1,0 +1,64 @@
+{
+  "id": "testing-vitest",
+  "titulo": "Tests con Vitest",
+  "minutos": 13,
+  "objetivo": "escribir y correr tests unitarios de un servicio, un pipe y un componente con ng test (Vitest).",
+  "explicacion": [
+    { "tipo": "texto", "md": "Desde Angular 21 los proyectos nuevos usan **Vitest** (antes Karma + Jasmine). Se corre con `ng test`. Cada archivo `algo.spec.ts` al lado del código es un archivo de tests." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "shared/iniciales-pipe.spec.ts", "codigo": "import { InicialesPipe } from './iniciales-pipe';\n\ndescribe('InicialesPipe', () => {\n  const pipe = new InicialesPipe();\n\n  it('devuelve las iniciales en mayúscula', () => {\n    expect(pipe.transform('ana gómez')).toBe('AG');\n  });\n\n  it('con un solo nombre devuelve una letra', () => {\n    expect(pipe.transform('Facu')).toBe('F');\n  });\n});" },
+    { "tipo": "texto", "md": "Para servicios y componentes se usa **TestBed**, que arma un entorno de inyección como el de la app. Con `provideHttpClientTesting()` las llamadas HTTP no salen: las controlás vos." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tareas/tareas-api.spec.ts", "codigo": "import { TestBed } from '@angular/core/testing';\nimport { provideHttpClient } from '@angular/common/http';\nimport { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';\nimport { TareasApi } from './tareas-api';\n\ndescribe('TareasApi', () => {\n  it('pide la lista de tareas', () => {\n    TestBed.configureTestingModule({\n      providers: [provideHttpClient(), provideHttpClientTesting()],\n    });\n    const api = TestBed.inject(TareasApi);\n    const http = TestBed.inject(HttpTestingController);\n\n    let resultado: unknown;\n    api.listar().subscribe(r => (resultado = r));\n\n    http.expectOne('/api/tareas').flush([{ id: 1, titulo: 'CI', estado: 'pendiente' }]);\n    expect(resultado).toHaveLength(1);\n    http.verify();   // no quedaron pedidos sin responder\n  });\n});" },
+    { "tipo": "comando", "comando": "ng test", "salida": " ✓ src/app/shared/iniciales-pipe.spec.ts (2 tests)\n ✓ src/app/tareas/tareas-api.spec.ts (1 test)\n Test Files  2 passed (2)" },
+    { "tipo": "nota", "variante": "version", "md": "En proyectos con Karma/Jasmine la sintaxis es casi igual (`describe`, `it`, `expect`); cambian los espías: `spyOn(obj, 'm')` de Jasmine es `vi.spyOn(obj, 'm')` en Vitest. Hay una migración: `ng g @schematics/angular:refactor-jasmine-vitest`." },
+    { "tipo": "nota", "variante": "dato", "md": "¿Qué testear primero? Lógica pura (pipes, funciones, servicios con cálculos) y los servicios que hablan con la API. Son baratos de escribir y atrapan la mayoría de los errores." }
+  ],
+  "recursos": {
+    "video": { "id": "2eWQD6ypoJI", "titulo": "Ng-News en español: Vitest, el nuevo testing framework de Angular", "canal": "ng-news en español", "inicio": 8, "fin": 176, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Testing (introducción)", "url": "https://angular.dev/guide/testing" },
+      { "titulo": "angular.dev: Testear servicios", "url": "https://angular.dev/guide/testing/services" },
+      { "titulo": "angular.dev: Testear pedidos HTTP", "url": "https://angular.dev/guide/http/testing" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el test del servicio: configurá TestBed con HttpClient de prueba, obtené el servicio y respondé el pedido falso.",
+    "lenguaje": "typescript",
+    "plantilla": "TestBed.configureTestingModule({\n  providers: [provideHttpClient(), {{0}}()],\n});\nconst api = TestBed.{{1}}(TareasApi);\nconst http = TestBed.inject(HttpTestingController);\n\napi.listar().subscribe(r => (resultado = r));\nhttp.{{2}}('/api/tareas').flush([]);\n{{3}}(resultado).toEqual([]);",
+    "huecos": [
+      { "respuestas": ["provideHttpClientTesting"], "ancho": 25 },
+      { "respuestas": ["inject"], "ancho": 7 },
+      { "respuestas": ["expectOne"], "ancho": 10 },
+      { "respuestas": ["expect"], "ancho": 7 }
+    ],
+    "pistas": [
+      "El provider de prueba se llama como el de producción + `Testing`. El controlador de pruebas \"espera un\" pedido a una URL.",
+      "Las respuestas son `provideHttpClientTesting`, `inject`, `expectOne` y `expect`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En tu proyecto, creá el pipe `iniciales` (lección de pipes) y su `iniciales-pipe.spec.ts` con los dos tests del ejemplo. Corré:" },
+        { "tipo": "comando", "comando": "ng test --watch=false" }
+      ],
+      "resultadoEsperado": "Vitest muestra los tests en verde. Si cambiás 'AG' por 'XX' en el test, ves exactamente cuál falla y por qué."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Para qué sirve `provideHttpClientTesting()`?",
+      "opciones": [
+        { "texto": "Para que los pedidos HTTP no salgan a la red y puedas responderlos desde el test.", "correcta": true, "explicacion": "Así el test es rápido, no depende del backend y controlás cada respuesta." },
+        { "texto": "Para hacer los pedidos a un servidor de pruebas.", "correcta": false, "explicacion": "No sale ningún pedido real." },
+        { "texto": "Para medir el tiempo de respuesta.", "correcta": false, "explicacion": "No mide tiempos." }
+      ]
+    },
+    {
+      "pregunta": "En un proyecto con Jasmine ves `spyOn(api, 'listar')`. ¿Cuál es el equivalente en Vitest?",
+      "opciones": [
+        { "texto": "`vi.spyOn(api, 'listar')`", "correcta": true, "explicacion": "La API de Vitest vive en el objeto `vi`." },
+        { "texto": "`jest.spyOn(api, 'listar')`", "correcta": false, "explicacion": "Eso es Jest." },
+        { "texto": "No existe en Vitest.", "correcta": false, "explicacion": "Existe con `vi.spyOn`." }
+      ]
+    }
+  ]
+}
