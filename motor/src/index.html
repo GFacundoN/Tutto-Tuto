@@ -1,11 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="es-AR">
 <head>
   <meta charset="utf-8">
-  <title>Motor</title>
+  <title>Tutto-Tuto</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Cursos interactivos cortos, con práctica en cada paso.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+  <script>
+    // Aplica el tema guardado antes de pintar, para evitar un parpadeo claro→oscuro.
+    try {
+      var t = localStorage.getItem('tutto-tuto:tema');
+      if (t === '"claro"') document.documentElement.dataset.theme = 'light';
+      if (t === '"oscuro"') document.documentElement.dataset.theme = 'dark';
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <app-root></app-root>

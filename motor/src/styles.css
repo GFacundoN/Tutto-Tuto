@@ -1,1 +1,263 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+  Estilos globales y tokens de diseño.
+  Idea visual: el curso es una línea de subte. Cada lección es una estación y cada
+  curso tiene el color de su línea (--linea, viene del JSON del curso).
+  Todo lo demás es sobrio para que la línea y el código sean lo que se ve.
+*/
+
+:root {
+  --fondo: #eef1f6;
+  --superficie: #ffffff;
+  --superficie-2: #f6f8fb;
+  --tinta: #16213a;
+  --tinta-suave: #4a5672;
+  --borde: #d3d9e4;
+  --linea: #c8235f;
+  --linea-tinta: #ffffff;
+  --exito: #17784f;
+  --exito-fondo: #e3f4ec;
+  --error: #b4361c;
+  --error-fondo: #fbe9e4;
+  --aviso-fondo: #fff4d6;
+  --codigo-fondo: #16213a;
+  --codigo-tinta: #e8ecf5;
+  --foco: #2b59c3;
+
+  --fuente-titulo: 'Bricolage Grotesque', system-ui, sans-serif;
+  --fuente-texto: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --fuente-codigo: 'Atkinson Hyperlegible Mono', ui-monospace, 'Cascadia Code', monospace;
+
+  /* Escala tipográfica (razón 1.25), en rem para respetar el tamaño de fuente del sistema. */
+  --t-0: 0.8rem;
+  --t-1: 1rem;
+  --t-2: 1.25rem;
+  --t-3: 1.563rem;
+  --t-4: 1.953rem;
+  --t-5: 2.441rem;
+
+  --radio-chico: 6px;
+  --radio: 12px;
+  --ancho-lectura: 68ch;
+  --gutter: max(16px, env(safe-area-inset-left));
+  --dur: 180ms;
+  --ease-salida: cubic-bezier(0.2, 0.8, 0.2, 1);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --fondo: #0f1522;
+    --superficie: #171f31;
+    --superficie-2: #1d2740;
+    --tinta: #e7ebf4;
+    --tinta-suave: #a7b1c8;
+    --borde: #2e3a57;
+    --linea: #ff5c93;
+    --linea-tinta: #1a0710;
+    --exito: #5fd39d;
+    --exito-fondo: #12372a;
+    --error: #ff8a6b;
+    --error-fondo: #3d1a12;
+    --aviso-fondo: #3a3115;
+    --codigo-fondo: #0a0f1a;
+    --foco: #8fb0ff;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --fondo: #0f1522;
+  --superficie: #171f31;
+  --superficie-2: #1d2740;
+  --tinta: #e7ebf4;
+  --tinta-suave: #a7b1c8;
+  --borde: #2e3a57;
+  --linea: #ff5c93;
+  --linea-tinta: #1a0710;
+  --exito: #5fd39d;
+  --exito-fondo: #12372a;
+  --error: #ff8a6b;
+  --error-fondo: #3d1a12;
+  --aviso-fondo: #3a3115;
+  --codigo-fondo: #0a0f1a;
+  --foco: #8fb0ff;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--fuente-texto);
+  font-size: var(--t-1);
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulo);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--t-4);
+  font-weight: 800;
+}
+h2 {
+  font-size: var(--t-3);
+  font-weight: 800;
+}
+h3 {
+  font-size: var(--t-2);
+  font-weight: 600;
+}
+
+p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: var(--linea);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--fuente-codigo);
+  font-size: 0.92em;
+}
+
+:not(pre) > code {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+}
+
+pre {
+  background: var(--codigo-fondo);
+  color: var(--codigo-tinta);
+  border-radius: var(--radio-chico);
+  padding: 14px 16px;
+  overflow-x: auto;
+  line-height: 1.5;
+  margin: 0 0 1em;
+  tab-size: 2;
+}
+
+:focus-visible {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Botones: tres jerarquías. Mínimo 44px de alto para el dedo. */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: 600 var(--t-1) / 1.2 var(--fuente-texto);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--dur) var(--ease-salida), background var(--dur);
+}
+.boton:active {
+  transform: scale(0.97);
+}
+.boton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.boton-principal {
+  background: var(--linea);
+  color: var(--linea-tinta);
+}
+.boton-secundario {
+  background: transparent;
+  color: var(--tinta);
+  border-color: var(--borde);
+}
+.boton-secundario:hover {
+  border-color: var(--tinta-suave);
+}
+.boton-texto {
+  background: transparent;
+  color: var(--tinta);
+  text-decoration: underline;
+  text-decoration-color: var(--linea);
+  text-underline-offset: 3px;
+  padding-inline: 6px;
+}
+
+.contenedor {
+  width: 100%;
+  max-width: calc(var(--ancho-lectura) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.solo-lectores {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tinta-suave {
+  color: var(--tinta-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .no-imprimir {
+    display: none !important;
+  }
+  pre {
+    background: #f3f3f3;
+    color: #000;
+    border: 1px solid #ccc;
+    white-space: pre-wrap;
+  }
+}
