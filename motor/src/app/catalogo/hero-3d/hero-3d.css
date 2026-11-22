@@ -69,8 +69,28 @@ canvas:active {
   font-size: 0.85rem;
   color: var(--tinta-suave);
 }
-.entrar {
+.pie {
   flex-basis: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+.pausa {
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--tinta-suave);
+  font: 500 0.88rem var(--fuente-texto);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.pausa:hover {
+  color: var(--tinta);
+}
+.entrar {
   text-align: center;
   font-weight: 600;
   color: var(--acento);

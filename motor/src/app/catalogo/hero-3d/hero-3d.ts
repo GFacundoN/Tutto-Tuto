@@ -5,7 +5,9 @@ import type { EscenaHero, Paleta } from './escena';
 
 /**
  * Hero 3D: un carrusel con los logos oficiales de los cursos en relieve.
- * Se gira arrastrando o con las flechas; el curso del frente se abre con un clic o con su botón.
+ * Pasa solo cada pocos segundos; se frena al pasar el mouse, al arrastrar o con el botón de pausa
+ * (y nunca se mueve solo si el sistema pide "reducir movimiento"). También se gira arrastrando o con
+ * las flechas, y el curso del frente se abre con un clic o con su botón.
  *
  * Rendimiento:
  * - Three.js se carga con import() recién después del primer dibujo (afterNextRender), en un chunk aparte.
@@ -25,6 +27,13 @@ export class Hero3d {
   protected readonly estado = signal<'cargando' | 'lista' | 'sin-webgl'>('cargando');
   protected readonly indice = signal(0);
   protected readonly actual = computed(() => this.conLogo()[this.indice()]);
+
+  /** Pasa solo (autoplay). Arranca apagado si el sistema pide reducir el movimiento. */
+  protected readonly reproduciendo = signal(!matchMedia('(prefers-reduced-motion: reduce)').matches);
+  /** true mientras el puntero o el foco están sobre el carrusel: ahí no avanza solo. */
+  private readonly enUso = signal(false);
+  /** true si el último cambio lo hizo la persona: solo entonces se anuncia a los lectores de pantalla. */
+  protected readonly cambioManual = signal(false);
 
   /** Solo los cursos que tienen logo entran al carrusel. */
   protected readonly conLogo = computed(() => this.cursos().filter((c) => !!c.resumen.logo));
@@ -78,6 +87,15 @@ export class Hero3d {
       visible.observe(lienzo);
       document.addEventListener('visibilitychange', actualizar);
 
+      // Autoplay: cada 4 s pasa al siguiente, salvo que esté en pausa, en uso o fuera de pantalla.
+      const reloj = setInterval(() => {
+        if (this.reproduciendo() && !this.enUso() && enPantalla && !document.hidden) {
+          this.cambioManual.set(false);
+          this.avanzar(1);
+        }
+      }, 4000);
+      destroyRef.onDestroy(() => clearInterval(reloj));
+
       // El tema cambia con el selector (atributo data-theme en <html>) o con el sistema operativo.
       const recolorear = () => requestAnimationFrame(() => this.escena?.cambiarPaleta(leerPaleta()));
       const tema = new MutationObserver(recolorear);
@@ -94,7 +112,22 @@ export class Hero3d {
     });
   }
 
+  /** Flechas: cambio hecho por la persona (se anuncia y el autoplay espera a que deje de usarlo). */
   protected mover(delta: number): void {
+    this.cambioManual.set(true);
+    this.avanzar(delta);
+  }
+
+  protected alternarReproduccion(): void {
+    this.reproduciendo.update((r) => !r);
+  }
+
+  /** El puntero o el foco entran/salen del carrusel (y al arrastrar en el canvas). */
+  protected usar(enUso: boolean): void {
+    this.enUso.set(enUso);
+  }
+
+  private avanzar(delta: number): void {
     const n = this.conLogo().length;
     const destino = (this.indice() + delta + n) % n;
     this.indice.set(destino);
