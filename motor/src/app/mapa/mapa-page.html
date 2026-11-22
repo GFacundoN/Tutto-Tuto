@@ -1,0 +1,99 @@
+<div class="contenedor">
+  @if (curso(); as curso) {
+    @if (version(); as version) {
+      <header class="portada">
+        <h1>{{ curso.titulo }}</h1>
+        <p class="tinta-suave">
+          {{ version.titulo }} · {{ curso.versionHerramienta }} · practicás
+          {{ cursoActual.preferencias()?.camino === 'local' ? 'en tu PC' : 'en el navegador' }}
+          · <a [routerLink]="['/', cursoId(), 'empezar']">cambiar</a>
+        </p>
+        <p class="avance">
+          <strong>{{ totalCompletas() }}</strong> de {{ cursoActual.ordenLecciones().length }} lecciones
+        </p>
+
+        <div class="acciones">
+          @if (ofrecerRepaso()) {
+            <a class="boton boton-secundario" [routerLink]="['/', cursoId(), 'repaso']">Repaso rápido (3 preguntas)</a>
+          }
+          @if (proxima(); as proxima) {
+            <a class="boton boton-principal" [routerLink]="['/', cursoId(), 'leccion', proxima]">
+              {{ totalCompletas() === 0 ? 'Empezar la primera lección' : 'Seguir donde quedaste' }}
+            </a>
+          } @else {
+            <a class="boton boton-principal" [routerLink]="['/', cursoId(), 'proyecto']">Ir al proyecto final</a>
+          }
+        </div>
+      </header>
+
+      <ol class="linea" aria-label="Niveles del recorrido">
+        @for (nivel of niveles(); track nivel.id; let n = $index) {
+          <li class="tramo" [class.tramo-completo]="nivel.completas === nivel.lecciones.length">
+            <div class="tramo-cabecera">
+              <h2>
+                <span class="numero-nivel">Nivel {{ n }}</span>
+                {{ nivel.titulo }}
+              </h2>
+              <p class="tinta-suave">
+                @if (nivel.dia) {
+                  <strong>{{ nivel.dia }}.</strong>
+                }
+                {{ nivel.descripcion }}
+              </p>
+              <!-- Barra de progreso del nivel: <progress> nativo, accesible sin trabajo extra. -->
+              <progress [value]="nivel.completas" [max]="nivel.lecciones.length" [attr.aria-label]="'Avance del nivel ' + nivel.titulo">
+                {{ nivel.porcentaje }}%
+              </progress>
+            </div>
+
+            <ol class="estaciones">
+              @for (e of nivel.estaciones; track e.id) {
+                @let info = titulosLecciones()[e.id];
+                <li [class]="'estacion ' + e.estado">
+                  @if (e.estado === 'bloqueada') {
+                    <span class="nombre">
+                      {{ info?.titulo ?? e.id }}
+                      <span class="solo-lectores">({{ etiquetaEstado[e.estado] }})</span>
+                    </span>
+                  } @else {
+                    <a class="nombre" [routerLink]="['/', cursoId(), 'leccion', e.id]">
+                      {{ info?.titulo ?? e.id }}
+                      <span class="solo-lectores">({{ etiquetaEstado[e.estado] }})</span>
+                    </a>
+                  }
+                  @if (info) {
+                    <span class="minutos tinta-suave">{{ info.minutos }} min</span>
+                  }
+                </li>
+              }
+            </ol>
+          </li>
+        }
+        <li class="tramo terminal">
+          <div class="tramo-cabecera">
+            <h2>
+              <span class="numero-nivel">Final</span>
+              <a [routerLink]="['/', cursoId(), 'proyecto']">{{ curso.proyectoFinal.titulo }}</a>
+            </h2>
+          </div>
+        </li>
+      </ol>
+
+      <nav class="extras" aria-label="Material de apoyo">
+        <a [routerLink]="['/', cursoId(), 'referencia']">Hoja de referencia</a>
+        <a [routerLink]="['/', cursoId(), 'instalacion']">Instalación en tu PC</a>
+        <a [routerLink]="['/', cursoId(), 'empezar']">Cambiar recorrido o camino</a>
+      </nav>
+    } @else {
+      <!-- Sin versión elegida todavía -->
+      <h1>{{ curso.titulo }}</h1>
+      <p>{{ curso.descripcion }}</p>
+      <a class="boton boton-principal" [routerLink]="['/', cursoId(), 'empezar']">Elegir cómo aprender</a>
+    }
+  } @else if (cursoActual.curso.error()) {
+    <h1>No encontré este curso</h1>
+    <a class="boton boton-principal" routerLink="/">Ver los cursos</a>
+  } @else {
+    <p class="tinta-suave" role="status">Cargando…</p>
+  }
+</div>

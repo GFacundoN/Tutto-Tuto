@@ -1,0 +1,33 @@
+<div class="contenedor">
+  <h1>Repaso rápido</h1>
+  @if (items(); as items) {
+    @if (items.length === 0) {
+      <p>Todavía no completaste lecciones de este recorrido. Hacé la primera y volvé.</p>
+      <a class="boton boton-principal" [routerLink]="['/', cursoId()]">Volver al recorrido</a>
+    } @else if (terminado()) {
+      <p class="resumen">Acertaste {{ aciertos() }} de {{ items.length }}. Las que fallaste van a volver a aparecer pronto.</p>
+      <a class="boton boton-principal" [routerLink]="['/', cursoId()]">Volver al recorrido</a>
+    } @else {
+      @let item = items[actual()];
+      <p class="tinta-suave">De la lección «{{ item.leccionTitulo }}»</p>
+      <div class="tarjeta">
+        @for (i of [item]; track i.clave) {
+          <app-pregunta
+            [pregunta]="i.pregunta"
+            [semilla]="i.clave"
+            [contexto]="'Pregunta ' + (actual() + 1) + ' de ' + items.length"
+            (respondida)="alResponder(i, $event)"
+          />
+        }
+      </div>
+      <div class="pie">
+        <a class="boton boton-texto" [routerLink]="['/', cursoId()]">Saltear por hoy</a>
+        <button type="button" class="boton boton-principal" [disabled]="!respondida()" (click)="siguiente(items.length)">
+          {{ actual() < items.length - 1 ? 'Siguiente' : 'Terminar' }}
+        </button>
+      </div>
+    }
+  } @else {
+    <p class="tinta-suave" role="status">Eligiendo preguntas…</p>
+  }
+</div>

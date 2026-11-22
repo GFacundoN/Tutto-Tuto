@@ -1,0 +1,60 @@
+<div class="contenedor">
+  @if (curso(); as curso) {
+    <h1>{{ yaElegido() ? 'Cambiar cómo aprendés' : curso.titulo }}</h1>
+    @if (!yaElegido()) {
+      <p class="bajada">{{ curso.descripcion }}</p>
+    }
+
+    <form (submit)="$event.preventDefault(); confirmar()">
+      <fieldset>
+        <legend>¿Qué recorrido querés hacer?</legend>
+        <div class="opciones">
+          @for (v of curso.versiones; track v.id) {
+            <label class="opcion" [class.elegida]="versionId() === v.id">
+              <input
+                type="radio"
+                name="version"
+                [value]="v.id"
+                [checked]="versionId() === v.id"
+                (change)="versionId.set(v.id)"
+              />
+              <span class="titulo">{{ v.titulo }}</span>
+              <span class="detalle">{{ v.descripcion }}</span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>¿Dónde querés practicar?</legend>
+        <div class="opciones">
+          <label class="opcion" [class.elegida]="camino() === 'navegador'">
+            <input type="radio" name="camino" value="navegador" [checked]="camino() === 'navegador'" (change)="camino.set('navegador')" />
+            <span class="titulo">En el navegador</span>
+            <span class="detalle">
+              Sin instalar nada. Los ejercicios grandes abren un proyecto Angular real en StackBlitz.
+            </span>
+          </label>
+          <label class="opcion" [class.elegida]="camino() === 'local'">
+            <input type="radio" name="camino" value="local" [checked]="camino() === 'local'" (change)="camino.set('local')" />
+            <span class="titulo">En mi PC con Windows</span>
+            <span class="detalle">
+              Instalás Node y Angular CLI y hacés los ejercicios en tu editor, como en el trabajo.
+              <a [routerLink]="['/', cursoId(), 'instalacion']">Ver la guía de instalación</a>
+            </span>
+          </label>
+        </div>
+        <p class="tinta-suave nota">Podés cambiar esto cuando quieras desde el recorrido. Tu progreso se mantiene.</p>
+      </fieldset>
+
+      <button type="submit" class="boton boton-principal">
+        {{ yaElegido() ? 'Guardar cambios' : 'Empezar' }}
+      </button>
+    </form>
+  } @else if (cursoActual.curso.error()) {
+    <h1>No encontré este curso</h1>
+    <a class="boton boton-principal" routerLink="/">Ver los cursos</a>
+  } @else {
+    <p class="tinta-suave" role="status">Cargando…</p>
+  }
+</div>

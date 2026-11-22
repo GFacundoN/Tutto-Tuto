@@ -1,0 +1,40 @@
+<div class="contenedor">
+  @if (proyecto(); as proyecto) {
+    <h1>{{ proyecto.titulo }}</h1>
+    <app-bloques [bloques]="proyecto.descripcion" />
+
+    <section aria-labelledby="titulo-criterios">
+      <h2 id="titulo-criterios">Criterios para darlo por terminado</h2>
+      <p class="tinta-suave">
+        Tildá cada criterio cuando lo verifiques en tu proyecto. Llevás {{ cumplidos() }} de {{ criterios().length }}.
+      </p>
+      <progress [value]="cumplidos()" [max]="criterios().length" aria-label="Criterios cumplidos"></progress>
+
+      <ul class="criterios">
+        @for (c of criterios(); track c.id) {
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="!!progreso.estado().proyecto[c.id]"
+                (change)="progreso.marcarCriterio(c.id, $any($event.target).checked)"
+              />
+              <span>{{ c.texto }}</span>
+            </label>
+            @if (c.leccion) {
+              <a class="repasar" [routerLink]="['/', cursoId(), 'leccion', c.leccion]">Repasar</a>
+            }
+          </li>
+        }
+      </ul>
+
+      @if (cumplidos() === criterios().length && criterios().length > 0) {
+        <p class="listo" role="status">
+          Terminaste el proyecto. Ahora intentá explicarle a alguien cada parte en voz alta: si podés, lo aprendiste.
+        </p>
+      }
+    </section>
+  } @else {
+    <p class="tinta-suave" role="status">Cargando…</p>
+  }
+</div>

@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  padding-top: 32px;
+}
+
+.bajada {
+  font-size: var(--t-2);
+  color: var(--tinta-suave);
+}
+
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 28px 0 0;
+  min-width: 0;
+}
+legend {
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+  font-size: var(--t-2);
+  margin-bottom: 12px;
+  padding: 0;
+}
+
+.opciones {
+  display: grid;
+  gap: 10px;
+}
+@media (min-width: 640px) {
+  .opciones {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.opcion {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 16px 16px 16px 48px;
+  border: 2px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  cursor: pointer;
+}
+.opcion.elegida {
+  border-color: var(--linea);
+}
+.opcion:has(input:focus-visible) {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+.opcion input {
+  position: absolute;
+  left: 16px;
+  top: 19px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  accent-color: var(--linea);
+}
+.opcion input:focus-visible {
+  outline: none;
+}
+.titulo {
+  font-weight: 700;
+  font-size: var(--t-2);
+}
+.detalle {
+  color: var(--tinta-suave);
+}
+.nota {
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+button[type='submit'] {
+  margin-top: 28px;
+  min-width: 180px;
+}

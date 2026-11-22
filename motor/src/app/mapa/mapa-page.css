@@ -1,0 +1,178 @@
+:host {
+  display: block;
+  padding-top: 32px;
+  --x-linea: 15px; /* centro de la línea */
+}
+
+.portada h1 {
+  font-size: var(--t-5);
+  margin-bottom: 4px;
+}
+.avance {
+  font-size: var(--t-2);
+  margin: 12px 0 16px;
+}
+.avance strong {
+  font-family: var(--fuente-titulo);
+  font-size: var(--t-4);
+  color: var(--linea);
+}
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 36px;
+}
+
+/* La línea de subte */
+.linea,
+.estaciones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tramo {
+  position: relative;
+  padding-left: 48px;
+  padding-bottom: 28px;
+}
+/* El trazo vertical de cada tramo */
+.tramo::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--x-linea) - 4px);
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: var(--borde);
+  border-radius: 4px;
+}
+.tramo-completo::before {
+  background: var(--linea);
+}
+.tramo.terminal::before {
+  bottom: auto;
+  height: 22px;
+}
+
+/* Cartel del nivel: una estación de combinación (rectángulo redondeado) */
+.tramo-cabecera {
+  position: relative;
+  margin-bottom: 14px;
+}
+.tramo-cabecera::before {
+  content: '';
+  position: absolute;
+  left: calc(-48px + var(--x-linea) - 14px);
+  top: 2px;
+  width: 28px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--superficie);
+  border: 4px solid var(--tinta);
+}
+.tramo h2 {
+  font-size: var(--t-2);
+  margin-bottom: 2px;
+}
+.numero-nivel {
+  display: block;
+  font-family: var(--fuente-texto);
+  font-size: var(--t-0);
+  font-weight: 700;
+  color: var(--tinta-suave);
+  letter-spacing: 0.02em;
+}
+.tramo-cabecera p {
+  margin: 0 0 8px;
+  max-width: 60ch;
+}
+
+progress {
+  appearance: none;
+  width: min(240px, 100%);
+  height: 6px;
+  border: 0;
+  border-radius: 3px;
+  background: var(--borde);
+  overflow: hidden;
+}
+progress::-webkit-progress-bar {
+  background: var(--borde);
+}
+progress::-webkit-progress-value {
+  background: var(--linea);
+}
+progress::-moz-progress-bar {
+  background: var(--linea);
+}
+
+/* Estaciones */
+.estacion {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 0;
+}
+.estacion::before {
+  content: '';
+  position: absolute;
+  left: calc(-48px + var(--x-linea) - 10px);
+  top: 13px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--superficie);
+  border: 4px solid var(--borde);
+  box-sizing: border-box;
+}
+.estacion.completa::before {
+  background: var(--linea);
+  border-color: var(--linea);
+}
+.estacion.actual::before {
+  border-color: var(--linea);
+  outline: 4px solid color-mix(in oklab, var(--linea) 25%, transparent);
+}
+.estacion.disponible::before {
+  border-color: var(--linea);
+}
+
+.nombre {
+  font-weight: 600;
+  text-decoration: none;
+}
+a.nombre:hover {
+  text-decoration: underline;
+}
+.estacion.actual .nombre {
+  font-size: var(--t-2);
+  font-family: var(--fuente-titulo);
+  font-weight: 800;
+}
+.estacion.bloqueada .nombre {
+  color: var(--tinta-suave);
+  font-weight: 400;
+}
+.minutos {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--borde);
+}
+.extras a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+}

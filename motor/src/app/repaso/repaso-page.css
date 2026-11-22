@@ -1,0 +1,20 @@
+:host {
+  display: block;
+  padding-top: 32px;
+}
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: clamp(16px, 4vw, 28px);
+}
+.pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.resumen {
+  font-size: var(--t-2);
+}
