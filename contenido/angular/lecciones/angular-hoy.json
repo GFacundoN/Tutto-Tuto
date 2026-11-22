@@ -1,0 +1,85 @@
+{
+  "id": "angular-hoy",
+  "titulo": "Angular hoy",
+  "minutos": 8,
+  "objetivo": "explicar qué es Angular, qué versión vas a usar y qué cambió respecto del Angular que se ve en proyectos viejos.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Angular es un **framework** de frontend mantenido por Google. A diferencia de React (una librería de UI a la que le sumás router, forms y HTTP por tu cuenta), Angular trae todo incluido: componentes, router, formularios, cliente HTTP, tests y una CLI que genera y construye el proyecto. Por eso lo eligen muchas empresas: dos proyectos Angular se parecen mucho entre sí." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Un componente de Angular es como un componente de React, pero el HTML va en un **template** separado del código (no hay JSX) y el estado se maneja con **signals** en vez de `useState`. Los hooks no existen: lo que hacías con `useEffect` o `useContext` acá se resuelve con `effect()` y con **servicios** inyectados.", "soloVersiones": ["semana"] },
+    { "tipo": "texto", "md": "Angular saca una versión mayor cada 6 meses. Este curso usa **Angular 22** (junio de 2026). En los últimos años cambió mucho la forma de escribirlo; en una empresa vas a encontrar las dos formas mezcladas:" },
+    { "tipo": "lista", "items": [
+      "**Componentes standalone** (Angular 15+, default desde 19): ya no hace falta declarar cada componente en un `NgModule`.",
+      "**Control flow** `@if`, `@for`, `@switch` (Angular 17+): reemplaza a `*ngIf`, `*ngFor` y `[ngSwitch]`.",
+      "**Signals** (Angular 16+, estables en 20): estado reactivo con `signal()`, `computed()` y `effect()`; `input()` y `output()` como funciones en vez de `@Input()`/`@Output()`.",
+      "**Zoneless** (default desde Angular 21): la app ya no depende de zone.js para saber cuándo redibujar.",
+      "**Angular 22**: los componentes nuevos usan `OnPush` por defecto, `HttpClient` usa `fetch`, y pasan a estables **Signal Forms** y `httpResource`."
+    ] },
+    { "tipo": "nota", "variante": "version", "md": "Si abrís un proyecto de la empresa y ves `app.module.ts`, `*ngIf` o `constructor(private http: HttpClient)`, no está mal: es Angular \"clásico\". La lección **Código legacy** del nivel 7 te enseña a leerlo y migrarlo." },
+    { "tipo": "texto", "md": "En el trabajo, Angular suele ser el frontend de una API REST (por ejemplo **Spring Boot**): Angular pide datos con HTTP, los muestra con componentes y manda formularios de vuelta. Ese es el recorrido de este curso." }
+  ],
+  "variantes": {
+    "principiantes": {
+      "objetivo": "explicar qué es Angular y para qué se usa en una empresa.",
+      "explicacion": [
+        { "tipo": "texto", "md": "Una **aplicación web** es una página que se comporta como un programa: Gmail, Trello o el home banking. Escribirlas a mano con HTML y JavaScript se vuelve un caos cuando crecen. Un **framework** como Angular te da una estructura y herramientas para que miles de líneas sigan ordenadas." },
+        { "tipo": "texto", "md": "Angular es de Google y trae todo incluido: la forma de dividir la pantalla en piezas (**componentes**), la navegación entre páginas (**router**), los **formularios**, la comunicación con el servidor (**HTTP**) y un programa de terminal, la **CLI**, que crea y arma el proyecto por vos." },
+        { "tipo": "lista", "items": [
+          "Una app Angular es un árbol de **componentes**: el encabezado, la lista de tareas, cada tarjeta… cada uno es una pieza con su HTML, su CSS y su lógica.",
+          "Los datos que cambian (lo que escribís, lo que llega del servidor) se guardan en **signals**: cuando un signal cambia, la pantalla se actualiza sola.",
+          "La lógica que no es de pantalla (pedir datos al servidor, por ejemplo) va en **servicios**."
+        ] },
+        { "tipo": "nota", "variante": "dato", "md": "Este curso usa **Angular 22**, la versión actual. Angular saca una versión nueva cada 6 meses y cambió bastante en los últimos años: si buscás ayuda en internet y ves `*ngIf` o `NgModule`, es la forma vieja. Lo que aprendés acá es la forma moderna." }
+      ]
+    }
+  },
+  "recursos": {
+    "video": { "id": "0hgDZOxLiQQ", "titulo": "Introducción a Angular", "canal": "Fernando Herrera", "inicio": 0, "fin": 443, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Qué es Angular", "url": "https://angular.dev/overview" },
+      { "titulo": "angular.dev: Essentials (resumen oficial de conceptos)", "url": "https://angular.dev/essentials" },
+      { "titulo": "Calendario de versiones y soporte", "url": "https://angular.dev/reference/releases" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená estas novedades de Angular de la más vieja a la más nueva. Te va a servir para ubicar en el tiempo el código que encuentres en la empresa.",
+    "lenguaje": "texto",
+    "lineas": [
+      "Componentes standalone (sin NgModule)",
+      "Signals: signal(), computed(), effect()",
+      "Control flow: @if, @for, @switch",
+      "Zoneless por defecto (sin zone.js)",
+      "OnPush por defecto y Signal Forms estables"
+    ],
+    "pistas": [
+      "Standalone apareció en Angular 15, antes que todo lo demás de la lista.",
+      "Signals llegó en Angular 16 y el control flow en 17. Zoneless es default desde la 21 y lo último es lo de Angular 22."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "Abrís un proyecto de la empresa y ves `*ngIf` y un archivo `app.module.ts`. ¿Qué significa?",
+      "opciones": [
+        { "texto": "Que el proyecto usa la sintaxis clásica de Angular (anterior a la 17), que sigue funcionando.", "correcta": true, "explicacion": "Exacto. Angular mantiene compatibilidad: `*ngIf` y los NgModules siguen andando, aunque lo nuevo se escribe con `@if` y componentes standalone." },
+        { "texto": "Que el proyecto está roto y hay que reescribirlo.", "correcta": false, "explicacion": "No. Es código válido; se puede migrar de a poco con los comandos de migración de la CLI." },
+        { "texto": "Que es AngularJS, otro framework distinto.", "correcta": false, "explicacion": "AngularJS (1.x) usa `ng-if` con guion y controladores; `*ngIf` es Angular 2+." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué trae Angular \"incluido\" que en React normalmente agregás con librerías aparte?",
+      "opciones": [
+        { "texto": "Router, formularios, cliente HTTP y una CLI para generar y construir.", "correcta": true, "explicacion": "Sí: por eso los proyectos Angular tienen una estructura muy parecida entre sí." },
+        { "texto": "Solo el sistema de componentes.", "correcta": false, "explicacion": "Eso es lo que trae React. Angular agrega mucho más." },
+        { "texto": "Una base de datos.", "correcta": false, "explicacion": "Angular es solo frontend: los datos vienen de una API (por ejemplo, Spring Boot)." }
+      ]
+    },
+    {
+      "pregunta": "En Angular 22, ¿qué estrategia de detección de cambios usan los componentes nuevos por defecto?",
+      "opciones": [
+        { "texto": "OnPush", "correcta": true, "explicacion": "Correcto. Desde Angular 22, OnPush es el default; la estrategia vieja se renombró a `Eager`." },
+        { "texto": "Default", "correcta": false, "explicacion": "`Default` era el default hasta Angular 21; en la 22 se llama `Eager` y ya no es el valor por defecto." },
+        { "texto": "Zone.js", "correcta": false, "explicacion": "zone.js no es una estrategia de componente, y además desde Angular 21 las apps nuevas no lo usan." }
+      ]
+    }
+  ]
+}

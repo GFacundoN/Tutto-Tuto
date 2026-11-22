@@ -1,0 +1,72 @@
+{
+  "id": "cli-y-estructura",
+  "titulo": "La CLI y la estructura del proyecto",
+  "minutos": 10,
+  "objetivo": "crear un proyecto con Angular CLI, levantarlo y saber qué hace cada archivo importante.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Todo proyecto Angular se crea y se maneja con la **CLI** (`ng`). En el trabajo casi nunca vas a crear un proyecto desde cero, pero sí vas a usar `ng serve` todos los días y `ng generate` para crear piezas con la estructura correcta." },
+    { "tipo": "comando", "comando": "ng new tablero --style=css --ssr=false" },
+    { "tipo": "comando", "comando": "cd tablero\nng serve -o", "salida": "➜  Local:   http://localhost:4200/" },
+    { "tipo": "texto", "md": "Los archivos que importan al principio:" },
+    { "tipo": "lista", "items": [
+      "`src/main.ts`: el punto de entrada. Arranca la app con `bootstrapApplication(App, appConfig)`.",
+      "`src/app/app.config.ts`: la configuración global (router, HTTP, etc.). Reemplaza al viejo `AppModule`.",
+      "`src/app/app.routes.ts`: la tabla de rutas.",
+      "`src/app/app.ts`, `app.html`, `app.css`: el componente raíz.",
+      "`angular.json`: cómo se construye el proyecto (assets, estilos, presupuestos de tamaño).",
+      "`package.json`: dependencias y scripts (`npm start` corre `ng serve`)."
+    ] },
+    { "tipo": "texto", "md": "Para crear piezas usá `ng generate` (o `ng g`). Respeta las convenciones oficiales y te ahorra errores de tipeo:" },
+    { "tipo": "comando", "comando": "ng g c tareas/tarjeta-tarea", "salida": "CREATE src/app/tareas/tarjeta-tarea/tarjeta-tarea.ts\nCREATE src/app/tareas/tarjeta-tarea/tarjeta-tarea.html\nCREATE src/app/tareas/tarjeta-tarea/tarjeta-tarea.css\nCREATE src/app/tareas/tarjeta-tarea/tarjeta-tarea.spec.ts" },
+    { "tipo": "nota", "variante": "version", "md": "Desde Angular 20 los archivos no llevan sufijo: `tarjeta-tarea.ts` con la clase `TarjetaTarea`. En proyectos anteriores vas a ver `tarjeta-tarea.component.ts` con `TarjetaTareaComponent`. Son lo mismo." },
+    { "tipo": "nota", "variante": "comparacion", "md": "`ng serve` es el equivalente a `npm run dev` de Vite. Angular usa por debajo **esbuild** y **Vite** desde la versión 17, así que el arranque es igual de rápido.", "soloVersiones": ["semana"] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Organizá por **funcionalidad** (`tareas/`, `usuarios/`), no por tipo (`components/`, `services/`). Es la recomendación oficial de la guía de estilo de Angular." }
+  ],
+  "recursos": {
+    "video": { "id": "m2TIAtl2w8g", "titulo": "Explicación de archivos y directorios", "canal": "Fernando Herrera", "inicio": 0, "fin": 592, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Instalación", "url": "https://angular.dev/installation" },
+      { "titulo": "angular.dev: Guía de estilo (estructura y nombres)", "url": "https://angular.dev/style-guide" },
+      { "titulo": "angular.dev: Referencia de ng generate", "url": "https://angular.dev/cli/generate" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá los comandos que usarías el primer día en el trabajo: levantar el proyecto y generar un componente `lista-tareas` dentro de la carpeta `tareas`.",
+    "lenguaje": "terminal",
+    "plantilla": "# levantar el servidor de desarrollo y abrir el navegador\nng {{0}} -o\n\n# generar el componente\nng {{1}} tareas/lista-tareas",
+    "huecos": [
+      { "respuestas": ["serve", "s"], "ancho": 6 },
+      { "respuestas": ["g c", "generate component", "g component", "generate c"], "ancho": 18 }
+    ],
+    "pistas": [
+      "El primero \"sirve\" la app en localhost:4200.",
+      "El segundo es `generate component`, que también se puede abreviar `g c`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En la carpeta de tu proyecto de práctica, generá el componente:" },
+        { "tipo": "comando", "comando": "ng g c tareas/lista-tareas" }
+      ],
+      "resultadoEsperado": "Se crea la carpeta src/app/tareas/lista-tareas con lista-tareas.ts, .html, .css y .spec.ts."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Dónde se registra el router o el cliente HTTP para toda la app en un proyecto Angular moderno?",
+      "opciones": [
+        { "texto": "En `app.config.ts`, dentro de `providers`.", "correcta": true, "explicacion": "Sí: `provideRouter(...)` y `provideHttpClient()` van ahí." },
+        { "texto": "En `angular.json`.", "correcta": false, "explicacion": "`angular.json` configura el build (assets, estilos), no la app en ejecución." },
+        { "texto": "En `app.module.ts`.", "correcta": false, "explicacion": "Así era antes de standalone. Los proyectos nuevos no tienen `AppModule`." }
+      ]
+    },
+    {
+      "pregunta": "Generás `ng g c tareas/tarjeta-tarea` en Angular 22. ¿Cómo se llama la clase?",
+      "opciones": [
+        { "texto": "`TarjetaTarea`", "correcta": true, "explicacion": "Desde Angular 20, sin sufijo `Component`." },
+        { "texto": "`TarjetaTareaComponent`", "correcta": false, "explicacion": "Ese era el nombre hasta Angular 19. Lo vas a ver en código existente." },
+        { "texto": "`tarjetaTarea`", "correcta": false, "explicacion": "Las clases van en PascalCase." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "id": "componente-standalone",
+  "titulo": "Tu primer componente standalone",
+  "minutos": 12,
+  "objetivo": "crear un componente standalone, darle un template y usarlo dentro de otro componente.",
+  "explicacion": [
+    {
+      "tipo": "texto",
+      "md": "Un **componente** es una clase de TypeScript con el decorador `@Component`. El decorador le dice a Angular tres cosas: con qué etiqueta se usa (`selector`), qué HTML dibuja (`template` o `templateUrl`) y qué otros componentes necesita ese HTML (`imports`)."
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "typescript",
+      "archivo": "src/app/tareas/tarjeta-tarea.ts",
+      "codigo": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `\n    <article>\n      <h3>{{ titulo }}</h3>\n      <p>Responsable: {{ responsable }}</p>\n    </article>\n  `,\n  styles: `article { border: 1px solid #ccc; padding: 8px; }`,\n})\nexport class TarjetaTarea {\n  titulo = 'Configurar CI';\n  responsable = 'Ana';\n}"
+    },
+    {
+      "tipo": "texto",
+      "md": "Para usarlo en otro componente, hay que **importarlo** en el `imports` del padre y escribir su etiqueta en el template:"
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "typescript",
+      "archivo": "src/app/app.ts",
+      "codigo": "import { Component } from '@angular/core';\nimport { TarjetaTarea } from './tareas/tarjeta-tarea';\n\n@Component({\n  selector: 'app-root',\n  imports: [TarjetaTarea],\n  template: `<h1>Tablero</h1> <app-tarjeta-tarea />`,\n})\nexport class App {}"
+    },
+    {
+      "tipo": "nota",
+      "variante": "error-comun",
+      "md": "Si usás `<app-tarjeta-tarea />` y te olvidás de ponerlo en `imports`, Angular falla con *\"'app-tarjeta-tarea' is not a known element\"* (error NG8001). Es el error más común del primer día."
+    },
+    {
+      "tipo": "nota",
+      "variante": "version",
+      "md": "Desde Angular 19 todos los componentes son **standalone por defecto**. En código anterior vas a ver `standalone: true` en el decorador (hoy sobra) o componentes declarados en el `declarations` de un `NgModule`."
+    },
+    {
+      "tipo": "nota",
+      "variante": "comparacion",
+      "md": "En React importás el componente en el archivo y listo. En Angular, además del `import` de TypeScript, tenés que agregarlo al array `imports` del decorador: es lo que el compilador usa para saber qué etiquetas existen en ese template.",
+      "soloVersiones": [
+        "semana"
+      ]
+    },
+    {
+      "tipo": "texto",
+      "md": "El prefijo `app-` en el selector es una convención: evita choques con etiquetas HTML reales. En empresas suele cambiarse por uno propio (por ejemplo `acme-`)."
+    }
+  ],
+  "recursos": {
+    "video": {
+      "id": "RKWbxZf9Vd0",
+      "titulo": "Counter Page | Componente",
+      "canal": "Fernando Herrera",
+      "inicio": 0,
+      "fin": 567,
+      "idioma": "es"
+    },
+    "docs": [
+      {
+        "titulo": "angular.dev: Componentes (Essentials)",
+        "url": "https://angular.dev/essentials/components"
+      },
+      {
+        "titulo": "angular.dev: Anatomía de un componente",
+        "url": "https://angular.dev/guide/components"
+      }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "En el proyecto, creá el componente `TarjetaTarea` en `src/app/tarjeta-tarea.ts` con el selector `app-tarjeta-tarea` y un template que muestre el título de una tarea. Después usalo en `App`. Cuando la vista previa muestre la tarjeta, tocá **Comprobar mi código**.",
+    "archivos": {
+      "src/app/tarjeta-tarea.ts": "import { Component } from '@angular/core';\n\n// TODO: agregá el decorador @Component con selector 'app-tarjeta-tarea'\n// y un template que muestre {{ titulo }} dentro de un <h3>.\nexport class TarjetaTarea {\n  titulo = 'Configurar CI';\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  // TODO: importá TarjetaTarea y usala en el template\n  imports: [],\n  template: `<h1>Tablero del equipo</h1>`,\n})\nexport class App {}\n"
+    },
+    "abrirArchivo": "src/app/tarjeta-tarea.ts,src/app/app.ts",
+    "verificaciones": [
+      {
+        "archivo": "src/app/tarjeta-tarea.ts",
+        "patron": "@Component\\s*\\(",
+        "mensaje": "TarjetaTarea tiene el decorador @Component."
+      },
+      {
+        "archivo": "src/app/tarjeta-tarea.ts",
+        "patron": "selector\\s*:\\s*['\"]app-tarjeta-tarea['\"]",
+        "mensaje": "El selector es 'app-tarjeta-tarea'."
+      },
+      {
+        "archivo": "src/app/tarjeta-tarea.ts",
+        "patron": "\\{\\{\\s*titulo\\s*\\}\\}",
+        "mensaje": "El template muestra {{ titulo }}."
+      },
+      {
+        "archivo": "src/app/app.ts",
+        "patron": "import\\s*\\{[^}]*TarjetaTarea[^}]*\\}\\s*from\\s*['\"]\\./tarjeta-tarea['\"]",
+        "mensaje": "app.ts importa TarjetaTarea desde './tarjeta-tarea'."
+      },
+      {
+        "archivo": "src/app/app.ts",
+        "patron": "imports\\s*:\\s*\\[[^\\]]*TarjetaTarea",
+        "mensaje": "TarjetaTarea está en el array imports de App."
+      },
+      {
+        "archivo": "src/app/app.ts|src/app/app.html",
+        "patron": "<app-tarjeta-tarea[\\s/>]",
+        "mensaje": "El template de App usa <app-tarjeta-tarea />."
+      }
+    ],
+    "pistas": [
+      "El decorador va justo arriba de `export class TarjetaTarea`: `@Component({ selector: '...', template: `...` })`.",
+      "En `app.ts` necesitás dos cosas: `import { TarjetaTarea } from './tarjeta-tarea';` arriba, y `imports: [TarjetaTarea]` en el decorador. Recién ahí podés escribir `<app-tarjeta-tarea />` en el template."
+    ],
+    "solucion": {
+      "src/app/tarjeta-tarea.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-tarjeta-tarea',\n  template: `<h3>{{ titulo }}</h3>`,\n})\nexport class TarjetaTarea {\n  titulo = 'Configurar CI';\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\nimport { TarjetaTarea } from './tarjeta-tarea';\n\n@Component({\n  selector: 'app-root',\n  imports: [TarjetaTarea],\n  template: `<h1>Tablero del equipo</h1> <app-tarjeta-tarea />`,\n})\nexport class App {}\n"
+    },
+    "local": {
+      "pasos": [
+        {
+          "tipo": "texto",
+          "md": "En tu proyecto `practica-angular`, generá el componente con la CLI (te crea el decorador ya armado):"
+        },
+        {
+          "tipo": "comando",
+          "comando": "ng g c tarjeta-tarea --inline-template --inline-style --flat"
+        },
+        {
+          "tipo": "texto",
+          "md": "Agregale la propiedad `titulo = 'Configurar CI';` y en el template `<h3>{{ titulo }}</h3>`. Después importalo en `src/app/app.ts` y reemplazá el contenido de `app.html` por `<h1>Tablero del equipo</h1> <app-tarjeta-tarea />`. Levantá con `ng serve`."
+        },
+        {
+          "tipo": "texto",
+          "md": "Para corregir, pegá abajo tu `tarjeta-tarea.ts`, tu `app.ts` y, si el template de App está en un archivo aparte, tu `app.html`."
+        }
+      ],
+      "resultadoEsperado": "En http://localhost:4200 ves \"Tablero del equipo\" y debajo \"Configurar CI\". La consola del navegador no muestra errores."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Escribís `<app-tarjeta-tarea />` en el template de `App` y Angular tira *\"is not a known element\"*. ¿Qué falta?",
+      "opciones": [
+        {
+          "texto": "Agregar `TarjetaTarea` al array `imports` del decorador de `App`.",
+          "correcta": true,
+          "explicacion": "Exacto. El compilador solo reconoce las etiquetas de los componentes listados en `imports`."
+        },
+        {
+          "texto": "Agregar `standalone: true` a `TarjetaTarea`.",
+          "correcta": false,
+          "explicacion": "Desde Angular 19 ya es standalone por defecto; ese no es el problema."
+        },
+        {
+          "texto": "Registrar el componente en `angular.json`.",
+          "correcta": false,
+          "explicacion": "`angular.json` es configuración de build; los componentes no se registran ahí."
+        }
+      ]
+    },
+    {
+      "pregunta": "¿Qué define el `selector` de un componente?",
+      "opciones": [
+        {
+          "texto": "La etiqueta HTML con la que se usa el componente en otros templates.",
+          "correcta": true,
+          "explicacion": "Sí: `selector: 'app-tarjeta-tarea'` se usa como `<app-tarjeta-tarea />`."
+        },
+        {
+          "texto": "El nombre del archivo.",
+          "correcta": false,
+          "explicacion": "El archivo puede llamarse distinto; por convención coinciden, pero no es lo que define el selector."
+        },
+        {
+          "texto": "El selector CSS que estiliza el componente.",
+          "correcta": false,
+          "explicacion": "Los estilos van en `styles`/`styleUrl`. El selector es la etiqueta."
+        }
+      ]
+    }
+  ]
+}
