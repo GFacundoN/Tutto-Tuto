@@ -3,7 +3,7 @@
   "titulo": "Angular",
   "descripcion": "Del primer componente a una app que consume tu API de Spring Boot. Angular 22 con signals y componentes standalone.",
   "color": "#c8235f",
-  "versionHerramienta": "Angular 22 (las notas marcan qué cambió desde Angular 15 en adelante)",
+  "versionHerramienta": "Angular 22",
   "plantillaProyecto": "plantilla-proyecto.json",
   "versiones": [
     {
@@ -16,56 +16,92 @@
           "dia": "Día 1",
           "titulo": "Arranque",
           "descripcion": "Qué es Angular hoy, cómo se crea un proyecto y dónde está cada cosa.",
-          "lecciones": ["angular-hoy", "cli-y-estructura"]
+          "lecciones": [
+            "angular-hoy",
+            "cli-y-estructura"
+          ]
         },
         {
           "id": "n1",
           "dia": "Día 1",
           "titulo": "Componentes y templates",
           "descripcion": "La pieza básica: componente standalone, bindings, @if/@for y signals.",
-          "lecciones": ["componente-standalone", "interpolacion-y-property-binding", "event-binding", "control-flow", "signals"]
+          "lecciones": [
+            "componente-standalone",
+            "interpolacion-y-property-binding",
+            "event-binding",
+            "control-flow",
+            "signals"
+          ]
         },
         {
           "id": "n2",
           "dia": "Día 2",
           "titulo": "Comunicación entre componentes",
           "descripcion": "Pasar datos hacia abajo, eventos hacia arriba, y transformar valores en el template.",
-          "lecciones": ["input-signal", "output-signal", "model-y-ng-content", "pipes"]
+          "lecciones": [
+            "input-signal",
+            "output-signal",
+            "model-y-ng-content",
+            "pipes"
+          ]
         },
         {
           "id": "n3",
           "dia": "Día 2",
           "titulo": "Servicios e inyección de dependencias",
           "descripcion": "Dónde va la lógica que no es de pantalla y cómo se comparte estado.",
-          "lecciones": ["servicios-inject", "estado-en-servicios"]
+          "lecciones": [
+            "servicios-inject",
+            "estado-en-servicios"
+          ]
         },
         {
           "id": "n4",
           "dia": "Día 3",
           "titulo": "Router",
           "descripcion": "Varias pantallas, parámetros en la URL, carga diferida y rutas protegidas.",
-          "lecciones": ["rutas-basicas", "parametros-y-lazy", "guards"]
+          "lecciones": [
+            "rutas-basicas",
+            "parametros-y-lazy",
+            "guards"
+          ]
         },
         {
           "id": "n5",
           "dia": "Día 4",
           "titulo": "HTTP con tu backend",
           "descripcion": "Consumir una API REST de Spring Boot: HttpClient, RxJS justo y necesario, interceptors y httpResource.",
-          "lecciones": ["httpclient", "rxjs-esencial", "interceptors", "httpresource-y-backend"]
+          "lecciones": [
+            "httpclient",
+            "rxjs-esencial",
+            "interceptors",
+            "httpresource-y-backend"
+          ]
         },
         {
           "id": "n6",
           "dia": "Día 5",
           "titulo": "Formularios",
           "descripcion": "Reactive Forms (lo que más vas a ver), Signal Forms (lo nuevo) y ngModel (para reconocerlo).",
-          "lecciones": ["reactive-forms", "signal-forms", "template-driven"]
+          "lecciones": [
+            "reactive-forms",
+            "signal-forms",
+            "template-driven"
+          ]
         },
         {
           "id": "n7",
           "dia": "Día 6",
           "titulo": "Trabajo profesional",
           "descripcion": "Código legacy, detección de cambios, tests, build con Docker y cómo depurar.",
-          "lecciones": ["codigo-legacy", "change-detection", "testing-vitest", "build-y-docker", "debugging"]
+          "lecciones": [
+            "codigo-legacy",
+            "change-detection",
+            "testing-vitest",
+            "build-y-docker",
+            "debugging"
+          ]
         }
       ]
     },
@@ -78,172 +114,440 @@
           "id": "f",
           "titulo": "Fundamentos de la web",
           "descripcion": "Lo mínimo de HTML, JavaScript, TypeScript y la terminal para poder usar Angular.",
-          "lecciones": ["web-html-css", "js-esencial", "ts-esencial", "terminal-node-npm"]
+          "lecciones": [
+            "web-html-css",
+            "js-esencial",
+            "ts-esencial",
+            "terminal-node-npm"
+          ]
         },
         {
           "id": "n0",
           "titulo": "Arranque",
           "descripcion": "Qué es Angular, cómo se crea un proyecto y dónde está cada cosa.",
-          "lecciones": ["angular-hoy", "cli-y-estructura"]
+          "lecciones": [
+            "angular-hoy",
+            "cli-y-estructura"
+          ]
         },
         {
           "id": "n1",
           "titulo": "Componentes y templates",
           "descripcion": "La pieza básica de toda app Angular y cómo mostrar datos en pantalla.",
-          "lecciones": ["componente-standalone", "interpolacion-y-property-binding", "event-binding", "control-flow", "signals"]
+          "lecciones": [
+            "componente-standalone",
+            "interpolacion-y-property-binding",
+            "event-binding",
+            "control-flow",
+            "signals"
+          ]
         },
         {
           "id": "n2",
           "titulo": "Comunicación entre componentes",
           "descripcion": "Pasar datos de un componente a otro.",
-          "lecciones": ["input-signal", "output-signal", "model-y-ng-content", "pipes"]
+          "lecciones": [
+            "input-signal",
+            "output-signal",
+            "model-y-ng-content",
+            "pipes"
+          ]
         },
         {
           "id": "n3",
           "titulo": "Servicios",
           "descripcion": "Separar la lógica de la pantalla y compartir datos.",
-          "lecciones": ["servicios-inject", "estado-en-servicios"]
+          "lecciones": [
+            "servicios-inject",
+            "estado-en-servicios"
+          ]
         },
         {
           "id": "n4",
           "titulo": "Varias pantallas",
           "descripcion": "Navegar entre páginas con el router.",
-          "lecciones": ["rutas-basicas", "parametros-y-lazy", "guards"]
+          "lecciones": [
+            "rutas-basicas",
+            "parametros-y-lazy",
+            "guards"
+          ]
         },
         {
           "id": "n5",
           "titulo": "Datos de un servidor",
           "descripcion": "Pedir y enviar datos a una API.",
-          "lecciones": ["httpclient", "rxjs-esencial", "httpresource-y-backend"]
+          "lecciones": [
+            "httpclient",
+            "rxjs-esencial",
+            "httpresource-y-backend"
+          ]
         },
         {
           "id": "n6",
           "titulo": "Formularios y herramientas",
           "descripcion": "Formularios con validaciones y cómo encontrar errores.",
-          "lecciones": ["reactive-forms", "template-driven", "debugging"]
+          "lecciones": [
+            "reactive-forms",
+            "template-driven",
+            "debugging"
+          ]
         }
       ]
     }
   ],
   "instalacion": [
-    { "tipo": "texto", "md": "Vas a instalar tres cosas: **Node.js** (el entorno que ejecuta las herramientas de JavaScript), **Angular CLI** (el comando `ng`) y **VS Code** (el editor). Todo es gratis. Tiempo estimado: 15 minutos." },
-    { "tipo": "nota", "variante": "version", "md": "Angular 22 necesita **Node.js 22.22 o más nuevo** (o 24.15+). Con Node 20 el comando `ng` no arranca. Si en el trabajo te toca un proyecto en Angular 17–19, ahí sí anda Node 20: fijate el campo `engines` del `package.json` del proyecto." },
-    { "tipo": "texto", "md": "**1. Instalá Node.js 24 LTS.** Abrí PowerShell y ejecutá:" },
-    { "tipo": "comando", "comando": "winget install OpenJS.NodeJS.LTS" },
-    { "tipo": "texto", "md": "Si `winget` no existe en tu Windows, descargá el instalador \"LTS\" desde [nodejs.org](https://nodejs.org/es/download). Cerrá y volvé a abrir PowerShell, y verificá:" },
-    { "tipo": "comando", "comando": "node -v", "salida": "v24.x.x" },
-    { "tipo": "texto", "md": "**2. Permití scripts de npm en PowerShell.** Windows bloquea por defecto los scripts `.ps1` que usa `npm`. Esto los habilita solo para tu usuario:" },
-    { "tipo": "comando", "comando": "Set-ExecutionPolicy -Scope CurrentUser RemoteSigned" },
-    { "tipo": "texto", "md": "**3. Instalá Angular CLI** de forma global:" },
-    { "tipo": "comando", "comando": "npm install -g @angular/cli" },
-    { "tipo": "comando", "comando": "ng version", "salida": "Angular CLI       : 22.x.x\nNode              : 24.x.x" },
-    { "tipo": "texto", "md": "**4. Instalá VS Code** desde [code.visualstudio.com](https://code.visualstudio.com/) y agregale la extensión oficial **Angular Language Service** (autocompletado y errores dentro de los templates)." },
-    { "tipo": "texto", "md": "**5. Creá el proyecto de práctica** que vas a usar en todos los ejercicios del camino local:" },
-    { "tipo": "comando", "comando": "ng new practica-angular --style=css --ssr=false --ai-config=none" },
-    { "tipo": "comando", "comando": "cd practica-angular" },
-    { "tipo": "comando", "comando": "ng serve -o", "salida": "Application bundle generation complete.\n  ➜  Local:   http://localhost:4200/" },
-    { "tipo": "texto", "md": "Se abre el navegador con la página de bienvenida de Angular. Para frenar el servidor: `Ctrl + C` en la terminal." },
-    { "tipo": "nota", "variante": "error-comun", "md": "Si ves *\"ng no se reconoce como nombre de un cmdlet\"*, cerrá y abrí de nuevo la terminal (para que tome el PATH nuevo). Si sigue, usá `npx ng serve` dentro del proyecto." },
-    { "tipo": "texto", "md": "**6. Opcional, para depurar:** instalá la extensión **Angular DevTools** en Chrome o Edge desde su tienda de extensiones (la vas a usar en la última lección)." }
+    {
+      "tipo": "texto",
+      "md": "Vas a instalar tres cosas: **Node.js** (el entorno que ejecuta las herramientas de JavaScript), **Angular CLI** (el comando `ng`) y **VS Code** (el editor). Todo es gratis. Tiempo estimado: 15 minutos."
+    },
+    {
+      "tipo": "nota",
+      "variante": "version",
+      "md": "Angular 22 necesita **Node.js 22.22 o más nuevo** (o 24.15+). Con Node 20 el comando `ng` no arranca. Si en el trabajo te toca un proyecto en Angular 17–19, ahí sí anda Node 20: fijate el campo `engines` del `package.json` del proyecto."
+    },
+    {
+      "tipo": "texto",
+      "md": "**1. Instalá Node.js 24 LTS.** Abrí PowerShell y ejecutá:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "winget install OpenJS.NodeJS.LTS"
+    },
+    {
+      "tipo": "texto",
+      "md": "Si `winget` no existe en tu Windows, descargá el instalador \"LTS\" desde [nodejs.org](https://nodejs.org/es/download). Cerrá y volvé a abrir PowerShell, y verificá:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "node -v",
+      "salida": "v24.x.x"
+    },
+    {
+      "tipo": "texto",
+      "md": "**2. Permití scripts de npm en PowerShell.** Windows bloquea por defecto los scripts `.ps1` que usa `npm`. Esto los habilita solo para tu usuario:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "Set-ExecutionPolicy -Scope CurrentUser RemoteSigned"
+    },
+    {
+      "tipo": "texto",
+      "md": "**3. Instalá Angular CLI** de forma global:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "npm install -g @angular/cli"
+    },
+    {
+      "tipo": "comando",
+      "comando": "ng version",
+      "salida": "Angular CLI       : 22.x.x\nNode              : 24.x.x"
+    },
+    {
+      "tipo": "texto",
+      "md": "**4. Instalá VS Code** desde [code.visualstudio.com](https://code.visualstudio.com/) y agregale la extensión oficial **Angular Language Service** (autocompletado y errores dentro de los templates)."
+    },
+    {
+      "tipo": "texto",
+      "md": "**5. Creá el proyecto de práctica** que vas a usar en todos los ejercicios del camino local:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "ng new practica-angular --style=css --ssr=false --ai-config=none"
+    },
+    {
+      "tipo": "comando",
+      "comando": "cd practica-angular"
+    },
+    {
+      "tipo": "comando",
+      "comando": "ng serve -o",
+      "salida": "Application bundle generation complete.\n  ➜  Local:   http://localhost:4200/"
+    },
+    {
+      "tipo": "texto",
+      "md": "Se abre el navegador con la página de bienvenida de Angular. Para frenar el servidor: `Ctrl + C` en la terminal."
+    },
+    {
+      "tipo": "nota",
+      "variante": "error-comun",
+      "md": "Si ves *\"ng no se reconoce como nombre de un cmdlet\"*, cerrá y abrí de nuevo la terminal (para que tome el PATH nuevo). Si sigue, usá `npx ng serve` dentro del proyecto."
+    },
+    {
+      "tipo": "texto",
+      "md": "**6. Opcional, para depurar:** instalá la extensión **Angular DevTools** en Chrome o Edge desde su tienda de extensiones (la vas a usar en la última lección)."
+    }
   ],
   "proyectoFinal": {
     "titulo": "Tablero de tareas del equipo",
     "descripcion": [
-      { "tipo": "texto", "md": "Vas a construir, **solo y sin IA**, un tablero de tareas estilo Trello para tu equipo: una lista de tareas por estado (Pendiente, En curso, Hecha), el detalle de cada tarea y un formulario para crear tareas nuevas." },
-      { "tipo": "texto", "md": "Como backend vas a usar una API falsa con **json-server** (corre en tu PC y responde como una API REST). En el trabajo la reemplazás por tu API de Spring Boot sin tocar los componentes: solo cambia la URL." },
-      { "tipo": "comando", "comando": "ng new tablero --style=css --ssr=false --ai-config=none" },
-      { "tipo": "comando", "comando": "npm install -D json-server" },
-      { "tipo": "texto", "md": "Creá un `db.json` en la raíz del proyecto con algunas tareas de ejemplo:" },
-      { "tipo": "codigo", "lenguaje": "json", "archivo": "db.json", "codigo": "{\n  \"tareas\": [\n    { \"id\": \"1\", \"titulo\": \"Configurar CI\", \"descripcion\": \"Pipeline de build y tests\", \"estado\": \"pendiente\", \"responsable\": \"Ana\" },\n    { \"id\": \"2\", \"titulo\": \"Login con JWT\", \"descripcion\": \"Endpoint /auth en Spring\", \"estado\": \"en-curso\", \"responsable\": \"Facu\" },\n    { \"id\": \"3\", \"titulo\": \"Dockerizar el front\", \"descripcion\": \"Dockerfile multi-stage con nginx\", \"estado\": \"hecha\", \"responsable\": \"Ana\" }\n  ]\n}" },
-      { "tipo": "comando", "comando": "npx json-server db.json --port 3000", "salida": "Endpoints:\nhttp://localhost:3000/tareas" },
-      { "tipo": "texto", "md": "En otra terminal, `ng serve`. Hacelo en este orden: 1) modelo `Tarea` y servicio con HTTP, 2) lista con `@for` agrupada por estado, 3) rutas (lista, detalle, nueva), 4) formulario, 5) interceptor y guard, 6) test y Docker. Si te trabás, cada criterio tiene un enlace a la lección donde se explica." },
-      { "tipo": "nota", "variante": "dato", "md": "Cuando termines, cerrá el editor y explicá en voz alta (o a otra persona) cómo viaja una tarea desde `db.json` hasta la pantalla. Esa es la prueba de que podés hacerlo en el trabajo." }
+      {
+        "tipo": "texto",
+        "md": "Vas a construir, **solo y sin IA**, un tablero de tareas estilo Trello para tu equipo: una lista de tareas por estado (Pendiente, En curso, Hecha), el detalle de cada tarea y un formulario para crear tareas nuevas."
+      },
+      {
+        "tipo": "texto",
+        "md": "Como backend vas a usar una API falsa con **json-server** (corre en tu PC y responde como una API REST). En el trabajo la reemplazás por tu API de Spring Boot sin tocar los componentes: solo cambia la URL."
+      },
+      {
+        "tipo": "comando",
+        "comando": "ng new tablero --style=css --ssr=false --ai-config=none"
+      },
+      {
+        "tipo": "comando",
+        "comando": "npm install -D json-server"
+      },
+      {
+        "tipo": "texto",
+        "md": "Creá un `db.json` en la raíz del proyecto con algunas tareas de ejemplo:"
+      },
+      {
+        "tipo": "codigo",
+        "lenguaje": "json",
+        "archivo": "db.json",
+        "codigo": "{\n  \"tareas\": [\n    { \"id\": \"1\", \"titulo\": \"Configurar CI\", \"descripcion\": \"Pipeline de build y tests\", \"estado\": \"pendiente\", \"responsable\": \"Ana\" },\n    { \"id\": \"2\", \"titulo\": \"Login con JWT\", \"descripcion\": \"Endpoint /auth en Spring\", \"estado\": \"en-curso\", \"responsable\": \"Facu\" },\n    { \"id\": \"3\", \"titulo\": \"Dockerizar el front\", \"descripcion\": \"Dockerfile multi-stage con nginx\", \"estado\": \"hecha\", \"responsable\": \"Ana\" }\n  ]\n}"
+      },
+      {
+        "tipo": "comando",
+        "comando": "npx json-server db.json --port 3000",
+        "salida": "Endpoints:\nhttp://localhost:3000/tareas"
+      },
+      {
+        "tipo": "texto",
+        "md": "En otra terminal, `ng serve`. Hacelo en este orden: 1) modelo `Tarea` y servicio con HTTP, 2) lista con `@for` agrupada por estado, 3) rutas (lista, detalle, nueva), 4) formulario, 5) interceptor y guard, 6) test y Docker. Si te trabás, cada criterio tiene un enlace a la lección donde se explica."
+      },
+      {
+        "tipo": "nota",
+        "variante": "dato",
+        "md": "Cuando termines, cerrá el editor y explicá en voz alta (o a otra persona) cómo viaja una tarea desde `db.json` hasta la pantalla. Esa es la prueba de que podés hacerlo en el trabajo."
+      }
     ],
     "criterios": [
-      { "id": "modelo", "texto": "Hay una interface Tarea tipada y ningún any en el código.", "leccion": "componente-standalone" },
-      { "id": "servicio", "texto": "Un servicio TareasService (providedIn: 'root') hace GET, POST y PATCH con HttpClient.", "leccion": "httpclient" },
-      { "id": "lista", "texto": "La lista muestra las tareas agrupadas por estado usando @for con track y @if para el estado vacío.", "leccion": "control-flow" },
-      { "id": "componente-hijo", "texto": "Cada tarea se dibuja con un componente TarjetaTarea que recibe la tarea con input.required().", "leccion": "input-signal" },
-      { "id": "output", "texto": "La tarjeta emite un evento con output() para mover la tarea de estado, y el padre lo maneja.", "leccion": "output-signal" },
-      { "id": "computed", "texto": "Los contadores por estado salen de un computed(), no de variables que actualizás a mano.", "leccion": "signals" },
-      { "id": "pipe", "texto": "Usás al menos un pipe (date, uppercase o uno propio).", "leccion": "pipes" },
-      { "id": "rutas", "texto": "Hay rutas para lista, detalle (/tareas/:id) y nueva tarea; el detalle recibe el id como input.", "leccion": "parametros-y-lazy" },
-      { "id": "lazy", "texto": "La pantalla de nueva tarea se carga con loadComponent (lazy).", "leccion": "parametros-y-lazy" },
-      { "id": "form", "texto": "El formulario de nueva tarea es un Reactive Form con validaciones (título obligatorio, mínimo 3 letras) y muestra los errores.", "leccion": "reactive-forms" },
-      { "id": "carga-error", "texto": "Mientras carga se ve un estado de carga y, si la API está apagada, un mensaje de error útil (no una pantalla en blanco).", "leccion": "httpresource-y-backend" },
-      { "id": "interceptor", "texto": "Un interceptor funcional agrega el header Authorization a cada pedido.", "leccion": "interceptors", "versiones": ["semana"] },
-      { "id": "guard", "texto": "Un guard funcional impide entrar a /tareas/nueva si no hay usuario \"logueado\" (alcanza con un signal en un servicio).", "leccion": "guards" },
-      { "id": "test", "texto": "Hay al menos un test con Vitest que pasa con ng test (por ejemplo, del servicio o de un pipe).", "leccion": "testing-vitest", "versiones": ["semana"] },
-      { "id": "docker", "texto": "Un Dockerfile multi-stage construye la app y la sirve con nginx; docker run la muestra en el navegador.", "leccion": "build-y-docker", "versiones": ["semana"] },
-      { "id": "explicar", "texto": "Podés explicar sin mirar cómo viaja una tarea desde la API hasta la pantalla." }
+      {
+        "id": "modelo",
+        "texto": "Hay una interface Tarea tipada y ningún any en el código.",
+        "leccion": "componente-standalone"
+      },
+      {
+        "id": "servicio",
+        "texto": "Un servicio TareasService (providedIn: 'root') hace GET, POST y PATCH con HttpClient.",
+        "leccion": "httpclient"
+      },
+      {
+        "id": "lista",
+        "texto": "La lista muestra las tareas agrupadas por estado usando @for con track y @if para el estado vacío.",
+        "leccion": "control-flow"
+      },
+      {
+        "id": "componente-hijo",
+        "texto": "Cada tarea se dibuja con un componente TarjetaTarea que recibe la tarea con input.required().",
+        "leccion": "input-signal"
+      },
+      {
+        "id": "output",
+        "texto": "La tarjeta emite un evento con output() para mover la tarea de estado, y el padre lo maneja.",
+        "leccion": "output-signal"
+      },
+      {
+        "id": "computed",
+        "texto": "Los contadores por estado salen de un computed(), no de variables que actualizás a mano.",
+        "leccion": "signals"
+      },
+      {
+        "id": "pipe",
+        "texto": "Usás al menos un pipe (date, uppercase o uno propio).",
+        "leccion": "pipes"
+      },
+      {
+        "id": "rutas",
+        "texto": "Hay rutas para lista, detalle (/tareas/:id) y nueva tarea; el detalle recibe el id como input.",
+        "leccion": "parametros-y-lazy"
+      },
+      {
+        "id": "lazy",
+        "texto": "La pantalla de nueva tarea se carga con loadComponent (lazy).",
+        "leccion": "parametros-y-lazy"
+      },
+      {
+        "id": "form",
+        "texto": "El formulario de nueva tarea es un Reactive Form con validaciones (título obligatorio, mínimo 3 letras) y muestra los errores.",
+        "leccion": "reactive-forms"
+      },
+      {
+        "id": "carga-error",
+        "texto": "Mientras carga se ve un estado de carga y, si la API está apagada, un mensaje de error útil (no una pantalla en blanco).",
+        "leccion": "httpresource-y-backend"
+      },
+      {
+        "id": "interceptor",
+        "texto": "Un interceptor funcional agrega el header Authorization a cada pedido.",
+        "leccion": "interceptors",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "guard",
+        "texto": "Un guard funcional impide entrar a /tareas/nueva si no hay usuario \"logueado\" (alcanza con un signal en un servicio).",
+        "leccion": "guards"
+      },
+      {
+        "id": "test",
+        "texto": "Hay al menos un test con Vitest que pasa con ng test (por ejemplo, del servicio o de un pipe).",
+        "leccion": "testing-vitest",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "docker",
+        "texto": "Un Dockerfile multi-stage construye la app y la sirve con nginx; docker run la muestra en el navegador.",
+        "leccion": "build-y-docker",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "explicar",
+        "texto": "Podés explicar sin mirar cómo viaja una tarea desde la API hasta la pantalla."
+      }
     ]
   },
   "referencia": [
     {
       "titulo": "Angular CLI",
       "items": [
-        { "titulo": "Crear y levantar un proyecto", "codigo": "ng new mi-app --style=css --ssr=false\ncd mi-app\nng serve -o" },
-        { "titulo": "Generar piezas", "codigo": "ng g c tareas/tarjeta-tarea   # componente\nng g s tareas/tareas           # servicio\nng g p shared/iniciales        # pipe\nng g guard auth/auth           # guard\nng g interceptor auth/auth     # interceptor\nng g environments              # environments", "nota": "En Angular 20+ los archivos ya no llevan sufijo: `tarjeta-tarea.ts` y la clase `TarjetaTarea` (antes `tarjeta-tarea.component.ts` y `TarjetaTareaComponent`)." },
-        { "titulo": "Build, tests y actualización", "codigo": "ng build            # genera dist/\nng test             # tests con Vitest\nng update           # qué se puede actualizar\nng update @angular/core @angular/cli" }
+        {
+          "titulo": "Crear y levantar un proyecto",
+          "codigo": "ng new mi-app --style=css --ssr=false\ncd mi-app\nng serve -o"
+        },
+        {
+          "titulo": "Generar piezas",
+          "codigo": "ng g c tareas/tarjeta-tarea   # componente\nng g s tareas/tareas           # servicio\nng g p shared/iniciales        # pipe\nng g guard auth/auth           # guard\nng g interceptor auth/auth     # interceptor\nng g environments              # environments",
+          "nota": "En Angular 20+ los archivos ya no llevan sufijo: `tarjeta-tarea.ts` y la clase `TarjetaTarea` (antes `tarjeta-tarea.component.ts` y `TarjetaTareaComponent`)."
+        },
+        {
+          "titulo": "Build, tests y actualización",
+          "codigo": "ng build            # genera dist/\nng test             # tests con Vitest\nng update           # qué se puede actualizar\nng update @angular/core @angular/cli"
+        }
       ]
     },
     {
       "titulo": "Componente",
       "items": [
-        { "titulo": "Componente standalone", "codigo": "@Component({\n  selector: 'app-tarjeta-tarea',\n  imports: [DatePipe],\n  templateUrl: './tarjeta-tarea.html',\n  styleUrl: './tarjeta-tarea.css',\n})\nexport class TarjetaTarea {\n  readonly tarea = input.required<Tarea>();\n  readonly mover = output<Estado>();\n}" },
-        { "titulo": "Bindings en el template", "codigo": "{{ tarea().titulo }}                 <!-- interpolación -->\n<img [src]=\"avatarUrl()\" />          <!-- property binding -->\n<button (click)=\"guardar()\">          <!-- event binding -->\n<input [(ngModel)]=\"texto\" />        <!-- two-way (FormsModule) -->\n<li [class.activa]=\"esActiva()\">      <!-- clase condicional -->" }
+        {
+          "titulo": "Componente standalone",
+          "codigo": "@Component({\n  selector: 'app-tarjeta-tarea',\n  imports: [DatePipe],\n  templateUrl: './tarjeta-tarea.html',\n  styleUrl: './tarjeta-tarea.css',\n})\nexport class TarjetaTarea {\n  readonly tarea = input.required<Tarea>();\n  readonly mover = output<Estado>();\n}"
+        },
+        {
+          "titulo": "Bindings en el template",
+          "codigo": "{{ tarea().titulo }}                 <!-- interpolación -->\n<img [src]=\"avatarUrl()\" />          <!-- property binding -->\n<button (click)=\"guardar()\">          <!-- event binding -->\n<input [(ngModel)]=\"texto\" />        <!-- two-way (FormsModule) -->\n<li [class.activa]=\"esActiva()\">      <!-- clase condicional -->"
+        }
       ]
     },
     {
       "titulo": "Control flow",
       "items": [
-        { "titulo": "@if / @else", "codigo": "@if (cargando()) {\n  <p>Cargando…</p>\n} @else if (error()) {\n  <p>Error: {{ error() }}</p>\n} @else {\n  <lista-tareas />\n}" },
-        { "titulo": "@for con track y @empty", "codigo": "@for (t of tareas(); track t.id) {\n  <app-tarjeta-tarea [tarea]=\"t\" />\n} @empty {\n  <p>No hay tareas.</p>\n}", "nota": "En código viejo: `*ngIf`, `*ngFor` con `trackBy`, `[ngSwitch]`." },
-        { "titulo": "@switch", "codigo": "@switch (tarea().estado) {\n  @case ('hecha') { <span>✓</span> }\n  @default { <span>…</span> }\n}" }
+        {
+          "titulo": "@if / @else",
+          "codigo": "@if (cargando()) {\n  <p>Cargando…</p>\n} @else if (error()) {\n  <p>Error: {{ error() }}</p>\n} @else {\n  <lista-tareas />\n}"
+        },
+        {
+          "titulo": "@for con track y @empty",
+          "codigo": "@for (t of tareas(); track t.id) {\n  <app-tarjeta-tarea [tarea]=\"t\" />\n} @empty {\n  <p>No hay tareas.</p>\n}",
+          "nota": "En código viejo: `*ngIf`, `*ngFor` con `trackBy`, `[ngSwitch]`."
+        },
+        {
+          "titulo": "@switch",
+          "codigo": "@switch (tarea().estado) {\n  @case ('hecha') { <span>✓</span> }\n  @default { <span>…</span> }\n}"
+        }
       ]
     },
     {
       "titulo": "Signals",
       "items": [
-        { "titulo": "signal, computed, effect", "codigo": "const tareas = signal<Tarea[]>([]);\nconst hechas = computed(() => tareas().filter(t => t.estado === 'hecha'));\n\ntareas.set([...]);\ntareas.update(lista => [...lista, nueva]);\n\neffect(() => localStorage.setItem('t', JSON.stringify(tareas())));", "nota": "Nunca mutes el array (`tareas().push(x)`): el signal no se entera. Siempre `update` con un array nuevo." },
-        { "titulo": "Signal ↔ Observable", "codigo": "const usuario = toSignal(this.http.get<Usuario>('/api/yo'));\nconst cambios$ = toObservable(filtro);" }
+        {
+          "titulo": "signal, computed, effect",
+          "codigo": "const tareas = signal<Tarea[]>([]);\nconst hechas = computed(() => tareas().filter(t => t.estado === 'hecha'));\n\ntareas.set([...]);\ntareas.update(lista => [...lista, nueva]);\n\neffect(() => localStorage.setItem('t', JSON.stringify(tareas())));",
+          "nota": "Nunca mutes el array (`tareas().push(x)`): el signal no se entera. Siempre `update` con un array nuevo."
+        },
+        {
+          "titulo": "Signal ↔ Observable",
+          "codigo": "const usuario = toSignal(this.http.get<Usuario>('/api/yo'));\nconst cambios$ = toObservable(filtro);"
+        }
       ]
     },
     {
       "titulo": "Servicios y DI",
       "items": [
-        { "titulo": "Servicio", "codigo": "@Injectable({ providedIn: 'root' })\nexport class TareasService {\n  private readonly http = inject(HttpClient);\n  listar() { return this.http.get<Tarea[]>(`${environment.api}/tareas`); }\n}" }
+        {
+          "titulo": "Servicio",
+          "codigo": "@Injectable({ providedIn: 'root' })\nexport class TareasService {\n  private readonly http = inject(HttpClient);\n  listar() { return this.http.get<Tarea[]>(`${environment.api}/tareas`); }\n}"
+        }
       ]
     },
     {
       "titulo": "Router",
       "items": [
-        { "titulo": "Rutas", "codigo": "export const routes: Routes = [\n  { path: '', component: ListaTareas },\n  { path: 'tareas/:id', component: DetalleTarea },\n  { path: 'nueva', canActivate: [authGuard],\n    loadComponent: () => import('./nueva-tarea').then(m => m.NuevaTarea) },\n  { path: '**', redirectTo: '' },\n];" },
-        { "titulo": "Parámetro como input", "codigo": "// app.config.ts\nprovideRouter(routes, withComponentInputBinding())\n\n// detalle-tarea.ts\nreadonly id = input.required<string>();" },
-        { "titulo": "Guard funcional", "codigo": "export const authGuard: CanActivateFn = () =>\n  inject(Auth).logueado() ? true : inject(Router).createUrlTree(['/login']);" }
+        {
+          "titulo": "Rutas",
+          "codigo": "export const routes: Routes = [\n  { path: '', component: ListaTareas },\n  { path: 'tareas/:id', component: DetalleTarea },\n  { path: 'nueva', canActivate: [authGuard],\n    loadComponent: () => import('./nueva-tarea').then(m => m.NuevaTarea) },\n  { path: '**', redirectTo: '' },\n];"
+        },
+        {
+          "titulo": "Parámetro como input",
+          "codigo": "// app.config.ts\nprovideRouter(routes, withComponentInputBinding())\n\n// detalle-tarea.ts\nreadonly id = input.required<string>();"
+        },
+        {
+          "titulo": "Guard funcional",
+          "codigo": "export const authGuard: CanActivateFn = () =>\n  inject(Auth).logueado() ? true : inject(Router).createUrlTree(['/login']);"
+        }
       ]
     },
     {
       "titulo": "HTTP",
       "items": [
-        { "titulo": "Configuración", "codigo": "provideHttpClient(withInterceptors([authInterceptor]))" },
-        { "titulo": "httpResource (Angular 20+)", "codigo": "readonly tareas = httpResource<Tarea[]>(() => `${api}/tareas?estado=${this.estado()}`);\n// tareas.value(), tareas.isLoading(), tareas.error(), tareas.reload()" },
-        { "titulo": "Interceptor funcional", "codigo": "export const authInterceptor: HttpInterceptorFn = (req, next) =>\n  next(req.clone({ setHeaders: { Authorization: `Bearer ${inject(Auth).token()}` } }));" },
-        { "titulo": "RxJS que más se usa", "codigo": "this.buscar$.pipe(\n  debounceTime(300),\n  switchMap(q => this.api.buscar(q)),\n  catchError(() => of([])),\n  takeUntilDestroyed(),\n).subscribe(r => this.resultados.set(r));" }
+        {
+          "titulo": "Configuración",
+          "codigo": "provideHttpClient(withInterceptors([authInterceptor]))"
+        },
+        {
+          "titulo": "httpResource (Angular 20+)",
+          "codigo": "readonly tareas = httpResource<Tarea[]>(() => `${api}/tareas?estado=${this.estado()}`);\n// tareas.value(), tareas.isLoading(), tareas.error(), tareas.reload()"
+        },
+        {
+          "titulo": "Interceptor funcional",
+          "codigo": "export const authInterceptor: HttpInterceptorFn = (req, next) =>\n  next(req.clone({ setHeaders: { Authorization: `Bearer ${inject(Auth).token()}` } }));"
+        },
+        {
+          "titulo": "RxJS que más se usa",
+          "codigo": "this.buscar$.pipe(\n  debounceTime(300),\n  switchMap(q => this.api.buscar(q)),\n  catchError(() => of([])),\n  takeUntilDestroyed(),\n).subscribe(r => this.resultados.set(r));"
+        }
       ]
     },
     {
       "titulo": "Formularios",
       "items": [
-        { "titulo": "Reactive Forms", "codigo": "private readonly fb = inject(NonNullableFormBuilder);\nform = this.fb.group({\n  titulo: ['', [Validators.required, Validators.minLength(3)]],\n  responsable: [''],\n});\n// template: <form [formGroup]=\"form\" (ngSubmit)=\"guardar()\">\n//           <input formControlName=\"titulo\" />" },
-        { "titulo": "Mostrar errores", "codigo": "@if (form.controls.titulo.touched && form.controls.titulo.hasError('required')) {\n  <small>El título es obligatorio</small>\n}" }
+        {
+          "titulo": "Reactive Forms",
+          "codigo": "private readonly fb = inject(NonNullableFormBuilder);\nform = this.fb.group({\n  titulo: ['', [Validators.required, Validators.minLength(3)]],\n  responsable: [''],\n});\n// template: <form [formGroup]=\"form\" (ngSubmit)=\"guardar()\">\n//           <input formControlName=\"titulo\" />"
+        },
+        {
+          "titulo": "Mostrar errores",
+          "codigo": "@if (form.controls.titulo.touched && form.controls.titulo.hasError('required')) {\n  <small>El título es obligatorio</small>\n}"
+        }
       ]
     },
     {
       "titulo": "Docker",
       "items": [
-        { "titulo": "Dockerfile multi-stage", "codigo": "FROM node:24-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npx ng build\n\nFROM nginx:alpine\nCOPY --from=build /app/dist/tablero/browser /usr/share/nginx/html\nCOPY nginx.conf /etc/nginx/conf.d/default.conf" },
-        { "titulo": "nginx para SPA", "codigo": "server {\n  listen 80;\n  root /usr/share/nginx/html;\n  location / { try_files $uri $uri/ /index.html; }\n}" }
+        {
+          "titulo": "Dockerfile multi-stage",
+          "codigo": "FROM node:24-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npx ng build\n\nFROM nginx:alpine\nCOPY --from=build /app/dist/tablero/browser /usr/share/nginx/html\nCOPY nginx.conf /etc/nginx/conf.d/default.conf"
+        },
+        {
+          "titulo": "nginx para SPA",
+          "codigo": "server {\n  listen 80;\n  root /usr/share/nginx/html;\n  location / { try_files $uri $uri/ /index.html; }\n}"
+        }
       ]
     }
   ]
