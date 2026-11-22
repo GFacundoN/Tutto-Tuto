@@ -1,0 +1,76 @@
+{
+  "id": "compose-dia-a-dia",
+  "titulo": "Compose en el día a día",
+  "minutos": 12,
+  "objetivo": "levantar, reconstruir, mirar y bajar el sistema con los comandos de Compose que se usan todos los días.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Con el `compose.yaml` en la carpeta, estos son los comandos de todos los días. Todos se corren **desde la carpeta del compose**:" },
+    { "tipo": "lista", "items": [
+      "`docker compose up -d`: crea y arranca todo en segundo plano. Si algo ya está corriendo y no cambió, lo deja como está.",
+      "`docker compose up -d --build`: reconstruye las imágenes de los servicios con `build:` antes de arrancar. **Usalo después de cambiar código**: sin `--build`, Compose reutiliza la imagen vieja.",
+      "`docker compose ps`: el estado de cada servicio (incluido *healthy*).",
+      "`docker compose logs -f api`: los logs de un servicio en vivo. Sin nombre, los de todos mezclados.",
+      "`docker compose exec db mysql -uroot -p`: un comando dentro de un servicio (ya tiene `-it` por defecto).",
+      "`docker compose restart api`: reinicia un servicio.",
+      "`docker compose down`: frena y borra contenedores y red. **Los volúmenes quedan.**",
+      "`docker compose down -v`: lo mismo, pero **borra también los volúmenes**: la base vuelve a cero."
+    ] },
+    { "tipo": "comando", "comando": "docker compose ps", "salida": "NAME             SERVICE   STATUS                    PORTS\ntareas-api-1     api       Up 2 minutes              0.0.0.0:8080->8080/tcp\ntareas-db-1      db        Up 2 minutes (healthy)    3306/tcp\ntareas-front-1   front     Up 2 minutes              0.0.0.0:4200->80/tcp" },
+    { "tipo": "nota", "variante": "error-comun", "md": "\"Cambié el código y no veo el cambio\": te faltó `--build`. `docker compose up -d` sin `--build` usa la imagen que ya estaba construida." },
+    { "tipo": "nota", "variante": "dato", "md": "Usá `down -v` a propósito: es la forma de \"resetear la base\" cuando cambiás el esquema o querés datos limpios. Pero no lo hagas por costumbre: vas a perder los datos de prueba." },
+    { "tipo": "nota", "variante": "dato", "md": "Compose arma los nombres como `carpeta-servicio-1` (`tareas-api-1`). Con los comandos de `docker compose` usás el nombre del **servicio** (`api`); con los de `docker` a secas, el del **contenedor** (`tareas-api-1`)." }
+  ],
+  "recursos": {
+    "video": { "id": "oR0nBx5C9DM", "titulo": "Comandos de Compose: up, ps, logs, exec y down (Curso Docker 12)", "canal": "Pabpereza", "inicio": 319, "fin": 442, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: docker compose (referencia CLI)", "url": "https://docs.docker.com/reference/cli/docker/compose/" },
+      { "titulo": "docs.docker.com: docker compose up", "url": "https://docs.docker.com/reference/cli/docker/compose/up/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Un día normal: cambiaste código de la API, la levantás, la revisás y al final apagás todo.",
+    "pasos": [
+      { "consigna": "Levantá todo en segundo plano, **reconstruyendo** las imágenes porque cambiaste código.", "soluciones": ["docker compose up -d --build"], "salida": "[+] Building 12.4s (18/18) FINISHED\n[+] Running 3/3\n ✔ Container tareas-db-1     Healthy\n ✔ Container tareas-api-1    Started\n ✔ Container tareas-front-1  Started" },
+      { "consigna": "Mirá el estado de los servicios.", "soluciones": ["docker compose ps"], "salida": "NAME           SERVICE   STATUS\ntareas-api-1   api       Up 10 seconds\ntareas-db-1    db        Up 40 seconds (healthy)\ntareas-front-1 front     Up 9 seconds" },
+      { "consigna": "Seguí en vivo los logs del servicio `api`.", "soluciones": ["docker compose logs -f api"], "salida": "api-1  | Started TareasApplication in 4.1 seconds\n^C" },
+      { "consigna": "Bajá todo **sin** borrar los datos de la base.", "soluciones": ["docker compose down"], "salida": "[+] Running 4/4\n ✔ Container tareas-front-1  Removed\n ✔ Container tareas-api-1    Removed\n ✔ Container tareas-db-1     Removed\n ✔ Network tareas_default    Removed" }
+    ],
+    "pistas": [
+      "Todos empiezan con `docker compose`. Para levantar es `up`, con `-d` para el segundo plano y `--build` para reconstruir.",
+      "Los logs en vivo llevan `-f` y el nombre del servicio. Para bajar es `down`; con `-v` borrarías los volúmenes, y acá no querés eso."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Con el compose de la lección anterior, cambiá un texto de la API, corré `docker compose up -d` (sin `--build`) y fijate que el cambio no aparece. Después corré con `--build`." }
+      ],
+      "resultadoEsperado": "Recién con --build se ve el cambio; docker compose down deja el volumen y los datos siguen al volver a levantar."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Cambiaste código de la API y corriste `docker compose up -d`. No ves el cambio. ¿Por qué?",
+      "opciones": [
+        { "texto": "Porque Compose reutilizó la imagen ya construida: faltó `--build`.", "correcta": true, "explicacion": "up solo construye si la imagen no existe, salvo que pidas --build." },
+        { "texto": "Porque Compose no soporta Spring Boot.", "correcta": false, "explicacion": "Soporta cualquier imagen." },
+        { "texto": "Porque hay que hacer down -v primero.", "correcta": false, "explicacion": "Eso borraría la base y no reconstruye nada." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué diferencia hay entre `docker compose down` y `docker compose down -v`?",
+      "opciones": [
+        { "texto": "Con -v también borra los volúmenes: la base pierde sus datos.", "correcta": true, "explicacion": "Sin -v, los volúmenes quedan y los datos vuelven al levantar." },
+        { "texto": "-v es modo verboso.", "correcta": false, "explicacion": "En down, -v es --volumes." },
+        { "texto": "Ninguna.", "correcta": false, "explicacion": "Una conserva los datos y la otra no." }
+      ]
+    },
+    {
+      "pregunta": "¿Desde dónde se corren los comandos `docker compose`?",
+      "opciones": [
+        { "texto": "Desde la carpeta donde está el compose.yaml (o indicándolo con -f).", "correcta": true, "explicacion": "Compose busca el archivo en la carpeta actual." },
+        { "texto": "Desde cualquier carpeta, encuentra el proyecto solo.", "correcta": false, "explicacion": "Busca en la carpeta actual (y sus padres), no en cualquier lado." },
+        { "texto": "Solo desde Docker Desktop.", "correcta": false, "explicacion": "Se usa desde cualquier terminal." }
+      ]
+    }
+  ]
+}

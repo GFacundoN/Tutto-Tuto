@@ -1,0 +1,77 @@
+{
+  "id": "compose-stack-completo",
+  "titulo": "Front, API y base con Compose",
+  "minutos": 14,
+  "objetivo": "armar el compose del sistema completo y hacer que la API espere a que la base esté lista.",
+  "explicacion": [
+    { "tipo": "texto", "md": "El proyecto típico del equipo tiene tres partes, cada una en su carpeta con su Dockerfile multi-stage:" },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "tareas/\n├── compose.yaml\n├── front/   (Angular → nginx)\n│   └── Dockerfile\n└── api/     (Spring Boot)\n    └── Dockerfile" },
+    { "tipo": "texto", "md": "Un problema clásico: Compose arranca la API y la base casi al mismo tiempo. MySQL tarda unos segundos en estar listo, la API intenta conectarse antes, falla y se cae. `depends_on` **solo** ordena el arranque; para que **espere a que la base responda**, la base declara un **healthcheck** y la API depende de ella con `condition: service_healthy`." },
+    { "tipo": "codigo", "lenguaje": "yaml", "archivo": "compose.yaml", "codigo": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: secreta\n      MYSQL_DATABASE: tareas\n    volumes:\n      - datos-mysql:/var/lib/mysql\n    healthcheck:\n      test: [\"CMD\", \"mysqladmin\", \"ping\", \"-h\", \"localhost\"]\n      interval: 5s\n      timeout: 3s\n      retries: 10\n      start_period: 20s\n\n  api:\n    build: ./api\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/tareas\n      SPRING_DATASOURCE_USERNAME: root\n      SPRING_DATASOURCE_PASSWORD: secreta\n    ports:\n      - \"8080:8080\"\n    depends_on:\n      db:\n        condition: service_healthy\n\n  front:\n    build: ./front\n    ports:\n      - \"4200:80\"\n    depends_on:\n      - api\n\nvolumes:\n  datos-mysql:" },
+    { "tipo": "lista", "items": [
+      "El **healthcheck** es un comando que Docker corre cada `interval` dentro del contenedor. Si sale bien, el contenedor pasa a *healthy*.",
+      "`start_period` le da tiempo a la base para inicializarse antes de contar los fallos.",
+      "La base **no publica puertos**: solo la usa la API, por la red interna. Si querés verla desde DBeaver, agregale `ports: [\"3306:3306\"]` solo en desarrollo.",
+      "El front publica el 80 de nginx en el **4200** de tu PC, como cuando hacías `ng serve`."
+    ] },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["semana"], "md": "¿Y cómo llama el front a la API? El navegador corre **en tu PC**, no en la red de Docker: para él, la API está en `http://localhost:8080`. Los nombres de servicio (`db`, `api`) solo sirven entre contenedores. Por eso la URL de la API en Angular apunta a localhost (o se resuelve con un proxy de nginx en producción)." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`Communications link failure` al arrancar la API: la base todavía no estaba lista. Revisá que tenga healthcheck y que el `depends_on` use `condition: service_healthy`, no solo el nombre." }
+  ],
+  "recursos": {
+    "video": { "id": "oR0nBx5C9DM", "titulo": "Ejemplo con base de datos, volúmenes y variables de entorno (Curso Docker 12)", "canal": "Pabpereza", "inicio": 559, "fin": 910, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Controlar el orden de arranque", "url": "https://docs.docker.com/compose/how-tos/startup-order/" },
+      { "titulo": "docs.docker.com: healthcheck en Compose", "url": "https://docs.docker.com/reference/compose-file/services/#healthcheck" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el compose para que la API arranque recién cuando la base está *healthy*, y la API encuentre a la base por su nombre.",
+    "lenguaje": "yaml",
+    "archivo": "compose.yaml",
+    "plantilla": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: secreta\n    {{0}}:\n      test: [\"CMD\", \"mysqladmin\", \"ping\", \"-h\", \"localhost\"]\n      interval: 5s\n      retries: 10\n\n  api:\n    build: ./api\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:mysql://{{1}}:3306/tareas\n    {{2}}:\n      db:\n        condition: {{3}}",
+    "huecos": [
+      { "respuestas": ["healthcheck"], "ancho": 11 },
+      { "respuestas": ["db"], "ancho": 4 },
+      { "respuestas": ["depends_on"], "ancho": 10 },
+      { "respuestas": ["service_healthy"], "ancho": 15 }
+    ],
+    "pistas": [
+      "La base declara cómo saber si está sana (*health check*). En la URL va el nombre del servicio de la base, no localhost.",
+      "La API *depende de* la base (`depends_on`), con la condición `service_healthy`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Agregá el healthcheck al servicio `db` de tu compose y corré `docker compose up -d`." },
+        { "tipo": "texto", "md": "Mirá `docker compose ps`: la columna STATUS de db pasa de `(health: starting)` a `(healthy)`, y recién ahí arranca la API." }
+      ],
+      "resultadoEsperado": "La API arranca sin errores de conexión, incluso la primera vez que se crea la base."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué garantiza `depends_on: [db]` (sin condición)?",
+      "opciones": [
+        { "texto": "Que el contenedor db se arranque antes, pero no que MySQL ya esté listo.", "correcta": true, "explicacion": "Para esperar a que responda hace falta healthcheck + condition: service_healthy." },
+        { "texto": "Que la base esté lista para recibir conexiones.", "correcta": false, "explicacion": "Solo ordena el arranque de los contenedores." },
+        { "texto": "Nada: es un comentario.", "correcta": false, "explicacion": "Sí ordena el arranque." }
+      ]
+    },
+    {
+      "pregunta": "En Angular, ¿qué URL usa el front (en el navegador) para llamar a la API publicada en el 8080?",
+      "opciones": [
+        { "texto": "http://localhost:8080, porque el navegador corre en tu PC, fuera de la red de Docker.", "correcta": true, "explicacion": "Los nombres de servicio solo existen dentro de la red de Compose." },
+        { "texto": "http://api:8080.", "correcta": false, "explicacion": "Tu navegador no conoce el DNS interno de Docker." },
+        { "texto": "http://db:3306.", "correcta": false, "explicacion": "Esa es la base, y tampoco es accesible desde el navegador." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué la base no tiene `ports:` en el compose del equipo?",
+      "opciones": [
+        { "texto": "Porque solo la usa la API, por la red interna; publicarla abriría un puerto innecesario.", "correcta": true, "explicacion": "Menos puertos abiertos, menos riesgo." },
+        { "texto": "Porque MySQL no usa puertos.", "correcta": false, "explicacion": "Usa el 3306 dentro del contenedor." },
+        { "texto": "Es un error: sin ports la API no conecta.", "correcta": false, "explicacion": "Entre servicios no hace falta publicar." }
+      ]
+    }
+  ]
+}

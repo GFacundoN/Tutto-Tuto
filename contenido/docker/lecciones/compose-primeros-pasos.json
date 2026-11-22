@@ -1,0 +1,77 @@
+{
+  "id": "compose-primeros-pasos",
+  "titulo": "Docker Compose: todo en un archivo",
+  "minutos": 13,
+  "objetivo": "describir varios contenedores en un compose.yaml y levantarlos con un solo comando.",
+  "explicacion": [
+    { "tipo": "texto", "md": "En la lección de redes levantaste la base y la API con dos `docker run` larguísimos, más una red. Imaginá eso con el front, la API, la base y un Redis: nadie se acuerda de todas las opciones. **Docker Compose** las escribe en un archivo, `compose.yaml`, que se sube a Git con el proyecto." },
+    { "tipo": "codigo", "lenguaje": "yaml", "archivo": "compose.yaml", "codigo": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: secreta\n      MYSQL_DATABASE: tareas\n    volumes:\n      - datos-mysql:/var/lib/mysql\n\n  api:\n    build: ./api\n    ports:\n      - \"8080:8080\"\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/tareas\n      SPRING_DATASOURCE_USERNAME: root\n      SPRING_DATASOURCE_PASSWORD: secreta\n\nvolumes:\n  datos-mysql:" },
+    { "tipo": "lista", "items": [
+      "`services`: cada servicio es un contenedor. **El nombre del servicio es su nombre en la red**: la API encuentra a la base como `db`.",
+      "`image`: la imagen a usar. O `build`: la carpeta con el Dockerfile para construirla.",
+      "`ports`, `environment` y `volumes` son lo mismo que `-p`, `-e` y `-v`.",
+      "Los volúmenes con nombre se declaran también abajo de todo, en `volumes:`.",
+      "Compose crea **solo** una red para el proyecto y conecta todos los servicios. No hace falta `docker network create`."
+    ] },
+    { "tipo": "comando", "comando": "docker compose up -d", "salida": "[+] Running 4/4\n ✔ Network tareas_default      Created\n ✔ Volume \"tareas_datos-mysql\" Created\n ✔ Container tareas-db-1       Started\n ✔ Container tareas-api-1      Started" },
+    { "tipo": "comando", "comando": "docker compose down", "salida": "[+] Running 3/3\n ✔ Container tareas-api-1  Removed\n ✔ Container tareas-db-1   Removed\n ✔ Network tareas_default  Removed" },
+    { "tipo": "nota", "variante": "error-comun", "md": "Se escribe `docker compose` (con espacio). `docker-compose` (con guion) es la versión 1, que ya no se mantiene. Y si ves `version: \"3.8\"` arriba de un compose viejo, sacalo: hoy es obsoleto y Compose avisa con un warning." },
+    { "tipo": "nota", "variante": "dato", "md": "YAML usa **espacios** para la jerarquía (no tabs) y es estricto: dos espacios por nivel. Los puertos van entre comillas (`\"8080:8080\"`) para que YAML no los interprete como otra cosa." }
+  ],
+  "recursos": {
+    "video": { "id": "oR0nBx5C9DM", "titulo": "Docker Compose: orquestar múltiples contenedores (Curso Docker 12)", "canal": "Pabpereza", "inicio": 21, "fin": 442, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Cómo funciona Compose", "url": "https://docs.docker.com/compose/intro/compose-application-model/" },
+      { "titulo": "docs.docker.com: Referencia de services", "url": "https://docs.docker.com/reference/compose-file/services/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el compose: la base usa la imagen `mysql:8.4`; la API se construye desde la carpeta `./api` y publica el **8080**.",
+    "lenguaje": "yaml",
+    "archivo": "compose.yaml",
+    "plantilla": "{{0}}:\n  db:\n    {{1}}: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: secreta\n\n  api:\n    {{2}}: ./api\n    ports:\n      - {{3}}",
+    "huecos": [
+      { "respuestas": ["services"], "ancho": 8 },
+      { "respuestas": ["image"], "ancho": 6 },
+      { "respuestas": ["build"], "ancho": 6 },
+      { "respuestas": ["\"8080:8080\"", "8080:8080"], "ancho": 11 }
+    ],
+    "pistas": [
+      "La clave de arriba de todo agrupa los contenedores (en inglés, *servicios*). Para usar una imagen hecha la clave es `image`; para construirla desde un Dockerfile, `build`.",
+      "Los puertos van como en `-p`: afuera:adentro, mejor entre comillas."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "En una carpeta nueva, creá `compose.yaml` solo con el servicio `db` de la explicación (y el volumen). Corré `docker compose up -d`, después `docker compose ps` y al final `docker compose down`." }
+      ],
+      "resultadoEsperado": "docker compose ps muestra el servicio db corriendo, y down lo borra junto con la red (el volumen queda)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "En Compose, ¿cómo encuentra la API a la base?",
+      "opciones": [
+        { "texto": "Por el nombre del servicio (`db`), porque Compose los pone en la misma red con DNS.", "correcta": true, "explicacion": "Por eso la URL es jdbc:mysql://db:3306/..." },
+        { "texto": "Por localhost.", "correcta": false, "explicacion": "Cada servicio es un contenedor distinto: localhost es el propio contenedor." },
+        { "texto": "Hay que crear una red a mano antes.", "correcta": false, "explicacion": "Compose crea una red por proyecto automáticamente." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué diferencia hay entre `image:` y `build:` en un servicio?",
+      "opciones": [
+        { "texto": "image usa una imagen ya existente; build la construye desde un Dockerfile.", "correcta": true, "explicacion": "Para tus servicios (api, front) se usa build; para la base, image." },
+        { "texto": "Son sinónimos.", "correcta": false, "explicacion": "Hacen cosas distintas." },
+        { "texto": "build descarga la imagen de Docker Hub.", "correcta": false, "explicacion": "Eso lo hace image (con pull)." }
+      ]
+    },
+    {
+      "pregunta": "Encontrás un compose con `version: \"3.8\"` en la primera línea. ¿Qué hacés?",
+      "opciones": [
+        { "texto": "Lo saco: es obsoleto y Compose solo da un warning.", "correcta": true, "explicacion": "Compose usa siempre la especificación actual, sin importar ese campo." },
+        { "texto": "Lo cambio a la versión 4.", "correcta": false, "explicacion": "No hay que poner ninguna versión." },
+        { "texto": "Lo dejo: sin él no arranca.", "correcta": false, "explicacion": "Arranca perfectamente sin él." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "redes",
+  "titulo": "Redes: contenedores que se hablan por nombre",
+  "minutos": 12,
+  "objetivo": "crear una red y conectar la API con la base usando el nombre del contenedor.",
+  "explicacion": [
+    { "tipo": "texto", "md": "La API corre en un contenedor y la base en otro. ¿Cómo se encuentran? **No con `localhost`**: dentro de un contenedor, `localhost` es el propio contenedor. Si la API busca la base en `localhost:3306`, busca adentro de sí misma y no encuentra nada." },
+    { "tipo": "texto", "md": "La solución es una **red** creada por vos. Los contenedores que están en la misma red se ven entre sí y Docker les da un **DNS**: cada uno se puede encontrar **por su nombre**." },
+    { "tipo": "comando", "comando": "docker network create tareas-red", "salida": "4e5f6a7b8c9d..." },
+    { "tipo": "comando", "comando": "docker run -d --name db --network tareas-red -e MYSQL_ROOT_PASSWORD=secreta -e MYSQL_DATABASE=tareas mysql:8.4", "salida": "..." },
+    { "tipo": "comando", "comando": "docker run -d --name api --network tareas-red -p 8080:8080 -e SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/tareas tareas-api:2.0", "salida": "..." },
+    { "tipo": "texto", "md": "Fijate la URL: `jdbc:mysql://db:3306/tareas`. Ese **`db`** es el nombre del contenedor de la base, y Docker lo resuelve a su IP dentro de la red. La base **no necesita** `-p`: solo la API le habla, y lo hace por la red interna." },
+    { "tipo": "lista", "items": [
+      "`docker network ls`: lista las redes (vas a ver `bridge`, `host` y `none`, que vienen de fábrica).",
+      "`docker network inspect tareas-red`: qué contenedores están conectados y con qué IP.",
+      "`docker network connect tareas-red web`: conecta un contenedor que ya existe.",
+      "`docker network rm tareas-red`: la borra (sin contenedores conectados)."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "La red `bridge` que viene por defecto **no tiene DNS por nombre**: si corrés los dos contenedores sin `--network`, la API no encuentra `db`. Creá siempre tu propia red (Compose lo hace solo, como vas a ver)." },
+    { "tipo": "nota", "variante": "dato", "md": "Cada puerto publicado con `-p` es una puerta abierta en tu PC (o en el servidor). Publicá solo lo que se usa desde afuera: el front y, si hace falta, la API. La base, por la red interna." }
+  ],
+  "recursos": {
+    "video": { "id": "lQoh9gaEvvc", "titulo": "Redes y segregación de red con docker network (Curso Docker 11)", "canal": "Pabpereza", "inicio": 60, "fin": 437, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Redes en Docker", "url": "https://docs.docker.com/engine/network/" },
+      { "titulo": "docs.docker.com: Redes bridge", "url": "https://docs.docker.com/engine/network/drivers/bridge/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Conectá la API con la base por una red propia.",
+    "pasos": [
+      { "consigna": "Creá una red llamada `tareas-red`.", "soluciones": ["docker network create tareas-red"], "salida": "4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f" },
+      { "consigna": "Corré `mysql:8.4` en segundo plano, llamado `db`, en la red `tareas-red`, con `MYSQL_ROOT_PASSWORD=secreta`.", "soluciones": ["docker run -d --name db --network tareas-red -e MYSQL_ROOT_PASSWORD=secreta mysql:8.4"], "salida": "9a8b7c6d5e4f..." },
+      { "consigna": "Conectá a esa red el contenedor `api`, que ya existe.", "soluciones": ["docker network connect tareas-red api"], "salida": "" },
+      { "consigna": "Inspeccioná `tareas-red` para ver los dos contenedores conectados.", "soluciones": ["docker network inspect tareas-red"], "salida": "\"Containers\": {\n  \"9a8b…\": { \"Name\": \"db\", \"IPv4Address\": \"172.19.0.2/16\" },\n  \"3c4d…\": { \"Name\": \"api\", \"IPv4Address\": \"172.19.0.3/16\" }\n}" }
+    ],
+    "pistas": [
+      "Las redes tienen su grupo de comandos: `docker network create`, `connect`, `inspect`. En `docker run`, la red se elige con `--network`.",
+      "`docker network connect` recibe primero la red y después el contenedor."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Creá la red y corré dos contenedores en ella: `docker run -d --name web --network tareas-red nginx:alpine` y `docker run --rm --network tareas-red alpine wget -qO- http://web`." },
+        { "tipo": "texto", "md": "Repetí el segundo comando sin `--network tareas-red` y compará." }
+      ],
+      "resultadoEsperado": "Con la red, alpine descarga la página de nginx usando el nombre web; sin la red, dice bad address 'web'."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "La API en un contenedor tiene `jdbc:mysql://localhost:3306/tareas` y no conecta a la base, que está en otro contenedor. ¿Por qué?",
+      "opciones": [
+        { "texto": "Dentro del contenedor, localhost es el propio contenedor de la API, no la base.", "correcta": true, "explicacion": "Hay que usar el nombre del contenedor de la base (db) en una red compartida." },
+        { "texto": "Porque MySQL no acepta conexiones de Java.", "correcta": false, "explicacion": "Acepta; el problema es la dirección." },
+        { "texto": "Porque falta EXPOSE 3306.", "correcta": false, "explicacion": "EXPOSE no cambia la conectividad." }
+      ]
+    },
+    {
+      "pregunta": "¿La base necesita `-p 3306:3306` para que la API se conecte por la red?",
+      "opciones": [
+        { "texto": "No: dentro de la red se hablan directo. -p solo hace falta para conectarte desde tu PC.", "correcta": true, "explicacion": "Publicar de más es abrir puertas innecesarias." },
+        { "texto": "Sí, siempre.", "correcta": false, "explicacion": "-p es para acceder desde afuera de Docker." },
+        { "texto": "Solo si la red es bridge.", "correcta": false, "explicacion": "En ninguna red propia hace falta para la comunicación interna." }
+      ]
+    },
+    {
+      "pregunta": "Corrés api y db sin `--network`. ¿Puede la API usar el nombre `db`?",
+      "opciones": [
+        { "texto": "No: la red bridge por defecto no resuelve nombres de contenedores.", "correcta": true, "explicacion": "El DNS por nombre funciona en redes que creás vos (y en las de Compose)." },
+        { "texto": "Sí, siempre.", "correcta": false, "explicacion": "Solo en redes definidas por el usuario." },
+        { "texto": "Solo si los dos usan la misma imagen.", "correcta": false, "explicacion": "La imagen no tiene que ver." }
+      ]
+    }
+  ]
+}

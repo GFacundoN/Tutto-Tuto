@@ -1,0 +1,77 @@
+{
+  "id": "volumenes",
+  "titulo": "Volúmenes: que los datos no se pierdan",
+  "minutos": 13,
+  "objetivo": "guardar los datos de una base en un volumen y montar carpetas de tu PC en un contenedor.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Todo lo que un contenedor escribe queda **dentro del contenedor**. Si lo borrás (o lo recreás para actualizar la imagen), los datos se van con él. Para una base de datos eso es inaceptable." },
+    { "tipo": "texto", "md": "Un **volumen** es un espacio de almacenamiento que maneja Docker, **fuera** de cualquier contenedor. Lo montás en una carpeta del contenedor y lo que se escribe ahí sobrevive aunque borres el contenedor." },
+    { "tipo": "comando", "comando": "docker volume create datos-mysql", "salida": "datos-mysql" },
+    { "tipo": "comando", "comando": "docker run -d --name db -e MYSQL_ROOT_PASSWORD=secreta -v datos-mysql:/var/lib/mysql mysql:8.4", "salida": "8b9c0d1e2f3a..." },
+    { "tipo": "texto", "md": "`-v volumen:/ruta/adentro` monta el volumen `datos-mysql` en `/var/lib/mysql`, donde MySQL guarda todo. Ahora podés hacer `docker rm -f db`, volver a correr el mismo comando, y las tablas siguen ahí." },
+    { "tipo": "lista", "items": [
+      "`docker volume ls`: lista los volúmenes.",
+      "`docker volume inspect datos-mysql`: muestra dónde está y cuándo se creó.",
+      "`docker volume rm datos-mysql`: lo borra (y con él, **los datos**). Tiene que no estar en uso.",
+      "Si usás `-v datos-mysql:/var/lib/mysql` sin haberlo creado, Docker lo crea solo."
+    ] },
+    { "tipo": "texto", "md": "El otro tipo de montaje es el **bind mount**: en vez de un volumen, montás **una carpeta de tu PC**. Se nota porque a la izquierda va una ruta, no un nombre. Sirve para pasarle archivos de configuración o para desarrollo, cuando querés que el contenedor vea tus cambios al instante:" },
+    { "tipo": "comando", "comando": "docker run -d -p 8080:80 -v ./sitio:/usr/share/nginx/html nginx:alpine", "salida": "nginx sirve los archivos de tu carpeta sitio/" },
+    { "tipo": "nota", "variante": "dato", "md": "Regla práctica: **volúmenes** para datos que produce la app (bases de datos, archivos subidos); **bind mounts** para archivos tuyos que el contenedor tiene que leer (configuración, código en desarrollo)." },
+    { "tipo": "nota", "variante": "error-comun", "md": "En Windows, los bind mounts de carpetas de `C:\\Users\\...` son lentos y a veces no detectan cambios. Si el proyecto vive dentro de WSL (`\\\\wsl$\\...`), anda mucho mejor." }
+  ],
+  "recursos": {
+    "video": { "id": "APgKgrcibvs", "titulo": "Volúmenes, montaje de archivos y backups en Docker (Curso Docker 10)", "canal": "Pabpereza", "inicio": 42, "fin": 521, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Persistir datos de un contenedor", "url": "https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/" },
+      { "titulo": "docs.docker.com: Volúmenes", "url": "https://docs.docker.com/engine/storage/volumes/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Comprobá que los datos de MySQL sobreviven al borrar el contenedor.",
+    "pasos": [
+      { "consigna": "Creá un volumen llamado `datos-mysql`.", "soluciones": ["docker volume create datos-mysql"], "salida": "datos-mysql" },
+      { "consigna": "Corré `mysql:8.4` en segundo plano, llamado `db`, con `MYSQL_ROOT_PASSWORD=secreta` y el volumen montado en `/var/lib/mysql`.", "soluciones": ["docker run -d --name db -e MYSQL_ROOT_PASSWORD=secreta -v datos-mysql:/var/lib/mysql mysql:8.4"], "salida": "8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c" },
+      { "consigna": "(Creaste tablas…) Ahora borrá el contenedor `db` a la fuerza, aunque esté corriendo.", "soluciones": ["docker rm -f db"], "salida": "db" },
+      { "consigna": "Listá los volúmenes: `datos-mysql` tiene que seguir ahí.", "soluciones": ["docker volume ls"], "salida": "DRIVER    VOLUME NAME\nlocal     datos-mysql" }
+    ],
+    "pistas": [
+      "Los volúmenes tienen su grupo de comandos: `docker volume create`, `docker volume ls`. Para montarlo en run: `-v nombre:/ruta`.",
+      "Borrar a la fuerza es `docker rm` con `-f`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Hacé los pasos de verdad. Antes de borrar, creá una tabla: `docker exec -it db mysql -uroot -psecreta -e \"CREATE DATABASE prueba\"`." },
+        { "tipo": "texto", "md": "Después de borrar, volvé a correr el mismo `docker run` con el volumen y listá las bases: `docker exec -it db mysql -uroot -psecreta -e \"SHOW DATABASES\"`." }
+      ],
+      "resultadoEsperado": "La base prueba sigue existiendo en el contenedor nuevo."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Corriste MySQL sin volumen, cargaste datos y borraste el contenedor. ¿Qué pasó con los datos?",
+      "opciones": [
+        { "texto": "Se perdieron: estaban dentro del contenedor.", "correcta": true, "explicacion": "Sin volumen, los datos viven y mueren con el contenedor." },
+        { "texto": "Siguen en la imagen mysql:8.4.", "correcta": false, "explicacion": "La imagen es de solo lectura; nunca guarda lo que escribe un contenedor." },
+        { "texto": "Docker los guarda en un volumen automático para siempre.", "correcta": false, "explicacion": "Hay volúmenes anónimos, pero no los vas a reutilizar sin saberlo: en la práctica, se pierden." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué es `-v ./config:/etc/app`?",
+      "opciones": [
+        { "texto": "Un bind mount: la carpeta config de tu PC aparece en /etc/app del contenedor.", "correcta": true, "explicacion": "Una ruta a la izquierda indica carpeta de tu PC." },
+        { "texto": "Un volumen llamado config.", "correcta": false, "explicacion": "Un volumen se nombra sin ./ ni barras." },
+        { "texto": "Una copia de /etc/app a tu PC.", "correcta": false, "explicacion": "Es al revés y además es un montaje, no una copia." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué pasa con los datos si corrés `docker volume rm datos-mysql`?",
+      "opciones": [
+        { "texto": "Se borran: el volumen es donde estaban.", "correcta": true, "explicacion": "Borrar el volumen es borrar los datos. Hacelo solo a propósito." },
+        { "texto": "Nada, quedan en el contenedor.", "correcta": false, "explicacion": "El contenedor los leía del volumen." },
+        { "texto": "Se mueven a otro volumen.", "correcta": false, "explicacion": "No hay movimiento automático." }
+      ]
+    }
+  ]
+}

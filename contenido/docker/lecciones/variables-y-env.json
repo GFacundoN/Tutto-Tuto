@@ -1,0 +1,76 @@
+{
+  "id": "variables-y-env",
+  "titulo": "Variables y secretos con .env",
+  "minutos": 11,
+  "objetivo": "sacar contraseñas y configuración del compose a un archivo .env que no se sube a Git.",
+  "explicacion": [
+    { "tipo": "texto", "md": "El compose se sube a Git. Si tiene `MYSQL_ROOT_PASSWORD: secreta` escrito, la contraseña queda en el historial para siempre. Además, cada compañero o entorno puede necesitar valores distintos." },
+    { "tipo": "texto", "md": "Compose lee automáticamente un archivo **`.env`** que esté al lado del `compose.yaml`, y reemplaza cada `${VARIABLE}` por su valor:" },
+    { "tipo": "codigo", "lenguaje": "text", "archivo": ".env", "codigo": "MYSQL_ROOT_PASSWORD=una-clave-larga\nMYSQL_DATABASE=tareas\nAPI_PUERTO=8080" },
+    { "tipo": "codigo", "lenguaje": "yaml", "archivo": "compose.yaml", "codigo": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}\n      MYSQL_DATABASE: ${MYSQL_DATABASE}\n\n  api:\n    build: ./api\n    ports:\n      - \"${API_PUERTO:-8080}:8080\"\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}\n      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}" },
+    { "tipo": "lista", "items": [
+      "`${VARIABLE}`: se reemplaza por el valor del `.env` (o de una variable de entorno de tu terminal, que tiene prioridad).",
+      "`${API_PUERTO:-8080}`: si no está definida, usa `8080`. Útil para valores con un default razonable.",
+      "`.env` va en el **`.gitignore`**. Al repo se sube un **`.env.example`** con las mismas claves y valores de mentira, para que cada uno sepa qué completar.",
+      "Si un servicio necesita muchas variables, `env_file: .env.api` se las pasa todas de una al contenedor."
+    ] },
+    { "tipo": "comando", "comando": "docker compose config", "salida": "services:\n  db:\n    environment:\n      MYSQL_DATABASE: tareas\n      MYSQL_ROOT_PASSWORD: una-clave-larga\n..." },
+    { "tipo": "texto", "md": "`docker compose config` muestra el compose **ya resuelto**, con las variables reemplazadas. Es la forma de comprobar que el `.env` se está leyendo." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`WARN The \"MYSQL_ROOT_PASSWORD\" variable is not set. Defaulting to a blank string.`: Compose no encontró la variable. Revisá que el archivo se llame exactamente `.env` (no `.env.txt`, cuidado con el Bloc de notas) y que esté en la carpeta del compose." }
+  ],
+  "recursos": {
+    "video": { "id": "hXh_ej-hsMg", "titulo": "Configuraciones y variables de entorno al dockerizar una app (Curso Docker 14)", "canal": "Pabpereza", "inicio": 309, "fin": 704, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Variables en Compose", "url": "https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/" },
+      { "titulo": "docs.docker.com: Setear variables de entorno en contenedores", "url": "https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el compose para que la contraseña salga del `.env` y el puerto use `8080` si `API_PUERTO` no está definido.",
+    "lenguaje": "yaml",
+    "archivo": "compose.yaml",
+    "plantilla": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: {{0}}\n\n  api:\n    build: ./api\n    ports:\n      - \"{{1}}:8080\"",
+    "huecos": [
+      { "respuestas": ["${MYSQL_ROOT_PASSWORD}"], "ancho": 22 },
+      { "respuestas": ["${API_PUERTO:-8080}"], "ancho": 19 }
+    ],
+    "pistas": [
+      "Una variable se usa como `${NOMBRE}`, con el nombre exacto que tiene en el `.env`.",
+      "El valor por defecto va adentro de las llaves después de `:-`, por ejemplo `${X:-valor}`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Creá el `.env` y pasá tu compose a usar variables. Corré `docker compose config` y fijate que aparezcan los valores." },
+        { "tipo": "texto", "md": "Agregá `.env` al `.gitignore` y creá un `.env.example` sin las contraseñas reales." }
+      ],
+      "resultadoEsperado": "docker compose config muestra los valores del .env y git status no lista el archivo .env."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué archivo se sube a Git?",
+      "opciones": [
+        { "texto": "El `.env.example`, con las claves y valores de mentira; el `.env` real no.", "correcta": true, "explicacion": "Así nadie filtra contraseñas y todos saben qué variables completar." },
+        { "texto": "El `.env`, para que todos tengan las contraseñas.", "correcta": false, "explicacion": "Las contraseñas quedarían en el historial de Git para siempre." },
+        { "texto": "Ninguno de los dos.", "correcta": false, "explicacion": "El .env.example es muy útil para el equipo." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué devuelve `${API_PUERTO:-8080}` si `API_PUERTO` no está definida?",
+      "opciones": [
+        { "texto": "8080.", "correcta": true, "explicacion": ":- define el valor por defecto." },
+        { "texto": "Un error.", "correcta": false, "explicacion": "Para que falle se usa :? en vez de :-." },
+        { "texto": "Un texto vacío.", "correcta": false, "explicacion": "Eso pasa con ${API_PUERTO} sin default." }
+      ]
+    },
+    {
+      "pregunta": "¿Cómo comprobás que Compose leyó bien el `.env`?",
+      "opciones": [
+        { "texto": "Con `docker compose config`, que muestra el compose con las variables ya reemplazadas.", "correcta": true, "explicacion": "Es la forma rápida de ver lo que Compose realmente va a usar." },
+        { "texto": "Abriendo el .env en el editor.", "correcta": false, "explicacion": "Eso muestra el archivo, no si Compose lo leyó." },
+        { "texto": "Con docker ps.", "correcta": false, "explicacion": "ps lista contenedores, no muestra la configuración." }
+      ]
+    }
+  ]
+}
