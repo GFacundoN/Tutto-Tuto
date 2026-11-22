@@ -20,7 +20,7 @@
     "video": { "id": "ipdC8xo_o3c", "titulo": "Servicios en Angular", "canal": "Fernando Herrera", "inicio": 0, "fin": 560, "idioma": "es" },
     "docs": [
       { "titulo": "angular.dev: Inyección de dependencias (Essentials)", "url": "https://angular.dev/essentials/dependency-injection" },
-      { "titulo": "angular.dev: Crear un servicio inyectable", "url": "https://angular.dev/guide/di/creating-injectable-service" }
+      { "titulo": "angular.dev: Crear y usar servicios", "url": "https://angular.dev/guide/di/creating-and-using-services" }
     ]
   },
   "ejercicio": {
