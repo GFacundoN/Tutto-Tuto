@@ -1,16 +1,40 @@
 :host {
   display: block;
-  padding-top: 20px;
+  padding-top: 28px;
 }
 
-.cabecera {
-  margin-bottom: 24px;
+.disposicion {
+  display: grid;
+  gap: 24px;
+  align-items: start;
 }
+@media (min-width: 960px) {
+  .disposicion {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 48px;
+  }
+  .lateral {
+    position: sticky;
+    top: 84px;
+  }
+}
+.principal {
+  min-width: 0;
+  max-width: 820px;
+}
+
+/* Barra lateral del módulo */
 .volver {
   display: inline-flex;
   align-items: center;
+  gap: 10px;
   min-height: 44px;
   font-weight: 600;
+  text-decoration: none;
+  color: var(--tinta-suave);
+}
+.volver:hover {
+  color: var(--tinta);
 }
 .volver::before {
   content: '';
@@ -19,94 +43,152 @@
   border-left: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   rotate: 45deg;
-  margin-right: 10px;
 }
-.meta {
-  margin: 4px 0 2px;
-  font-size: 0.9rem;
-}
-
-/* Pasos: una mini línea de subte horizontal. */
-.pasos {
-  list-style: none;
-  padding: 0;
-  margin: 16px 0 0;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  counter-reset: paso;
-}
-.pasos li {
-  position: relative;
-  counter-increment: paso;
-  padding-top: 26px;
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
-  text-align: center;
-}
-.pasos li::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--borde);
-}
-.pasos li::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 50%;
-  translate: -50%;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
+.modulo {
+  margin-top: 8px;
   background: var(--superficie);
-  border: 3px solid var(--borde);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  overflow: hidden;
 }
-.pasos li.hecho::before,
-.pasos li.actual::before {
-  background: var(--linea);
+.modulo summary {
+  display: grid;
+  gap: 2px;
+  padding: 16px;
+  cursor: pointer;
+  list-style: none;
+  border-bottom: 1px solid var(--borde);
 }
-.pasos li.hecho::after {
-  background: var(--linea);
-  border-color: var(--linea);
+.modulo summary::-webkit-details-marker {
+  display: none;
 }
-.pasos li.actual::after {
-  border-color: var(--linea);
-}
-.pasos li.actual {
-  color: var(--tinta);
+.modulo-titulo {
   font-weight: 700;
 }
-.pasos button {
-  background: none;
-  border: 0;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  min-height: 32px;
+.lista-lecciones {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+}
+.lista-lecciones li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+.lista-lecciones li.activa {
+  background: var(--acento-suave);
+}
+.lista-lecciones a,
+.lista-lecciones .bloqueada {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+}
+.lista-lecciones li.activa a {
+  font-weight: 700;
+  color: var(--acento);
+}
+.lista-lecciones .bloqueada {
+  color: var(--tinta-suave);
+}
+.lista-lecciones .marca {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--borde-control);
+}
+.lista-lecciones li.hecha .marca {
+  background: var(--exito);
+  border-color: var(--exito);
+  color: var(--fondo);
+}
+.lista-lecciones li.activa .marca {
+  border-color: var(--acento);
 }
 
+/* Cabecera de la lección */
+.cabecera h1 {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  margin: 6px 0 20px;
+}
+
+/* Pestañas */
+.pasos {
+  list-style: none;
+  margin: 0 0 24px;
+  padding: 0;
+  display: flex;
+  gap: 4px;
+  box-shadow: inset 0 -1px 0 var(--borde);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.pasos li {
+  display: flex;
+}
+.pasos li > * {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  font: 600 0.95rem var(--fuente-texto);
+  color: var(--tinta-suave);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.pasos li.hecho > *::before {
+  content: '✓';
+  color: var(--exito);
+}
+.pasos button {
+  cursor: pointer;
+}
+.pasos button:hover {
+  color: var(--tinta);
+}
+.pasos li.actual > * {
+  color: var(--tinta);
+  border-bottom-color: var(--acento);
+}
+
+/* Contenido del paso */
 .paso {
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio);
-  padding: clamp(16px, 4vw, 28px);
+  box-shadow: var(--sombra);
+  padding: clamp(20px, 4vw, 36px);
 }
 .paso h2:focus {
   outline: none;
 }
 .objetivo {
-  font-size: var(--t-2);
-  border-left: 4px solid var(--linea);
-  padding-left: 12px;
-  margin-bottom: 16px;
+  display: grid;
+  gap: 6px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.45;
+  background: var(--acento-suave);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 24px;
 }
 .docs-titulo {
-  margin-top: 20px;
+  margin-top: 24px;
+  font-size: 1rem;
 }
 .docs {
   padding-left: 1.2em;
@@ -127,6 +209,7 @@
   align-items: center;
 }
 
+/* Barra de navegación inferior */
 .pie {
   position: sticky;
   bottom: 0;
@@ -134,15 +217,22 @@
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, var(--fondo) 30%);
+  padding: 16px 0 calc(16px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--fondo) 35%);
   margin-top: 8px;
+}
+.pie .boton-secundario {
+  margin-right: auto;
 }
 .pista-avance {
   margin: 0;
   font-size: 0.9rem;
 }
 
+/* Estados */
+.cargando {
+  padding: 48px 0;
+}
 .aviso,
 .fin {
   text-align: center;
@@ -156,7 +246,7 @@
   height: 72px;
   margin: 0 auto 16px;
   border-radius: 50%;
-  background: var(--linea);
+  background: var(--exito);
   position: relative;
   animation: sello 420ms var(--ease-salida) both;
 }
@@ -164,11 +254,11 @@
   content: '';
   position: absolute;
   left: 25px;
-  top: 18px;
+  top: 16px;
   width: 16px;
   height: 30px;
-  border-right: 5px solid var(--linea-tinta);
-  border-bottom: 5px solid var(--linea-tinta);
+  border-right: 5px solid var(--fondo);
+  border-bottom: 5px solid var(--fondo);
   rotate: 45deg;
 }
 @keyframes sello {
@@ -185,4 +275,13 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
+}
+
+@media (max-width: 959px) {
+  .modulo:not([open]) summary {
+    border-bottom: 0;
+  }
+  .pista-avance {
+    display: none;
+  }
 }

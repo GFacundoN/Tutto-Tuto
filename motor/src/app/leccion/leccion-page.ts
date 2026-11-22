@@ -13,12 +13,13 @@ import { ResultadoEjercicio } from '../ejercicios/resultado';
 import { Pregunta } from '../quiz/pregunta/pregunta';
 import { Bloques } from '../shared/bloques/bloques';
 import { VideoYoutube } from '../shared/video-youtube/video-youtube';
+import { TitulosLecciones } from '../core/contenido/titulos-lecciones';
 
 /** Los pasos de toda lección, en orden. */
 export const PASOS = [
-  { id: 'aprender', titulo: 'Aprender' },
-  { id: 'ver', titulo: 'Ver' },
-  { id: 'practicar', titulo: 'Practicar' },
+  { id: 'aprender', titulo: 'Lectura' },
+  { id: 'ver', titulo: 'Video' },
+  { id: 'practicar', titulo: 'Práctica' },
   { id: 'quiz', titulo: 'Quiz' },
 ] as const;
 
@@ -64,6 +65,28 @@ export class LeccionPage {
   );
   protected readonly yaCompletada = computed(() => this.progreso.completadas().has(this.leccionId()));
   protected readonly siguiente = computed(() => this.orden()[this.posicion() + 1] ?? null);
+
+  /** Módulo (nivel) que contiene esta lección, con el estado de cada lección para la barra lateral. */
+  private readonly titulos = inject(TitulosLecciones).titulos;
+  protected readonly modulo = computed(() => {
+    const niveles = this.cursoActual.version()?.niveles ?? [];
+    const indice = niveles.findIndex((n) => n.lecciones.includes(this.leccionId()));
+    if (indice === -1) return null;
+    const hechas = this.progreso.completadas();
+    const lecciones = niveles[indice].lecciones.map((id) => ({
+      id,
+      titulo: this.titulos()[id]?.titulo ?? id,
+      minutos: this.titulos()[id]?.minutos,
+      hecha: hechas.has(id),
+      disponible: hechas.has(id) || estaDesbloqueada(this.orden(), id, hechas),
+    }));
+    return { numero: indice + 1, titulo: niveles[indice].titulo, lecciones };
+  });
+  /** En celular la lista del módulo arranca cerrada para que la lección quede arriba. */
+  protected readonly pantallaAncha = matchMedia('(min-width: 960px)').matches;
+  protected readonly numeroEnModulo = computed(
+    () => (this.modulo()?.lecciones.findIndex((l) => l.id === this.leccionId()) ?? -1) + 1,
+  );
 
   // Estado del recorrido por la lección. linkedSignal: vuelve a 0 al cambiar de lección.
   protected readonly paso = linkedSignal({ source: this.leccionId, computation: () => 0 });
