@@ -1,7 +1,8 @@
 :host {
   display: block;
-  --panel-fondo: var(--superficie-2);
-  --panel-activo: #3b30c4;
+  /* Tarjetas casi negras: el color lo ponen los focos de luz, no el fondo. */
+  --panel-fondo: #0b0d1f;
+  --panel-activo: #0c0e26;
   --panel-tinta-activa: #ffffff;
   --curva: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -63,11 +64,11 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  /* Focos de luz: violeta fuerte abajo a la derecha, índigo tenue arriba a la izquierda. */
   background:
-    radial-gradient(70% 60% at 100% 100%, rgb(168 85 247 / 0.55), transparent 70%),
-    radial-gradient(60% 50% at 0% 0%, rgb(129 140 248 / 0.35), transparent 70%),
-    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 32px),
-    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 32px);
+    radial-gradient(55% 45% at 100% 100%, rgb(139 92 246 / 0.75), transparent 72%),
+    radial-gradient(35% 30% at 92% 96%, rgb(196 181 253 / 0.35), transparent 70%),
+    radial-gradient(45% 35% at 0% 0%, rgb(79 70 229 / 0.28), transparent 72%);
   opacity: 0;
   transition: opacity 0.35s var(--curva);
 }
@@ -107,6 +108,15 @@
   margin: 0;
   color: var(--tinta-suave);
   font-size: 0.95rem;
+  line-height: 1.55;
+}
+.meta {
+  margin: -4px 0 0;
+  font: 500 0.78rem var(--fuente-codigo);
+  color: var(--tinta-suave);
+}
+.panel.activo .meta {
+  color: rgb(255 255 255 / 0.75);
 }
 .usas {
   display: flex;
@@ -119,7 +129,8 @@
   padding: 3px 10px;
   border-radius: 8px;
   font: 500 0.78rem var(--fuente-codigo);
-  background: rgb(255 255 255 / 0.15);
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.12);
 }
 .logros {
   list-style: none;
@@ -203,7 +214,7 @@
   .pista {
     align-items: flex-end;
     gap: 8px;
-    height: 440px;
+    height: 540px;
   }
   .panel {
     flex: 1 1 0;
@@ -223,7 +234,7 @@
   .panel.activo {
     flex-grow: 2.9;
     background-color: var(--panel-activo);
-    border-color: transparent;
+    border-color: rgb(139 92 246 / 0.35);
     color: var(--panel-tinta-activa);
   }
   .panel.activo::before {
@@ -234,6 +245,7 @@
   }
   /* El detalle se oculta rápido al cerrar y aparece con retraso al abrir. */
   .desc,
+  .meta,
   .usas,
   .logros,
   .pie {
@@ -245,9 +257,10 @@
   }
   /* Mientras está cerrada, el detalle no puede achicar la tarjeta ni desbordar. */
   .panel:not(.activo) .interior > :not(.titulo) {
-    width: 320px;
+    width: 400px;
   }
   .panel.activo .desc,
+  .panel.activo .meta,
   .panel.activo .usas,
   .panel.activo .logros,
   .panel.activo .pie {
@@ -278,7 +291,7 @@
     padding: 24px;
     background-color: var(--panel-activo);
     color: var(--panel-tinta-activa);
-    border-color: transparent;
+    border-color: rgb(139 92 246 / 0.3);
   }
   .panel::before {
     opacity: 1;

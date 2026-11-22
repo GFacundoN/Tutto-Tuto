@@ -2,8 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { map, switchMap } from 'rxjs';
+import { ContenidoCursos } from '../../core/contenido/contenido-cursos';
 import { Curso, Destacado } from '../../core/contenido/modelos';
+
+/** Tarjeta lista para mostrar: el destacado más los datos calculados de sus módulos. */
+interface Tarjeta extends Destacado {
+  /** Ej. "Módulos 2, 3 y 4" */
+  rotulo: string;
+  lecciones: number;
+  minutos: number;
+}
 
 /**
  * Paneles expandibles (estilo "expanding panels"):
@@ -22,21 +31,34 @@ import { Curso, Destacado } from '../../core/contenido/modelos';
 export class PanelesModulos {
   readonly cursoId = input.required<string>();
   private readonly http = inject(HttpClient);
+  private readonly contenido = inject(ContenidoCursos);
 
+  // curso.json y después las lecciones del primer recorrido, para sumar cantidad y minutos.
   private readonly datos = rxResource({
     params: () => this.cursoId(),
     stream: ({ params: cursoId }) =>
       this.http.get<Curso>(`contenido/${cursoId}/curso.json`).pipe(
-        map<Curso, Destacado[]>(
-          (curso) =>
+        switchMap((curso) => {
+          const niveles = curso.versiones[0]?.niveles ?? [];
+          const destacados: Destacado[] =
             curso.destacados ??
-            (curso.versiones[0]?.niveles ?? []).slice(0, 5).map((n) => ({
-              titulo: n.titulo,
-              descripcion: n.descripcion,
-              usas: [],
-              logros: [],
-            })),
-        ),
+            niveles.slice(0, 5).map((n) => ({ titulo: n.titulo, descripcion: n.descripcion, usas: [], logros: [], modulos: [n.id] }));
+          return this.contenido.lecciones(cursoId, niveles.flatMap((n) => n.lecciones)).pipe(
+            map((lecciones) => {
+              const minutos = new Map(lecciones.map((l) => [l.id, l.minutos]));
+              return destacados.map<Tarjeta>((d) => {
+                const indices = (d.modulos ?? []).map((id) => niveles.findIndex((n) => n.id === id)).filter((i) => i >= 0);
+                const ids = indices.flatMap((i) => niveles[i].lecciones);
+                return {
+                  ...d,
+                  rotulo: rotular(indices.map((i) => i + 1)),
+                  lecciones: ids.length,
+                  minutos: ids.reduce((total, id) => total + (minutos.get(id) ?? 0), 0),
+                };
+              });
+            }),
+          );
+        }),
       ),
   });
 
@@ -79,4 +101,11 @@ export class PanelesModulos {
       this.activo.set(Math.round(pista.scrollLeft / (ancho + 12)));
     });
   }
+}
+
+/** [2, 3, 4] -> "Módulos 2, 3 y 4"; [1] -> "Módulo 1"; [] -> "" */
+function rotular(numeros: number[]): string {
+  if (numeros.length === 0) return '';
+  if (numeros.length === 1) return `Módulo ${numeros[0]}`;
+  return `Módulos ${numeros.slice(0, -1).join(', ')} y ${numeros.at(-1)}`;
 }

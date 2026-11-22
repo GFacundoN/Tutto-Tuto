@@ -27,6 +27,9 @@
         ></button>
         <div class="interior">
           <h3 class="titulo">{{ p.titulo }}</h3>
+          @if (p.lecciones) {
+            <p class="meta">{{ p.rotulo }} · {{ p.lecciones }} lecciones · {{ p.minutos }} min</p>
+          }
           <p class="desc">{{ p.descripcion }}</p>
           @if (p.usas.length) {
             <div class="usas">
