@@ -48,30 +48,12 @@ export class CatalogoPage {
   });
 
   protected readonly lista = computed(() => (this.cursos.hasValue() ? this.cursos.value() : []));
-  protected readonly disponiblesLista = computed(() => this.lista().filter((c) => c.disponible));
-  protected readonly proximosLista = computed(() => this.lista().filter((c) => !c.disponible));
-  protected readonly disponibles = computed(() => this.disponiblesLista().length);
+  protected readonly disponibles = computed(() => this.lista().filter((c) => c.disponible).length);
   protected readonly totalLecciones = computed(() => this.lista().reduce((t, c) => t + c.lecciones, 0));
 
   constructor() {
     // En el home no hay curso activo: el encabezado no muestra racha ni XP.
     inject(CursoActual).cursoId.set(null);
   }
-
-  /** Letra clara u oscura sobre el color del curso: la que tenga más contraste (WCAG). */
-  protected tintaSobre(color: string): string {
-    const l = luminancia(color);
-    const conBlanco = 1.05 / (l + 0.05);
-    const conNegro = (l + 0.05) / (0.0056 + 0.05);
-    return conBlanco >= conNegro ? '#ffffff' : '#101010';
-  }
 }
 
-/** Luminancia relativa de un color hex (#rrggbb), como la define WCAG 2. */
-function luminancia(hex: string): number {
-  const [r, g, b] = [1, 3, 5].map((i) => {
-    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}

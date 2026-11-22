@@ -7,15 +7,10 @@
       Cada lección tiene una explicación corta con ejemplos de trabajo real, un video, un ejercicio que se corrige
       solo y un quiz. Tu progreso queda guardado en este navegador.
     </p>
-    <ul class="meta" aria-label="Datos de la plataforma">
-      <li><strong>{{ disponibles() }}</strong> {{ disponibles() === 1 ? 'curso disponible' : 'cursos disponibles' }}</li>
-      @if (lista().length > disponibles()) {
-        <li><strong>{{ lista().length - disponibles() }}</strong> en preparación</li>
-      }
-      <li><strong>{{ totalLecciones() }}</strong> lecciones</li>
-      <li>Gratis y sin registrarte</li>
-      <li>Practicás en el navegador o en tu PC</li>
-    </ul>
+    <p class="meta">
+      {{ disponibles() }} {{ disponibles() === 1 ? 'curso disponible' : 'cursos disponibles' }}, {{ totalLecciones() }} lecciones.
+      Gratis, sin registrarte, y practicás en el navegador o en tu PC.
+    </p>
     </div>
     @if (lista().length) {
       <!-- Pila 3D interactiva; si el navegador no tiene WebGL, adentro queda la ilustración en SVG. -->
@@ -25,89 +20,80 @@
     }
   </section>
 
-  <section id="seccion-cursos" aria-labelledby="titulo-cursos">
-    <h2 id="titulo-cursos">Cursos</h2>
+  <!--
+    Cursos en el mismo formato que las secciones del portfolio: el título a la izquierda y la lista a la
+    derecha, separada por líneas finas. Sin colores de marca: solo el logo oficial de cada curso.
+  -->
+  <section id="seccion-cursos" class="seccion-cursos" aria-labelledby="titulo-cursos">
+    <div class="cursos-intro">
+      <h2 id="titulo-cursos">Cursos</h2>
+      <p>Uno por cada herramienta que se usa en un equipo. Elegí uno y empezá: no hace falta registrarse.</p>
+    </div>
 
     @if (cursos.error()) {
       <p class="aviso" role="alert">No pude cargar la lista de cursos. Revisá tu conexión y recargá la página.</p>
     } @else if (cursos.isLoading()) {
       <div class="esqueleto" role="status" aria-label="Cargando cursos"><span class="bloque" style="max-width:380px"></span></div>
     } @else {
-      <!--
-        Cursos disponibles: cada tarjeta es una "tapa" del color del curso. Al pasar el mouse (o al
-        llegar con el teclado) sube una hoja con lo que vas a poder hacer, tu avance y el botón.
-      -->
-      <ul class="cursos">
-        @for (c of disponiblesLista(); track c.resumen.id) {
-          <li class="curso" [style.--marca]="c.resumen.color" [style.--sobre-marca]="tintaSobre(c.resumen.color)">
-            <div class="tapa">
-              <div class="cabeza">
-                @if (c.resumen.logo) {
-                  <img class="logo" [src]="'contenido/' + c.resumen.logo" alt="" height="48" />
+      <ul class="lista-cursos">
+        @for (c of lista(); track c.resumen.id) {
+          <li class="fila" [class.proximo]="!c.disponible">
+            <span class="marca-curso" aria-hidden="true">
+              @if (c.resumen.logo) {
+                <img [src]="'contenido/' + c.resumen.logo" alt="" />
+              } @else {
+                {{ c.resumen.titulo[0] }}
+              }
+            </span>
+
+            <div class="fila-cuerpo">
+              <h3 class="fila-titulo">
+                @if (c.disponible) {
+                  <!-- El enlace cubre toda la fila (::after): el nombre del curso es el texto del link. -->
+                  <a [routerLink]="['/', c.resumen.id]">{{ c.resumen.titulo }}</a>
+                } @else {
+                  {{ c.resumen.titulo }}
                 }
-                @if (c.resumen.area) {
-                  <span class="area">{{ c.resumen.area }}</span>
-                }
-              </div>
-              <h3 class="titulo">
-                <!-- El enlace cubre toda la tarjeta (::after), así el nombre del curso es el texto del link. -->
-                <a class="enlace" [routerLink]="['/', c.resumen.id]">{{ c.resumen.titulo }}</a>
               </h3>
-              <p class="desc">{{ c.resumen.descripcion }}</p>
-              <p class="meta">
-                {{ c.lecciones }} lecciones, {{ c.modulos }} módulos y {{ c.recorridos.length }}
-                {{ c.recorridos.length === 1 ? 'recorrido' : 'recorridos' }}
-              </p>
+              <p class="fila-desc">{{ c.resumen.descripcion }}</p>
+              @if (c.disponible) {
+                <p class="fila-meta">
+                  {{ c.resumen.area }} · {{ c.lecciones }} lecciones en {{ c.modulos }} módulos
+                  @if (c.completadas > 0) {
+                    · <strong>hiciste {{ c.completadas }}</strong>
+                  }
+                </p>
+                @if (c.completadas > 0) {
+                  <progress [value]="c.completadas" [max]="c.lecciones" aria-label="Tu avance en el curso"></progress>
+                }
+                @if (c.resumen.logros?.length) {
+                  <!-- Se despliega al pasar el mouse o al llegar con el teclado; en celular está siempre. -->
+                  <div class="fila-mas">
+                    <ul class="logros" aria-label="Al terminar vas a poder">
+                      @for (l of c.resumen.logros!.slice(0, 3); track l) {
+                        <li>{{ l }}</li>
+                      }
+                    </ul>
+                  </div>
+                }
+              } @else {
+                <p class="fila-meta">{{ c.resumen.area }} · en preparación</p>
+              }
             </div>
 
-            <div class="hoja">
-              @if (c.resumen.logros?.length) {
-                <p class="hoja-titulo">Al terminar vas a poder</p>
-                <ul class="logros">
-                  @for (l of c.resumen.logros!.slice(0, 3); track l) {
-                    <li>
-                      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" /></svg>
-                      {{ l }}
-                    </li>
-                  }
-                </ul>
+            <span class="fila-accion" aria-hidden="true">
+              @if (!c.disponible) {
+                Próximamente
+              } @else {
+                {{ c.completadas > 0 ? 'Continuar' : 'Empezar' }}
+                <svg viewBox="0 0 16 16" width="16" height="16"><path d="M6 3.5 10.5 8 6 12.5" /></svg>
               }
-              <div class="pie">
-                @if (c.completadas > 0) {
-                  <span class="avance">
-                    <span>{{ c.completadas }} de {{ c.lecciones }} lecciones</span>
-                    <progress [value]="c.completadas" [max]="c.lecciones" aria-label="Tu avance en el curso"></progress>
-                  </span>
-                  <span class="accion">Continuar</span>
-                } @else {
-                  <span class="gratis">Gratis, a tu ritmo</span>
-                  <span class="accion">Empezar</span>
-                }
-              </div>
-            </div>
+            </span>
           </li>
         } @empty {
           <li class="tinta-suave">Todavía no hay cursos publicados.</li>
         }
       </ul>
-
-      @if (proximosLista().length) {
-        <h3 class="subtitulo">En preparación</h3>
-        <ul class="proximos">
-          @for (c of proximosLista(); track c.resumen.id) {
-            <li class="proximo" [style.--marca]="c.resumen.color">
-              <span class="inicial" aria-hidden="true">{{ c.resumen.titulo[0] }}</span>
-              <span class="proximo-texto">
-                <strong>{{ c.resumen.titulo }}</strong>
-                @if (c.resumen.area) {
-                  <span class="area-chica">{{ c.resumen.area }}</span>
-                }
-                <span class="desc-chica">{{ c.resumen.descripcion }}</span>
-              </span>
-            </li>
-          }
-        </ul>
-      }
     }
   </section>
 
