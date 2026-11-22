@@ -1,0 +1,72 @@
+{
+  "id": "rxjs-esencial",
+  "titulo": "RxJS justo y necesario",
+  "minutos": 14,
+  "objetivo": "leer y escribir las cadenas de RxJS más comunes en Angular (pipe, map, switchMap, catchError) y evitar suscripciones que nunca se cierran.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **Observable** es un flujo de valores en el tiempo: una respuesta HTTP (un valor y termina), lo que tipea el usuario (muchos valores), un intervalo. Con **operadores** dentro de `.pipe()` los transformás, como una cadena de `map`/`filter` de arrays." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "buscador-tareas.ts", "codigo": "import { debounceTime, distinctUntilChanged, switchMap, catchError, of, map } from 'rxjs';\nimport { takeUntilDestroyed } from '@angular/core/rxjs-interop';\n\nexport class BuscadorTareas {\n  private readonly api = inject(TareasApi);\n  readonly busqueda = new FormControl('', { nonNullable: true });\n  readonly resultados = signal<Tarea[]>([]);\n\n  constructor() {\n    this.busqueda.valueChanges.pipe(\n      debounceTime(300),                 // espera 300 ms sin tipear\n      distinctUntilChanged(),            // ignora si el texto no cambió\n      switchMap(texto => this.api.buscar(texto).pipe(\n        catchError(() => of([])),        // si falla, lista vacía (y el flujo sigue vivo)\n      )),\n      map(tareas => tareas.slice(0, 10)),\n      takeUntilDestroyed(),              // se desuscribe al destruir el componente\n    ).subscribe(tareas => this.resultados.set(tareas));\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "`map`: transforma cada valor.",
+      "`switchMap`: por cada valor, arranca otro Observable (por ejemplo un pedido HTTP) y **cancela el anterior**. Ideal para buscadores: solo importa la última búsqueda.",
+      "`catchError`: atrapa el error y devuelve un valor de reemplazo.",
+      "`debounceTime` / `distinctUntilChanged`: evitan pedidos de más mientras se tipea.",
+      "`takeUntilDestroyed()`: cierra la suscripción cuando se destruye el componente."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Un `subscribe()` a algo que **no termina solo** (valueChanges, un intervalo, un store) y sin `takeUntilDestroyed()` es una **fuga de memoria**: sigue ejecutándose aunque el componente ya no exista. Las respuestas HTTP terminan solas, pero igual conviene convertirlas con `toSignal`, que se desuscribe solo." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Evitá un `subscribe` dentro de otro `subscribe`. Si un pedido depende del resultado de otro, encadenalos con `switchMap` (o `concatMap` si importa el orden)." },
+    { "tipo": "nota", "variante": "dato", "md": "Regla práctica hoy: **signals para el estado** que se muestra, **RxJS para eventos en el tiempo** (búsquedas, websockets, reintentos). `toSignal()` y `toObservable()` los conectan." },
+    { "tipo": "nota", "variante": "version", "md": "En código viejo vas a ver `private destroy$ = new Subject<void>()` con `takeUntil(this.destroy$)` y `ngOnDestroy() { this.destroy$.next(); }`. Es lo mismo que `takeUntilDestroyed()`, escrito a mano." }
+  ],
+  "recursos": {
+    "video": { "id": "sxjpUNRU_tI", "titulo": "Operadores switchMap, mergeMap, concatMap y exhaustMap (tramo de switchMap)", "canal": "akotech", "inicio": 467, "fin": 572, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Interoperabilidad entre RxJS y signals", "url": "https://angular.dev/ecosystem/rxjs-interop" },
+      { "titulo": "angular.dev: takeUntilDestroyed", "url": "https://angular.dev/api/core/rxjs-interop/takeUntilDestroyed" },
+      { "titulo": "rxjs.dev: Operadores", "url": "https://rxjs.dev/guide/operators" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená los operadores del buscador: primero esperar a que el usuario deje de tipear, después ignorar repetidos, buscar en la API (cancelando la búsqueda anterior), y por último cerrar la suscripción al destruir el componente.",
+    "lenguaje": "typescript",
+    "lineas": [
+      "this.busqueda.valueChanges.pipe(",
+      "  debounceTime(300),",
+      "  distinctUntilChanged(),",
+      "  switchMap(texto => this.api.buscar(texto)),",
+      "  takeUntilDestroyed(),",
+      ").subscribe(r => this.resultados.set(r));"
+    ],
+    "pistas": [
+      "`debounceTime` va antes que todo: no tiene sentido comparar ni buscar en cada tecla.",
+      "`takeUntilDestroyed()` conviene ponerlo al final del pipe, justo antes de `subscribe`, para que corte todo lo de arriba."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "En un buscador, el usuario tipea rápido \"log\" y después \"login\". ¿Qué operador evita que la respuesta vieja de \"log\" pise a la de \"login\"?",
+      "opciones": [
+        { "texto": "`switchMap`, porque cancela el pedido anterior cuando llega un valor nuevo.", "correcta": true, "explicacion": "Solo queda viva la última búsqueda." },
+        { "texto": "`mergeMap`, porque hace todos los pedidos en paralelo.", "correcta": false, "explicacion": "Justamente por eso las respuestas pueden llegar desordenadas." },
+        { "texto": "`map`.", "correcta": false, "explicacion": "`map` transforma valores; no maneja Observables internos." }
+      ]
+    },
+    {
+      "pregunta": "¿Cuál de estas suscripciones es una fuga de memoria?",
+      "opciones": [
+        { "texto": "`form.valueChanges.subscribe(...)` en un componente, sin takeUntilDestroyed.", "correcta": true, "explicacion": "valueChanges no termina nunca: la suscripción sobrevive al componente." },
+        { "texto": "`toSignal(this.http.get(...))`.", "correcta": false, "explicacion": "toSignal se desuscribe solo al destruirse el contexto." },
+        { "texto": "`this.http.get(...).subscribe(...)` de un pedido que ya respondió.", "correcta": false, "explicacion": "HTTP emite una vez y completa; la suscripción se cierra sola." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué hace `catchError(() => of([]))` dentro del `switchMap`?",
+      "opciones": [
+        { "texto": "Si el pedido falla, emite una lista vacía y el buscador sigue funcionando para la próxima búsqueda.", "correcta": true, "explicacion": "Si el error llegara al flujo principal, este se cerraría y el buscador dejaría de andar." },
+        { "texto": "Reintenta el pedido.", "correcta": false, "explicacion": "Para eso está `retry`." },
+        { "texto": "Oculta el error en la consola pero corta el flujo.", "correcta": false, "explicacion": "Al reemplazar el error por un valor, el flujo sigue vivo." }
+      ]
+    }
+  ]
+}

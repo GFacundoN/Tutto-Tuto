@@ -1,0 +1,88 @@
+{
+  "id": "httpresource-y-backend",
+  "titulo": "httpResource, environments y tu backend Spring",
+  "minutos": 14,
+  "objetivo": "cargar datos con httpResource mostrando carga y error, y conectar el front con tu API de Spring Boot en desarrollo (proxy, CORS y environments).",
+  "explicacion": [
+    { "tipo": "texto", "md": "**`httpResource`** (estable en Angular 22) hace un GET y te da **signals** con el estado del pedido. Si la URL depende de otros signals, vuelve a pedir solo cuando cambian:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "lista-tareas.ts", "codigo": "export class ListaTareas {\n  readonly estado = signal<'pendiente' | 'hecha'>('pendiente');\n  readonly tareas = httpResource<Tarea[]>(() => `/api/tareas?estado=${this.estado()}`);\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "lista-tareas.html", "codigo": "@if (tareas.isLoading()) {\n  <p>Cargando…</p>\n} @else if (tareas.error()) {\n  <p>No pudimos cargar las tareas. <button (click)=\"tareas.reload()\">Reintentar</button></p>\n} @else {\n  @for (t of tareas.value(); track t.id) { <app-tarjeta-tarea [tarea]=\"t\" /> }\n}" },
+    { "tipo": "nota", "variante": "error-comun", "md": "Mostrá **siempre** los tres estados: cargando, error y datos. Una lista vacía mientras carga se confunde con \"no hay tareas\", y un error sin mensaje deja a la persona sin saber qué hacer. Ojo: leer `value()` cuando el resource está en error tira excepción; chequeá `error()` o `hasValue()` antes." },
+    { "tipo": "texto", "md": "**`httpResource` es para leer (GET).** Para crear, editar o borrar seguís usando `HttpClient` desde el servicio." },
+    { "tipo": "texto", "md": "**Conectar con Spring Boot en desarrollo.** Angular corre en `localhost:4200` y Spring en `localhost:8080`: son orígenes distintos y el navegador bloquea el pedido por **CORS**. Tenés dos opciones:" },
+    { "tipo": "lista", "items": [
+      "**Proxy del dev server (recomendado en desarrollo)**: Angular reenvía `/api` a Spring y el navegador ve un solo origen.",
+      "**CORS en Spring**: `@CrossOrigin(origins = \"http://localhost:4200\")` en el controller o una config global. Hace falta igual si en producción front y back están en dominios distintos."
+    ] },
+    { "tipo": "codigo", "lenguaje": "json", "archivo": "proxy.conf.json", "codigo": "{\n  \"/api\": { \"target\": \"http://localhost:8080\", \"secure\": false }\n}" },
+    { "tipo": "codigo", "lenguaje": "json", "archivo": "angular.json (serve.options)", "codigo": "\"proxyConfig\": \"proxy.conf.json\"" },
+    { "tipo": "texto", "md": "**Environments**: `ng g environments` crea `src/environments/environment.ts` y `environment.development.ts`. Ahí va la URL base de la API, distinta en desarrollo y producción; el build reemplaza un archivo por el otro." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "environments/environment.development.ts", "codigo": "export const environment = { apiUrl: '/api' };   // pasa por el proxy\n// environment.ts (producción): { apiUrl: 'https://api.miempresa.com' }" },
+    { "tipo": "nota", "variante": "error-comun", "md": "**Nunca** pongas secretos (claves de API privadas, contraseñas) en `environment.ts`: todo lo que está en el frontend lo puede leer cualquiera desde el navegador." }
+  ],
+  "recursos": {
+    "video": { "id": "Fcf28vYYPy0", "titulo": "Explorando httpResource()", "canal": "CodeScript", "inicio": 30, "fin": 503, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: httpResource", "url": "https://angular.dev/guide/http/http-resource" },
+      { "titulo": "angular.dev: Proxy al backend en desarrollo", "url": "https://angular.dev/tools/cli/serve#proxying-to-a-backend-server" },
+      { "titulo": "angular.dev: Environments", "url": "https://angular.dev/tools/cli/environments" },
+      { "titulo": "spring.io: CORS en Spring MVC", "url": "https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "Cargá `api/tareas.json` con `httpResource` y mostrá los tres estados: \"Cargando…\" mientras carga, un mensaje de error con botón **Reintentar** si falla, y la lista si sale bien. Para probar el error, cambiá la URL por una que no exista.",
+    "archivos": {
+      "public/api/tareas.json": "[\n  { \"id\": 1, \"titulo\": \"Configurar CI\" },\n  { \"id\": 2, \"titulo\": \"Login con JWT\" }\n]\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\ninterface Tarea {\n  id: number;\n  titulo: string;\n}\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas</h1>\n    <!-- TODO: estados de carga, error y datos -->\n  `,\n})\nexport class App {\n  // TODO: tareas = httpResource<Tarea[]>(...)\n}\n"
+    },
+    "abrirArchivo": "src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/app.ts", "patron": "httpResource\\s*<\\s*Tarea\\[\\]\\s*>\\s*\\(\\s*\\(\\s*\\)\\s*=>", "mensaje": "tareas = httpResource<Tarea[]>(() => ...)." },
+      { "archivo": "src/app/app.ts", "patron": "import\\s*\\{[^}]*httpResource[^}]*\\}\\s*from\\s*['\"]@angular/common/http['\"]", "mensaje": "Importás httpResource desde @angular/common/http." },
+      { "archivo": "src/app/app.ts", "patron": "tareas\\.isLoading\\(\\)", "mensaje": "Mostrás el estado de carga con tareas.isLoading()." },
+      { "archivo": "src/app/app.ts", "patron": "tareas\\.error\\(\\)", "mensaje": "Mostrás el error con tareas.error()." },
+      { "archivo": "src/app/app.ts", "patron": "tareas\\.reload\\(\\)", "mensaje": "El botón Reintentar llama a tareas.reload()." },
+      { "archivo": "src/app/app.ts", "patron": "tareas\\.value\\(\\)", "mensaje": "La lista recorre tareas.value()." }
+    ],
+    "pistas": [
+      "`protected readonly tareas = httpResource<Tarea[]>(() => 'api/tareas.json');` e importalo de `@angular/common/http`.",
+      "En el template: `@if (tareas.isLoading()) { … } @else if (tareas.error()) { … <button (click)=\"tareas.reload()\">Reintentar</button> } @else { @for (t of tareas.value(); track t.id) { … } }`."
+    ],
+    "solucion": {
+      "src/app/app.ts": "import { httpResource } from '@angular/common/http';\nimport { Component } from '@angular/core';\n\ninterface Tarea {\n  id: number;\n  titulo: string;\n}\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas</h1>\n    @if (tareas.isLoading()) {\n      <p>Cargando…</p>\n    } @else if (tareas.error()) {\n      <p>No pudimos cargar las tareas.</p>\n      <button (click)=\"tareas.reload()\">Reintentar</button>\n    } @else {\n      <ul>\n        @for (t of tareas.value(); track t.id) {\n          <li>{{ t.titulo }}</li>\n        }\n      </ul>\n    }\n  `,\n})\nexport class App {\n  protected readonly tareas = httpResource<Tarea[]>(() => 'api/tareas.json');\n}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Hacelo en tu proyecto con `public/api/tareas.json`. Si tenés una API de Spring corriendo en el 8080, probá además el proxy: creá `proxy.conf.json`, agregá `\"proxyConfig\": \"proxy.conf.json\"` en `serve.options` de `angular.json`, reiniciá `ng serve` y cambiá la URL a `/api/tareas`." }
+      ],
+      "resultadoEsperado": "Ves la lista; con una URL inexistente ves el mensaje de error y el botón Reintentar. En la pestaña Network el pedido sale a localhost:4200 (no a 8080) cuando usás el proxy."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Tu front en `localhost:4200` pide `http://localhost:8080/api/tareas` y la consola dice *\"blocked by CORS policy\"*. ¿Qué hacés en desarrollo?",
+      "opciones": [
+        { "texto": "Configurás el proxy del dev server (o CORS en Spring) y usás URLs relativas `/api/...`.", "correcta": true, "explicacion": "Con el proxy, el navegador ve un solo origen y no hay CORS." },
+        { "texto": "Instalás una extensión que desactiva CORS.", "correcta": false, "explicacion": "Solo funciona en tu navegador y esconde un problema que vuelve en producción." },
+        { "texto": "Cambiás HttpClient por fetch.", "correcta": false, "explicacion": "CORS lo aplica el navegador a cualquier pedido." }
+      ]
+    },
+    {
+      "pregunta": "¿Cuándo vuelve a hacer el pedido `httpResource(() => `/api/tareas?estado=${this.estado()}`)`?",
+      "opciones": [
+        { "texto": "Cada vez que cambia el signal `estado`.", "correcta": true, "explicacion": "La función se reevalúa al cambiar sus signals; si la URL cambia, pide de nuevo." },
+        { "texto": "Cada vez que se detectan cambios en la pantalla.", "correcta": false, "explicacion": "Solo depende de los signals que lee." },
+        { "texto": "Solo una vez, al crear el componente.", "correcta": false, "explicacion": "Es reactivo: sigue al signal." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué podés poner en `environment.ts`?",
+      "opciones": [
+        { "texto": "La URL base de la API y flags no sensibles.", "correcta": true, "explicacion": "Todo lo del frontend es público." },
+        { "texto": "La contraseña de la base de datos.", "correcta": false, "explicacion": "Nunca: quedaría expuesta en el JavaScript que descarga el navegador." },
+        { "texto": "La clave privada para firmar JWT.", "correcta": false, "explicacion": "Eso vive solo en el backend." }
+      ]
+    }
+  ]
+}

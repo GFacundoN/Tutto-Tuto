@@ -1,0 +1,196 @@
+{
+  "id": "httpclient",
+  "titulo": "Consumir una API con HttpClient",
+  "minutos": 13,
+  "objetivo": "hacer GET y POST a una API REST con HttpClient desde un servicio y mostrar el resultado.",
+  "explicacion": [
+    {
+      "tipo": "texto",
+      "md": "`HttpClient` es el cliente HTTP de Angular. Se habilita con `provideHttpClient()` en `app.config.ts` y se usa **desde servicios**, nunca directo en los componentes: así el componente no sabe de URLs y es fácil de testear."
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "typescript",
+      "archivo": "tareas/tareas-api.ts",
+      "codigo": "import { HttpClient } from '@angular/common/http';\nimport { inject, Injectable } from '@angular/core';\nimport { Observable } from 'rxjs';\nimport { environment } from '../../environments/environment';\n\nexport interface Tarea { id: number; titulo: string; estado: 'pendiente' | 'en-curso' | 'hecha'; }\n\n@Injectable({ providedIn: 'root' })\nexport class TareasApi {\n  private readonly http = inject(HttpClient);\n  private readonly url = `${environment.apiUrl}/tareas`;   // ej. http://localhost:8080/api\n\n  listar(): Observable<Tarea[]> {\n    return this.http.get<Tarea[]>(this.url);\n  }\n\n  crear(tarea: Omit<Tarea, 'id'>): Observable<Tarea> {\n    return this.http.post<Tarea>(this.url, tarea);\n  }\n\n  cambiarEstado(id: number, estado: Tarea['estado']): Observable<Tarea> {\n    return this.http.patch<Tarea>(`${this.url}/${id}`, { estado });\n  }\n}"
+    },
+    {
+      "tipo": "texto",
+      "md": "Los métodos devuelven un **Observable**: el pedido **no se hace** hasta que alguien se suscribe. Desde un componente, lo más simple es convertirlo en signal con `toSignal`:"
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "typescript",
+      "archivo": "lista-tareas.ts",
+      "codigo": "export class ListaTareas {\n  private readonly api = inject(TareasApi);\n  readonly tareas = toSignal(this.api.listar(), { initialValue: [] });\n\n  crear() {\n    this.api.crear({ titulo: 'Nueva', estado: 'pendiente' }).subscribe({\n      next: (creada) => console.log('Creada', creada.id),\n      error: (err) => console.error('No se pudo crear', err.status),\n    });\n  }\n}"
+    },
+    {
+      "tipo": "nota",
+      "variante": "error-comun",
+      "md": "Si llamás `this.api.crear(...)` **sin** `.subscribe()`, no pasa nada: el POST nunca sale. Es el error número uno con HttpClient."
+    },
+    {
+      "tipo": "nota",
+      "variante": "version",
+      "md": "En Angular 22, `HttpClient` usa `fetch` por defecto (antes XMLHttpRequest). Para tu código no cambia nada, salvo el progreso de subida de archivos, que necesita `withXhr()`. En proyectos viejos vas a ver `HttpClientModule` importado en el `AppModule`."
+    },
+    {
+      "tipo": "nota",
+      "variante": "comparacion",
+      "md": "En React usarías `fetch` + `useEffect` o React Query. Acá `HttpClient` ya parsea el JSON, tipa la respuesta con el genérico `<Tarea[]>` y tira error en 4xx/5xx (fetch no lo hace).",
+      "soloVersiones": [
+        "semana"
+      ]
+    }
+  ],
+  "recursos": {
+    "video": {
+      "id": "XmGa52Ym9Q8",
+      "titulo": "Petición HTTP GET",
+      "canal": "Fernando Herrera",
+      "inicio": 0,
+      "fin": 550,
+      "idioma": "es"
+    },
+    "docs": [
+      {
+        "titulo": "angular.dev: HttpClient (configuración)",
+        "url": "https://angular.dev/guide/http/setup"
+      },
+      {
+        "titulo": "angular.dev: Hacer pedidos HTTP",
+        "url": "https://angular.dev/guide/http/making-requests"
+      }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "El proyecto tiene una \"API\" de prueba en `public/api/tareas.json`. Completá el servicio `TareasApi` para que `listar()` haga un GET a `api/tareas.json`, y mostrá los títulos en `App` usando `toSignal`.",
+    "archivos": {
+      "public/api/tareas.json": "[\n  { \"id\": 1, \"titulo\": \"Configurar CI\", \"estado\": \"pendiente\" },\n  { \"id\": 2, \"titulo\": \"Login con JWT\", \"estado\": \"en-curso\" },\n  { \"id\": 3, \"titulo\": \"Dockerizar el front\", \"estado\": \"hecha\" }\n]\n",
+      "src/app/tareas-api.ts": "import { HttpClient } from '@angular/common/http';\nimport { inject, Injectable } from '@angular/core';\nimport { Observable, of } from 'rxjs';\n\nexport interface Tarea {\n  id: number;\n  titulo: string;\n  estado: string;\n}\n\n@Injectable({ providedIn: 'root' })\nexport class TareasApi {\n  // TODO: inyectá HttpClient\n\n  listar(): Observable<Tarea[]> {\n    // TODO: GET a 'api/tareas.json'\n    return of([]);\n  }\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas desde la API</h1>\n    <ul>\n      <!-- TODO: mostrar los títulos -->\n    </ul>\n  `,\n})\nexport class App {\n  // TODO: inyectá TareasApi y convertí listar() en signal con toSignal\n}\n"
+    },
+    "abrirArchivo": "src/app/tareas-api.ts,src/app/app.ts",
+    "verificaciones": [
+      {
+        "archivo": "src/app/tareas-api.ts",
+        "patron": "inject\\s*\\(\\s*HttpClient\\s*\\)",
+        "mensaje": "TareasApi inyecta HttpClient."
+      },
+      {
+        "archivo": "src/app/tareas-api.ts",
+        "patron": "\\.get\\s*<\\s*Tarea\\[\\]\\s*>\\s*\\(\\s*['\"`]api/tareas\\.json['\"`]",
+        "mensaje": "listar() hace http.get<Tarea[]>('api/tareas.json')."
+      },
+      {
+        "archivo": "src/app/tareas-api.ts",
+        "patron": "return\\s+of\\(",
+        "debeCoincidir": false,
+        "mensaje": "listar() ya no devuelve of([])."
+      },
+      {
+        "archivo": "src/app/app.ts",
+        "patron": "toSignal\\s*\\(",
+        "mensaje": "App usa toSignal."
+      },
+      {
+        "archivo": "src/app/app.ts",
+        "patron": "inject\\s*\\(\\s*TareasApi\\s*\\)",
+        "mensaje": "App inyecta TareasApi."
+      },
+      {
+        "archivo": "src/app/app.ts",
+        "patron": "@for\\s*\\([^)]*tareas\\(\\)",
+        "mensaje": "El template recorre tareas() con @for."
+      }
+    ],
+    "pistas": [
+      "En el servicio: `private readonly http = inject(HttpClient);` y `return this.http.get<Tarea[]>('api/tareas.json');`.",
+      "En App: `import { toSignal } from '@angular/core/rxjs-interop';`, `private readonly api = inject(TareasApi);` y `protected readonly tareas = toSignal(this.api.listar(), { initialValue: [] });`. En el template: `@for (t of tareas(); track t.id) { <li>{{ t.titulo }}</li> }`."
+    ],
+    "solucion": {
+      "src/app/tareas-api.ts": "import { HttpClient } from '@angular/common/http';\nimport { inject, Injectable } from '@angular/core';\nimport { Observable } from 'rxjs';\n\nexport interface Tarea {\n  id: number;\n  titulo: string;\n  estado: string;\n}\n\n@Injectable({ providedIn: 'root' })\nexport class TareasApi {\n  private readonly http = inject(HttpClient);\n\n  listar(): Observable<Tarea[]> {\n    return this.http.get<Tarea[]>('api/tareas.json');\n  }\n}\n",
+      "src/app/app.ts": "import { Component, inject } from '@angular/core';\nimport { toSignal } from '@angular/core/rxjs-interop';\nimport { TareasApi } from './tareas-api';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas desde la API</h1>\n    <ul>\n      @for (t of tareas(); track t.id) {\n        <li>{{ t.titulo }} ({{ t.estado }})</li>\n      }\n    </ul>\n  `,\n})\nexport class App {\n  private readonly api = inject(TareasApi);\n  protected readonly tareas = toSignal(this.api.listar(), { initialValue: [] });\n}\n"
+    },
+    "local": {
+      "pasos": [
+        {
+          "tipo": "texto",
+          "md": "Creá `public/api/tareas.json` con 2 o 3 tareas (como en el proyecto del navegador), y verificá que `app.config.ts` tenga `provideHttpClient()` (si no, agregalo)."
+        },
+        {
+          "tipo": "comando",
+          "comando": "ng g s tareas-api --flat"
+        },
+        {
+          "tipo": "texto",
+          "md": "Abrí la pestaña **Network** de las DevTools del navegador (F12) para ver el pedido."
+        }
+      ],
+      "resultadoEsperado": "Ves la lista de tareas y en Network un GET a /api/tareas.json con estado 200."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Llamás `this.api.crear(tarea)` y en el backend no llega nada. ¿Qué pasó?",
+      "opciones": [
+        {
+          "texto": "Falta `.subscribe()`: los Observables de HttpClient no hacen el pedido hasta que alguien se suscribe.",
+          "correcta": true,
+          "explicacion": "Son \"fríos\": sin suscripción, no hay pedido."
+        },
+        {
+          "texto": "HttpClient no soporta POST.",
+          "correcta": false,
+          "explicacion": "Soporta get, post, put, patch y delete."
+        },
+        {
+          "texto": "Falta `await`.",
+          "correcta": false,
+          "explicacion": "No son Promises; se usan con subscribe, toSignal o el pipe async."
+        }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué las llamadas HTTP van en un servicio y no en el componente?",
+      "opciones": [
+        {
+          "texto": "Para separar responsabilidades: el componente muestra, el servicio sabe de URLs y se puede reutilizar y testear.",
+          "correcta": true,
+          "explicacion": "Además, si cambia la API, se toca un solo lugar."
+        },
+        {
+          "texto": "Porque HttpClient no se puede inyectar en componentes.",
+          "correcta": false,
+          "explicacion": "Se puede, pero no conviene."
+        },
+        {
+          "texto": "Por rendimiento.",
+          "correcta": false,
+          "explicacion": "Es por diseño, no por rendimiento."
+        }
+      ]
+    },
+    {
+      "pregunta": "Tu API de Spring devuelve 404. ¿Qué hace HttpClient?",
+      "opciones": [
+        {
+          "texto": "El Observable emite un error (HttpErrorResponse) que manejás en `error` o con catchError.",
+          "correcta": true,
+          "explicacion": "A diferencia de fetch, los 4xx/5xx se tratan como error."
+        },
+        {
+          "texto": "Devuelve null en next.",
+          "correcta": false,
+          "explicacion": "No: va por el canal de error."
+        },
+        {
+          "texto": "Reintenta automáticamente.",
+          "correcta": false,
+          "explicacion": "Solo si agregás el operador `retry`."
+        }
+      ]
+    }
+  ]
+}

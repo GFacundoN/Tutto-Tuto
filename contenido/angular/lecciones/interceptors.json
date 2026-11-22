@@ -1,0 +1,59 @@
+{
+  "id": "interceptors",
+  "titulo": "Interceptors: token y errores en un solo lugar",
+  "minutos": 11,
+  "objetivo": "agregar el token JWT a todos los pedidos y manejar errores comunes (401) con un interceptor funcional.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **interceptor** se mete en el medio de **todos** los pedidos de HttpClient. Es el lugar para lo que se repite: el header `Authorization`, mostrar un spinner global, redirigir al login cuando el backend responde 401, loguear errores." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "auth/auth-interceptor.ts", "codigo": "import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';\nimport { inject } from '@angular/core';\nimport { Router } from '@angular/router';\nimport { catchError, throwError } from 'rxjs';\nimport { Auth } from './auth';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const token = inject(Auth).token();\n  const router = inject(Router);\n\n  // Las requests son inmutables: se clonan con los cambios.\n  const conToken = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;\n\n  return next(conToken).pipe(\n    catchError((err: HttpErrorResponse) => {\n      if (err.status === 401) router.navigate(['/login']);\n      return throwError(() => err);   // el error sigue hacia quien hizo el pedido\n    }),\n  );\n};" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "app.config.ts", "codigo": "provideHttpClient(withInterceptors([authInterceptor]))" },
+    { "tipo": "lista", "items": [
+      "`req.clone({ setHeaders })`: la request original no se puede modificar; se crea una copia.",
+      "`next(req)`: pasa la request al siguiente interceptor (o al backend) y devuelve el Observable de la respuesta.",
+      "Se ejecutan **en el orden** del array de `withInterceptors`."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "No agregues el token a pedidos a **otros dominios** (por ejemplo, una API pública o un CDN): le estarías mandando tu credencial a un tercero. Filtrá por URL: `if (!req.url.startsWith(environment.apiUrl)) return next(req);`." },
+    { "tipo": "nota", "variante": "version", "md": "Los interceptors de clase (`class AuthInterceptor implements HttpInterceptor` + `{ provide: HTTP_INTERCEPTORS, useClass: ..., multi: true }`) son lo que vas a encontrar en código viejo. Para usarlos con `provideHttpClient` hace falta `withInterceptorsFromDi()`." },
+    { "tipo": "nota", "variante": "dato", "md": "Del lado de Spring Boot, el filtro de Spring Security lee ese mismo header `Authorization: Bearer …`. Si el front y el back están en distintos puertos, además necesitás CORS configurado en Spring (lo ves en la próxima lección)." }
+  ],
+  "recursos": {
+    "video": { "id": "fO86sfYpaj8", "titulo": "Implementa los nuevos Functional HTTP Interceptor (tramo del interceptor)", "canal": "Carlos Codea", "inicio": 595, "fin": 986, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Interceptors", "url": "https://angular.dev/guide/http/interceptors" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el interceptor para que agregue el header `Authorization` con el token, y registralo.",
+    "lenguaje": "typescript",
+    "plantilla": "export const authInterceptor: {{0}} = (req, next) => {\n  const token = inject(Auth).token();\n  const conToken = req.{{1}}({ setHeaders: { Authorization: `Bearer ${token}` } });\n  return {{2}}(conToken);\n};\n\n// app.config.ts\nprovideHttpClient({{3}}([authInterceptor]))",
+    "huecos": [
+      { "respuestas": ["HttpInterceptorFn"], "ancho": 18 },
+      { "respuestas": ["clone"], "ancho": 6 },
+      { "respuestas": ["next"], "ancho": 5 },
+      { "respuestas": ["withInterceptors"], "ancho": 17 }
+    ],
+    "pistas": [
+      "Las requests son inmutables: hay que copiarlas. El tipo del interceptor funcional termina en `Fn`.",
+      "Las respuestas son `HttpInterceptorFn`, `clone`, `next` y `withInterceptors`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué se usa `req.clone(...)` en vez de modificar `req.headers` directamente?",
+      "opciones": [
+        { "texto": "Porque las HttpRequest son inmutables.", "correcta": true, "explicacion": "Así un interceptor no puede romper la request que ve otro." },
+        { "texto": "Por rendimiento.", "correcta": false, "explicacion": "Clonar es más costoso; se hace por seguridad e inmutabilidad." },
+        { "texto": "Porque headers es privado.", "correcta": false, "explicacion": "Se puede leer; lo que no se puede es modificar." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué riesgo tiene agregar el token a TODAS las requests sin mirar la URL?",
+      "opciones": [
+        { "texto": "Mandarle la credencial del usuario a dominios de terceros.", "correcta": true, "explicacion": "Filtrá por el dominio de tu API." },
+        { "texto": "Ninguno, el token es público.", "correcta": false, "explicacion": "El token da acceso a la cuenta: es secreto." },
+        { "texto": "Que el backend lo rechace por duplicado.", "correcta": false, "explicacion": "El problema no es tu backend, son los ajenos." }
+      ]
+    }
+  ]
+}

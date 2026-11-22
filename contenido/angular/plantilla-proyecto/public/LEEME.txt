@@ -1,0 +1,1 @@
+Archivos estáticos: lo que pongas acá se sirve tal cual (por ejemplo api/tareas.json).
