@@ -14,6 +14,8 @@ import { Pregunta } from '../quiz/pregunta/pregunta';
 import { Bloques } from '../shared/bloques/bloques';
 import { VideoYoutube } from '../shared/video-youtube/video-youtube';
 import { TitulosLecciones } from '../core/contenido/titulos-lecciones';
+import { Confeti } from '../shared/confeti/confeti';
+import { IconoPaso } from '../shared/ilustraciones/icono-paso';
 
 /** Los pasos de toda lección, en orden. */
 export const PASOS = [
@@ -25,7 +27,7 @@ export const PASOS = [
 
 @Component({
   selector: 'app-leccion-page',
-  imports: [RouterLink, Bloques, VideoYoutube, CompletarCodigo, OrdenarLineas, PracticaProyecto, Pregunta],
+  imports: [RouterLink, Bloques, VideoYoutube, CompletarCodigo, OrdenarLineas, PracticaProyecto, Pregunta, Confeti, IconoPaso],
   templateUrl: './leccion-page.html',
   styleUrl: './leccion-page.css',
 })

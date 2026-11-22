@@ -285,3 +285,61 @@
     display: none;
   }
 }
+
+/* Íconos de las pestañas */
+.pasos app-icono-paso {
+  opacity: 0.8;
+}
+.pasos li.hecho app-icono-paso {
+  display: none;
+}
+
+/* Transición entre pasos: entra desde abajo, solo transform y opacity. */
+.entrar-paso {
+  animation: entrar-paso 260ms var(--ease-salida);
+}
+@keyframes entrar-paso {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Celebración */
+.fin {
+  position: relative;
+}
+.sello {
+  animation:
+    sello 420ms var(--ease-salida) both,
+    latido 600ms 450ms ease-out;
+}
+@keyframes latido {
+  40% {
+    scale: 1.12;
+  }
+}
+@property --xp-animado {
+  syntax: '<integer>';
+  initial-value: 0;
+  inherits: false;
+}
+.contador {
+  --xp-animado: var(--xp);
+  counter-reset: xp var(--xp-animado);
+  animation: contar 900ms 300ms var(--ease-salida) both;
+}
+.contador::after {
+  content: counter(xp);
+}
+@keyframes contar {
+  from {
+    --xp-animado: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .entrar-paso,
+  .contador {
+    animation: none;
+  }
+}

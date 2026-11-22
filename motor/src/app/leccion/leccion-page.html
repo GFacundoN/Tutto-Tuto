@@ -6,7 +6,7 @@
       <a class="boton boton-principal" [routerLink]="['/', cursoId()]">Volver al curso</a>
     </div>
   } @else if (cargando() && !leccion()) {
-    <p class="tinta-suave cargando" role="status">Cargando la lección…</p>
+    <div class="esqueleto" role="status" aria-label="Cargando"><span class="alto"></span><span></span><span style="width:80%"></span><span class="bloque"></span></div>
   } @else if (leccion(); as leccion) {
     @if (!desbloqueada() && !yaCompletada()) {
       <div class="aviso">
@@ -56,12 +56,15 @@
         <div class="principal">
           @if (terminada()) {
             <section class="fin" aria-labelledby="titulo-fin">
+              <app-confeti />
               <div class="sello" aria-hidden="true"></div>
               <h1 id="titulo-fin" tabindex="-1">Lección completa</h1>
               <p class="resumen">
                 {{ leccion.titulo }}: acertaste {{ aciertos() }} de {{ leccion.quiz.length }} en el quiz
                 @if (xpGanada() > 0) {
-                  y sumaste <strong>{{ xpGanada() }} XP</strong>
+                  y sumaste
+                  <!-- El número sube de 0 al total con CSS (@property + counter): sin timers en JS. -->
+                  <strong><span class="solo-lectores">{{ xpGanada() }}</span><span class="contador" aria-hidden="true" [style.--xp]="xpGanada()"></span>&nbsp;XP</strong>
                 }.
               </p>
               <div class="fila">
@@ -89,18 +92,28 @@
                   <li [class.hecho]="i < paso()" [class.actual]="i === paso()">
                     @if (i < paso()) {
                       <button type="button" (click)="irAPaso(i)">
+                        <app-icono-paso [tipo]="p.id" [tamano]="18" />
                         <span class="solo-lectores">Volver a </span>{{ p.titulo }}
                       </button>
                     } @else {
-                      <span [attr.aria-current]="i === paso() ? 'step' : null">{{ p.titulo }}</span>
+                      <span [attr.aria-current]="i === paso() ? 'step' : null" [class.dibujar]="i === paso()">
+                        <app-icono-paso [tipo]="p.id" [tamano]="18" />
+                        {{ p.titulo }}
+                      </span>
                     }
                   </li>
                 }
               </ol>
             </header>
 
-            <section class="paso" aria-labelledby="titulo-paso">
-              @switch (pasos[paso()].id) {
+            <!--
+              animate.enter (Angular 20.2+): agrega la clase mientras el elemento entra y la saca
+              cuando termina la animación CSS. El @for con track por paso recrea la sección al
+              cambiar de paso, así la transición se ve cada vez. Sin @angular/animations.
+            -->
+            @for (p of [paso()]; track p) {
+            <section class="paso" aria-labelledby="titulo-paso" animate.enter="entrar-paso">
+              @switch (pasos[p].id) {
                 @case ('aprender') {
                   <h2 id="titulo-paso" tabindex="-1" class="objetivo">
                     <span class="dato">Objetivo</span>
@@ -173,6 +186,7 @@
                 }
               }
             </section>
+            }
 
             <footer class="pie">
               @if (paso() > 0) {
