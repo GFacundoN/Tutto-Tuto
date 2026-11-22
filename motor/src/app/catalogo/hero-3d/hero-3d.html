@@ -1,12 +1,27 @@
-<div class="marco" [class.lista]="estado() === 'lista'">
-  @if (estado() === 'sin-webgl') {
-    <!-- Sin WebGL queda la ilustración en SVG (ng-content: la pone el padre). -->
-    <ng-content />
-  } @else {
+@if (estado() === 'sin-webgl') {
+  <!-- Sin WebGL queda la ilustración en SVG (ng-content: la pone el padre). -->
+  <ng-content />
+} @else {
+  <div class="marco" [class.lista]="estado() === 'lista'">
     <canvas #lienzo aria-hidden="true"></canvas>
-    @if (etiqueta(); as e) {
-      <span class="etiqueta" aria-hidden="true" [style.left.px]="e.x" [style.top.px]="e.y">{{ e.texto }}</span>
-    }
-    <p class="ayuda" aria-hidden="true">Arrastrá para girar · clic en un curso para entrar</p>
+  </div>
+
+  @if (actual(); as c) {
+    <div class="controles">
+      <button type="button" class="flecha" (click)="mover(-1)" aria-label="Curso anterior">
+        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5" /></svg>
+      </button>
+      <!-- aria-live: al cambiar de curso, el lector de pantalla anuncia el nuevo nombre. -->
+      <div class="actual" aria-live="polite">
+        <strong>{{ c.resumen.titulo }}</strong>
+        <span>{{ c.disponible ? c.lecciones + ' lecciones' : 'Próximamente' }}</span>
+      </div>
+      <button type="button" class="flecha" (click)="mover(1)" aria-label="Curso siguiente">
+        <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5" /></svg>
+      </button>
+      @if (c.disponible) {
+        <a class="entrar" [routerLink]="['/', c.resumen.id]">Entrar al curso</a>
+      }
+    </div>
   }
-</div>
+}

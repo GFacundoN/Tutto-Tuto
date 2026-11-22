@@ -5,7 +5,7 @@
 /* El lugar se reserva desde el principio (aspect-ratio): cuando carga Three.js no se mueve nada. */
 .marco {
   position: relative;
-  aspect-ratio: 1 / 0.95;
+  aspect-ratio: 1 / 0.8;
   width: 100%;
 }
 canvas {
@@ -13,57 +13,68 @@ canvas {
   width: 100%;
   height: 100%;
   cursor: grab;
-  /* En celular, el scroll vertical sigue funcionando; el arrastre horizontal gira la pila. */
+  /* En celular el scroll vertical sigue funcionando; el arrastre horizontal gira el carrusel. */
   touch-action: pan-y;
   opacity: 0;
-  transform: scale(0.96);
-  transition:
-    opacity 600ms var(--ease-salida),
-    transform 700ms var(--ease-salida);
+  transition: opacity 600ms var(--ease-salida);
 }
 .lista canvas {
   opacity: 1;
-  transform: none;
 }
 canvas:active {
   cursor: grabbing;
 }
 
-/* Sombra de contacto debajo de la pila: un óvalo difuso en CSS, más barato que sombras reales en 3D. */
-.marco::before {
-  content: '';
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: 9%;
-  height: 9%;
+/* Controles del carrusel: el nombre del curso del frente entre dos flechas, y el botón para entrar. */
+.controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin-top: 4px;
+}
+.flecha {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: radial-gradient(closest-side, color-mix(in oklab, var(--tinta) 22%, transparent), transparent);
-  pointer-events: none;
+  border: 1px solid var(--borde-control);
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+  transition: background var(--dur);
 }
-
-.etiqueta {
-  position: absolute;
-  transform: translate(-50%, calc(-100% - 10px));
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: var(--primario-fondo);
-  color: var(--primario-tinta);
-  font-weight: 600;
-  font-size: 0.88rem;
-  white-space: nowrap;
-  pointer-events: none;
+.flecha:hover {
+  background: color-mix(in oklab, var(--tinta) 6%, transparent);
 }
-
-.ayuda {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0;
+.flecha path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.actual {
+  display: grid;
+  justify-items: center;
+  min-width: 160px;
   text-align: center;
-  font-size: 0.82rem;
+}
+.actual strong {
+  font-size: 1.05rem;
+}
+.actual span {
+  font-size: 0.85rem;
   color: var(--tinta-suave);
+}
+.entrar {
+  flex-basis: 100%;
+  text-align: center;
+  font-weight: 600;
+  color: var(--acento);
+  text-underline-offset: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {

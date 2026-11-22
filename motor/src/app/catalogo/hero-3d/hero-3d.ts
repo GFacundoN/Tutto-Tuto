@@ -1,20 +1,21 @@
-import { afterNextRender, Component, DestroyRef, ElementRef, inject, input, signal, viewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { TarjetaCurso } from '../tarjeta-curso';
-import type { BloqueCurso, EscenaHero, Paleta } from './escena';
+import type { EscenaHero, Paleta } from './escena';
 
 /**
- * Hero 3D: una pila de bloques, uno por curso, que se puede girar arrastrando.
- * Al pasar el mouse un bloque se levanta y muestra su nombre; con un clic entra al curso.
+ * Hero 3D: un carrusel con los logos oficiales de los cursos en relieve.
+ * Se gira arrastrando o con las flechas; el curso del frente se abre con un clic o con su botón.
  *
  * Rendimiento:
  * - Three.js se carga con import() recién después del primer dibujo (afterNextRender), en un chunk aparte.
  * - Solo se dibuja mientras el hero está en pantalla (IntersectionObserver) y la pestaña está visible.
- * - Si el navegador no tiene WebGL, se queda la ilustración en SVG que ya estaba.
- * Accesibilidad: el canvas es decorativo (aria-hidden); los mismos cursos están en las tarjetas de abajo.
+ * - Si el navegador no tiene WebGL, queda la ilustración en SVG de antes.
+ * Accesibilidad: el canvas es decorativo (aria-hidden); las flechas y el botón son controles reales.
  */
 @Component({
   selector: 'app-hero-3d',
+  imports: [RouterLink],
   templateUrl: './hero-3d.html',
   styleUrl: './hero-3d.css',
 })
@@ -22,7 +23,11 @@ export class Hero3d {
   readonly cursos = input.required<TarjetaCurso[]>();
 
   protected readonly estado = signal<'cargando' | 'lista' | 'sin-webgl'>('cargando');
-  protected readonly etiqueta = signal<{ texto: string; x: number; y: number } | null>(null);
+  protected readonly indice = signal(0);
+  protected readonly actual = computed(() => this.conLogo()[this.indice()]);
+
+  /** Solo los cursos que tienen logo entran al carrusel. */
+  protected readonly conLogo = computed(() => this.cursos().filter((c) => !!c.resumen.logo));
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('lienzo');
   private readonly router = inject(Router);
@@ -42,33 +47,24 @@ export class Hero3d {
         this.estado.set('sin-webgl');
         return;
       }
-      const { crearEscena } = await import('./escena');
+      const cursos = this.conLogo();
+      // Los logos y Three.js se piden en paralelo.
+      const [{ crearEscena }, svgs] = await Promise.all([
+        import('./escena'),
+        Promise.all(cursos.map((c) => fetch(`contenido/${c.resumen.logo}`).then((r) => r.text()))),
+      ]);
       if (destruido) return;
-      const lienzo = this.canvas().nativeElement;
-      const bloques: BloqueCurso[] = this.cursos().map((c) => ({
-        id: c.resumen.id,
-        titulo: c.resumen.titulo,
-        logo: c.resumen.logo ? `contenido/${c.resumen.logo}` : undefined,
-        disponible: c.disponible,
-      }));
-      const lecciones = new Map(this.cursos().map((c) => [c.resumen.id, c.lecciones]));
 
+      const lienzo = this.canvas().nativeElement;
       this.escena = crearEscena({
         canvas: lienzo,
-        bloques,
+        logos: cursos.map((c, i) => ({ svg: svgs[i], disponible: c.disponible })),
         paleta: leerPaleta(),
         movimientoReducido: matchMedia('(prefers-reduced-motion: reduce)').matches,
-        alResaltar: (b, x, y) => {
-          const texto = b ? `${b.titulo} · ${b.disponible ? `${lecciones.get(b.id)} lecciones` : 'próximamente'}` : null;
-          // Evita re-dibujar Angular en cada cuadro si la etiqueta no cambió de forma visible.
-          const actual = this.etiqueta();
-          if (!texto) {
-            if (actual) this.etiqueta.set(null);
-          } else if (!actual || actual.texto !== texto || Math.abs(actual.x - x) > 1 || Math.abs(actual.y - y) > 1) {
-            this.etiqueta.set({ texto, x, y });
-          }
+        alCambiar: (i) => this.indice.set(i),
+        alElegir: (i) => {
+          if (cursos[i].disponible) this.router.navigate(['/', cursos[i].resumen.id]);
         },
-        alElegir: (b) => this.router.navigate(['/', b.id]),
       });
       this.estado.set('lista');
 
@@ -97,38 +93,20 @@ export class Hero3d {
       });
     });
   }
+
+  protected mover(delta: number): void {
+    const n = this.conLogo().length;
+    const destino = (this.indice() + delta + n) % n;
+    this.indice.set(destino);
+    this.escena?.irA(destino);
+  }
 }
 
-/**
- * Colores de los cubos a partir de las variables CSS del tema: así la escena usa la misma paleta
- * que el resto de la página (y no los colores de marca de cada curso).
- */
+/** Colores de la escena a partir de las variables CSS del tema (los mismos del resto de la página). */
 function leerPaleta(): Paleta {
   const css = getComputedStyle(document.documentElement);
   const v = (nombre: string) => css.getPropertyValue(nombre).trim();
-  const oscuro = luminancia(v('--fondo')) < 0.2;
-  return {
-    // En oscuro: índigo profundo (la superficie con un toque del acento). En claro: casi blanco.
-    cubo: oscuro ? mezclar(v('--superficie-2'), v('--acento'), 0.22) : mezclar(v('--superficie'), v('--acento'), 0.06),
-    apagado: oscuro ? v('--superficie') : v('--superficie-2'),
-    texto: v('--tinta-suave'),
-  };
-}
-
-/** Mezcla dos colores hex (#rrggbb) en la proporción t (0 = a, 1 = b). */
-function mezclar(a: string, b: string, t: number): string {
-  const ca = hexARgb(a);
-  const cb = hexARgb(b);
-  return '#' + ca.map((x, i) => Math.round(x + (cb[i] - x) * t).toString(16).padStart(2, '0')).join('');
-}
-
-function luminancia(hex: string): number {
-  const [r, g, b] = hexARgb(hex);
-  return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-}
-
-function hexARgb(hex: string): number[] {
-  return [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return { acento: v('--acento'), apagado: v('--borde-control') };
 }
 
 function soportaWebgl(): boolean {

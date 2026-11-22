@@ -220,6 +220,11 @@ progress::-moz-progress-bar {
 .proximo .marca-curso {
   color: var(--tinta-suave);
 }
+/* Los logos de los cursos que todavía no están van en gris: el color queda para los disponibles. */
+.proximo .marca-curso img {
+  filter: grayscale(1);
+  opacity: 0.65;
+}
 .proximo .fila-accion {
   font-weight: 500;
   font-size: 0.85rem;
