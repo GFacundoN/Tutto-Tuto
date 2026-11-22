@@ -231,28 +231,8 @@ progress::-moz-progress-bar {
 }
 
 /* Sección de tarjetas: título grande con segunda línea atenuada y descripción al costado. */
-/*
-  Franja siempre oscura (en modo claro y oscuro), a todo el ancho de la ventana.
-  Redefine los tokens solo para esta sección: los hijos heredan la paleta oscura.
-  El fondo se extiende con box-shadow + clip-path para no generar scroll horizontal.
-*/
 .modulos {
-  --tinta: #f3f4f6;
-  --tinta-suave: #a3abbd;
-  --borde: #1f2447;
-  --borde-control: #5a62a8;
-  --superficie-2: #0e1230;
-  --acento: #818cf8;
-  --foco: #a5b4fc;
-  color: var(--tinta);
-  background:
-    radial-gradient(40rem 24rem at 90% 0%, rgb(55 48 163 / 0.28), transparent 70%),
-    radial-gradient(36rem 20rem at 0% 100%, rgb(23 37 120 / 0.3), transparent 70%),
-    #04050f;
-  box-shadow: 0 0 0 100vmax #04050f;
-  clip-path: inset(0 -100vmax);
-  padding-block: 80px;
-  margin: 24px 0 88px;
+  margin: 24px 0 96px;
 }
 .titular {
   display: grid;

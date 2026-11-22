@@ -1,9 +1,9 @@
 :host {
   display: block;
-  /* Tarjetas casi negras: el color lo ponen los focos de luz, no el fondo. */
-  --panel-fondo: #0b0d1f;
-  --panel-activo: #0c0e26;
-  --panel-tinta-activa: #ffffff;
+  /* Las tarjetas usan la superficie del tema: el color lo ponen los focos de luz. */
+  --panel-fondo: var(--superficie);
+  --panel-activo: var(--superficie);
+  --panel-tinta-activa: var(--tinta);
   --curva: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -57,6 +57,7 @@
   overflow: hidden;
   background-color: var(--panel-fondo);
   border: 1px solid var(--borde);
+  box-shadow: var(--sombra);
 }
 /* Arte de fondo: brillo índigo y una grilla tenue, solo en la tarjeta activa. */
 .panel::before {
@@ -66,9 +67,9 @@
   z-index: 0;
   /* Focos de luz: violeta fuerte abajo a la derecha, índigo tenue arriba a la izquierda. */
   background:
-    radial-gradient(55% 45% at 100% 100%, rgb(139 92 246 / 0.75), transparent 72%),
-    radial-gradient(35% 30% at 92% 96%, rgb(196 181 253 / 0.35), transparent 70%),
-    radial-gradient(45% 35% at 0% 0%, rgb(79 70 229 / 0.28), transparent 72%);
+    radial-gradient(55% 45% at 100% 100%, var(--panel-foco), transparent 72%),
+    radial-gradient(35% 30% at 92% 96%, var(--panel-foco-2), transparent 70%),
+    radial-gradient(45% 35% at 0% 0%, var(--luz-2), transparent 72%);
   opacity: 0;
   transition: opacity 0.35s var(--curva);
 }
@@ -116,7 +117,7 @@
   color: var(--tinta-suave);
 }
 .panel.activo .meta {
-  color: rgb(255 255 255 / 0.75);
+  color: var(--tinta-suave);
 }
 .usas {
   display: flex;
@@ -129,8 +130,8 @@
   padding: 3px 10px;
   border-radius: 8px;
   font: 500 0.78rem var(--fuente-codigo);
-  background: rgb(255 255 255 / 0.1);
-  border: 1px solid rgb(255 255 255 / 0.12);
+  background: color-mix(in oklab, var(--tinta) 7%, transparent);
+  border: 1px solid color-mix(in oklab, var(--tinta) 12%, transparent);
 }
 .logros {
   list-style: none;
@@ -147,7 +148,7 @@
 .logros svg {
   flex-shrink: 0;
   margin-top: 3px;
-  color: #34d399;
+  color: var(--exito);
 }
 .pie {
   display: flex;
@@ -168,7 +169,7 @@
   transition: background var(--dur);
 }
 .ir:hover {
-  background: rgb(255 255 255 / 0.1);
+  background: color-mix(in oklab, var(--tinta) 8%, transparent);
 }
 
 /* Puntos */
@@ -234,14 +235,14 @@
   .panel.activo {
     flex-grow: 2.9;
     background-color: var(--panel-activo);
-    border-color: rgb(139 92 246 / 0.35);
+    border-color: color-mix(in oklab, var(--panel-foco) 70%, var(--borde));
     color: var(--panel-tinta-activa);
   }
   .panel.activo::before {
     opacity: 1;
   }
   .panel.activo .desc {
-    color: rgb(255 255 255 / 0.78);
+    color: var(--tinta-suave);
   }
   /* El detalle se oculta rápido al cerrar y aparece con retraso al abrir. */
   .desc,
@@ -291,13 +292,13 @@
     padding: 24px;
     background-color: var(--panel-activo);
     color: var(--panel-tinta-activa);
-    border-color: rgb(139 92 246 / 0.3);
+    border-color: var(--borde);
   }
   .panel::before {
     opacity: 1;
   }
   .desc {
-    color: rgb(255 255 255 / 0.78);
+    color: var(--tinta-suave);
   }
   .cubierta {
     display: none;
