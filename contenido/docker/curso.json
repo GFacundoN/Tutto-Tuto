@@ -205,7 +205,7 @@
     "descripcion": [
       {
         "tipo": "texto",
-        "md": "Vas a dockerizar una app de tareas completa: un **front** (Angular, o cualquier SPA que tengas), una **API** (Spring Boot) y una base **MySQL**. La meta: que alguien que recién llega al equipo clone el repo, cree su `.env` y con **`docker compose up -d --build`** tenga todo andando en minutos, sin instalar Java, Node ni MySQL."
+        "md": "Vas a dockerizar una app de tareas completa: un **front** (Angular, o cualquier SPA que tengas), una **API** (Spring Boot) y una base **MySQL**. La meta: que alguien que recién llega al equipo clone el repo y con **`docker compose up -d --build`** tenga todo andando en minutos, sin instalar Java, Node ni MySQL."
       },
       {
         "tipo": "texto",
@@ -214,7 +214,7 @@
       {
         "tipo": "codigo",
         "lenguaje": "text",
-        "codigo": "tareas/\n├── compose.yaml\n├── .env            (no va a Git)\n├── .env.example\n├── .gitignore\n├── README.md\n├── front/\n│   ├── Dockerfile\n│   ├── .dockerignore\n│   └── nginx.conf\n└── api/\n    ├── Dockerfile\n    └── .dockerignore"
+        "codigo": "tareas/\n├── compose.yaml\n├── .env            (recorrido En una semana; no va a Git)\n├── .env.example\n├── .gitignore\n├── README.md\n├── front/\n│   ├── Dockerfile\n│   ├── .dockerignore\n│   └── nginx.conf\n└── api/\n    ├── Dockerfile\n    └── .dockerignore"
       },
       {
         "tipo": "texto",
@@ -240,8 +240,19 @@
       },
       {
         "id": "front-dockerfile",
-        "texto": "El front tiene un Dockerfile que sirve los archivos compilados con nginx.",
-        "leccion": "primer-dockerfile"
+        "texto": "El front tiene un Dockerfile multi-stage que compila con Node y sirve los archivos con nginx.",
+        "leccion": "multi-stage",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "front-dockerfile-simple",
+        "texto": "El front tiene un Dockerfile que parte de nginx:alpine y copia los archivos ya compilados a /usr/share/nginx/html.",
+        "leccion": "primer-dockerfile",
+        "versiones": [
+          "principiantes"
+        ]
       },
       {
         "id": "cache",
@@ -317,7 +328,7 @@
       },
       {
         "id": "readme",
-        "texto": "El README explica en tres pasos cómo levantar el proyecto (copiar .env.example, completar, docker compose up)."
+        "texto": "El README explica en pocos pasos cómo levantar el proyecto con docker compose up."
       },
       {
         "id": "explicar",

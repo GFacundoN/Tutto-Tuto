@@ -44,7 +44,7 @@
       },
       {
         "consigna": "Levantá **nginx** en segundo plano, con el puerto **8080** de tu PC apuntando al **80** del contenedor.",
-        "soluciones": ["docker run -d -p 8080:80 nginx"],
+        "soluciones": ["docker run -d -p 8080:80 nginx", "docker run -d -p 8080:80 nginx:latest"],
         "salida": "3f1c9a2b7d4e8c0b5a6f1e2d3c4b5a69788f7e6d5c4b3a2918f7e6d5c4b3a291\n\nAbrí http://localhost:8080 → Welcome to nginx!"
       }
     ],
