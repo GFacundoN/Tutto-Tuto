@@ -1,0 +1,49 @@
+<fieldset>
+  <legend>
+    @if (contexto()) {
+      <span class="contexto">{{ contexto() }}</span>
+    }
+    <span [innerHTML]="pregunta().pregunta | textoMd"></span>
+  </legend>
+
+  @if (pregunta().codigo) {
+    <app-codigo-copiable [codigo]="pregunta().codigo!" />
+  }
+
+  <ul class="opciones" role="list">
+    @for (opcion of opciones(); track opcion.texto) {
+      <!-- @let declara una variable local del template (Angular 18.1+), para no repetir la expresión. -->
+      @let marcada = elegida() === opcion;
+      <li>
+        <button
+          type="button"
+          class="opcion"
+          [class.elegida]="marcada"
+          [class.correcta]="elegida() && opcion.correcta"
+          [class.incorrecta]="marcada && !opcion.correcta"
+          [attr.aria-pressed]="marcada"
+          [attr.aria-disabled]="!!elegida()"
+          (click)="elegir(opcion)"
+        >
+          <span [innerHTML]="opcion.texto | textoMd"></span>
+          @if (elegida()) {
+            <span class="estado">{{ opcion.correcta ? 'Correcta' : marcada ? 'Tu respuesta' : '' }}</span>
+          }
+        </button>
+        @if (elegida()) {
+          <p class="explicacion" [innerHTML]="opcion.explicacion | textoMd"></p>
+        }
+      </li>
+    }
+  </ul>
+
+  <p class="veredicto" aria-live="polite">
+    @if (elegida(); as e) {
+      @if (e.correcta) {
+        <span class="ok">Correcto.</span>
+      } @else {
+        <span class="mal">No es esa. Leé por qué debajo de cada opción.</span>
+      }
+    }
+  </p>
+</fieldset>

@@ -1,0 +1,84 @@
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+legend {
+  font-weight: 700;
+  font-size: var(--t-2);
+  line-height: 1.35;
+  margin-bottom: 12px;
+  padding: 0;
+}
+.contexto {
+  display: block;
+  font-size: var(--t-0);
+  font-weight: 600;
+  color: var(--tinta-suave);
+  margin-bottom: 4px;
+}
+
+.opciones {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.opcion {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 12px 16px;
+  border-radius: var(--radio);
+  border: 2px solid var(--borde);
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--dur), background var(--dur);
+}
+.opcion:hover:not([aria-disabled='true']) {
+  border-color: var(--linea);
+}
+.opcion[aria-disabled='true'] {
+  cursor: default;
+}
+.opcion.correcta {
+  border-color: var(--exito);
+  background: var(--exito-fondo);
+}
+.opcion.incorrecta {
+  border-color: var(--error);
+  background: var(--error-fondo);
+}
+.estado {
+  font-size: var(--t-0);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.explicacion {
+  margin: 6px 4px 4px 16px;
+  font-size: 0.95rem;
+  color: var(--tinta-suave);
+}
+
+.veredicto {
+  margin: 12px 0 0;
+  font-weight: 700;
+  min-height: 1.6em;
+}
+.ok {
+  color: var(--exito);
+}
+.mal {
+  color: var(--error);
+}
