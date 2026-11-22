@@ -10,7 +10,8 @@
     "prebuild": "npm run contenido",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "validar-contenido": "node scripts/validar-contenido.mjs"
   },
   "private": true,
   "packageManager": "npm@11.19.1",
