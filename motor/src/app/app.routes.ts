@@ -18,11 +18,6 @@ export const routes: Routes = [
     canActivate: [seleccionarCursoGuard],
     children: [
       {
-        path: '',
-        title: 'Tu recorrido',
-        loadComponent: () => import('./mapa/mapa-page').then((m) => m.MapaPage),
-      },
-      {
         path: 'empezar',
         title: 'Elegí cómo aprender',
         loadComponent: () => import('./bienvenida/bienvenida-page').then((m) => m.BienvenidaPage),
@@ -39,10 +34,15 @@ export const routes: Routes = [
       },
       {
         // canActivate: guards que deciden si se puede entrar a la ruta.
-        // Sin versión elegida, estas pantallas no tienen sentido: el guard redirige a "empezar".
+        // Sin recorrido elegido, estas pantallas no tienen sentido: el guard redirige a "empezar".
         path: '',
         canActivate: [cursoElegidoGuard],
         children: [
+          {
+            path: '',
+            title: 'Tu recorrido',
+            loadComponent: () => import('./mapa/mapa-page').then((m) => m.MapaPage),
+          },
           {
             path: 'leccion/:leccionId',
             title: 'Lección',
