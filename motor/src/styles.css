@@ -1,33 +1,41 @@
 /*
   Estilos globales y tokens de diseño.
-  Idea visual: el curso es una línea de subte. Cada lección es una estación y cada
-  curso tiene el color de su línea (--linea, viene del JSON del curso).
-  Todo lo demás es sobrio para que la línea y el código sean lo que se ve.
+  Paleta y tipografía del portfolio gfacundon.dev: azul noche con resplandores índigo,
+  Onest para textos y títulos, JetBrains Mono para código y datos.
+  Estructura de plataforma de cursos (temario por módulos, lección con barra lateral):
+  el contenido es protagonista y el color se usa solo para acciones y progreso.
+  El modo oscuro es el del portfolio; el claro es su versión de día.
 */
 
 :root {
-  --fondo: #eef1f6;
+  --fondo: #f7f8fc;
   --superficie: #ffffff;
-  --superficie-2: #f6f8fb;
-  --tinta: #16213a;
-  --tinta-suave: #4a5672;
-  --borde: #d3d9e4;
+  --superficie-2: #f1f2fa;
+  --tinta: #10143a;
+  --tinta-suave: #4b5563;
+  --borde: #e5e7eb;
   /* Borde de controles interactivos: 3:1 contra el fondo (WCAG 1.4.11). --borde es solo decorativo. */
-  --borde-control: #737e97;
-  --linea: #c8235f;
-  --linea-tinta: #ffffff;
-  --exito: #17784f;
-  --exito-fondo: #e3f4ec;
-  --error: #b4361c;
-  --error-fondo: #fbe9e4;
-  --aviso-fondo: #fff4d6;
-  --codigo-fondo: #16213a;
-  --codigo-tinta: #e8ecf5;
-  --foco: #2b59c3;
+  --borde-control: #7c81ab;
+  --acento: #4f46e5;
+  --acento-tinta: #ffffff;
+  --acento-suave: #eef0ff;
+  /* Botón principal: en oscuro es la píldora índigo clara del portfolio. */
+  --primario-fondo: #4f46e5;
+  --primario-tinta: #ffffff;
+  --exito: #047857;
+  --exito-fondo: #e6f7ef;
+  --error: #be123c;
+  --error-fondo: #fdecef;
+  --aviso-fondo: #fff7e0;
+  --codigo-fondo: #10143a;
+  --codigo-tinta: #e5e7eb;
+  --foco: #4f46e5;
+  --sombra: 0 1px 2px rgb(16 20 58 / 0.06), 0 4px 16px rgb(16 20 58 / 0.05);
+  --resplandor: none;
 
-  --fuente-titulo: 'Bricolage Grotesque', system-ui, sans-serif;
-  --fuente-texto: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
-  --fuente-codigo: 'Atkinson Hyperlegible Mono', ui-monospace, 'Cascadia Code', monospace;
+  --fuente-titulo: 'Onest', system-ui, sans-serif;
+  --fuente-texto: 'Onest', system-ui, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
 
   /* Escala tipográfica (razón 1.25), en rem para respetar el tamaño de fuente del sistema. */
   --t-0: 0.8rem;
@@ -37,9 +45,10 @@
   --t-4: 1.953rem;
   --t-5: 2.441rem;
 
-  --radio-chico: 6px;
-  --radio: 12px;
-  --ancho-lectura: 68ch;
+  --radio-chico: 8px;
+  --radio: 16px;
+  --ancho-lectura: 72ch;
+  --ancho-pagina: 1200px;
   --gutter: max(16px, env(safe-area-inset-left));
   --dur: 180ms;
   --ease-salida: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -48,43 +57,55 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --fondo: #0f1522;
-    --superficie: #171f31;
-    --superficie-2: #1d2740;
-    --tinta: #e7ebf4;
-    --tinta-suave: #a7b1c8;
-    --borde: #2e3a57;
-    --borde-control: #64739a;
-    --linea: #ff5c93;
-    --linea-tinta: #1a0710;
-    --exito: #5fd39d;
-    --exito-fondo: #12372a;
-    --error: #ff8a6b;
-    --error-fondo: #3d1a12;
-    --aviso-fondo: #3a3115;
-    --codigo-fondo: #0a0f1a;
-    --foco: #8fb0ff;
+    --fondo: #070a1f;
+    --superficie: #0e1230;
+    --superficie-2: #151a3f;
+    --tinta: #f3f4f6;
+    --tinta-suave: #9ca3af;
+    --borde: #1f2447;
+    --borde-control: #5a62a8;
+    --acento: #818cf8;
+    --acento-tinta: #10143a;
+    --acento-suave: #1a1f4d;
+    --primario-fondo: #e9ebff;
+    --primario-tinta: #10143a;
+    --exito: #00ec7a;
+    --exito-fondo: #06281c;
+    --error: #fb7185;
+    --error-fondo: #2e0d18;
+    --aviso-fondo: #2a2410;
+    --codigo-fondo: #050716;
+    --foco: #a5b4fc;
+    --sombra: none;
+    --resplandor: radial-gradient(60rem 40rem at 15% -10%, rgb(55 48 163 / 0.38), transparent 70%),
+      radial-gradient(50rem 35rem at 95% 10%, rgb(23 37 120 / 0.5), transparent 70%);
     color-scheme: dark;
   }
 }
 
 :root[data-theme='dark'] {
-  --fondo: #0f1522;
-  --superficie: #171f31;
-  --superficie-2: #1d2740;
-  --tinta: #e7ebf4;
-  --tinta-suave: #a7b1c8;
-  --borde: #2e3a57;
-  --borde-control: #64739a;
-  --linea: #ff5c93;
-  --linea-tinta: #1a0710;
-  --exito: #5fd39d;
-  --exito-fondo: #12372a;
-  --error: #ff8a6b;
-  --error-fondo: #3d1a12;
-  --aviso-fondo: #3a3115;
-  --codigo-fondo: #0a0f1a;
-  --foco: #8fb0ff;
+  --fondo: #070a1f;
+  --superficie: #0e1230;
+  --superficie-2: #151a3f;
+  --tinta: #f3f4f6;
+  --tinta-suave: #9ca3af;
+  --borde: #1f2447;
+  --borde-control: #5a62a8;
+  --acento: #818cf8;
+  --acento-tinta: #10143a;
+  --acento-suave: #1a1f4d;
+  --primario-fondo: #e9ebff;
+  --primario-tinta: #10143a;
+  --exito: #00ec7a;
+  --exito-fondo: #06281c;
+  --error: #fb7185;
+  --error-fondo: #2e0d18;
+  --aviso-fondo: #2a2410;
+  --codigo-fondo: #050716;
+  --foco: #a5b4fc;
+  --sombra: none;
+  --resplandor: radial-gradient(60rem 40rem at 15% -10%, rgb(55 48 163 / 0.38), transparent 70%),
+    radial-gradient(50rem 35rem at 95% 10%, rgb(23 37 120 / 0.5), transparent 70%);
   color-scheme: dark;
 }
 
@@ -100,7 +121,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--fondo);
+  background: var(--resplandor) no-repeat, var(--fondo);
   color: var(--tinta);
   font-family: var(--fuente-texto);
   font-size: var(--t-1);
@@ -121,6 +142,7 @@ h3 {
 h1 {
   font-size: var(--t-4);
   font-weight: 800;
+  letter-spacing: -0.025em;
 }
 h2 {
   font-size: var(--t-3);
@@ -138,7 +160,7 @@ p {
 
 a {
   color: inherit;
-  text-decoration-color: var(--linea);
+  text-decoration-color: var(--acento);
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
 }
@@ -184,7 +206,7 @@ pre {
   padding: 10px 18px;
   border-radius: 999px;
   border: 2px solid transparent;
-  font: 600 var(--t-1) / 1.2 var(--fuente-texto);
+  font: 600 0.95rem / 1.2 var(--fuente-texto);
   cursor: pointer;
   text-decoration: none;
   transition: transform var(--dur) var(--ease-salida), background var(--dur);
@@ -198,8 +220,8 @@ pre {
   transform: none;
 }
 .boton-principal {
-  background: var(--linea);
-  color: var(--linea-tinta);
+  background: var(--primario-fondo);
+  color: var(--primario-tinta);
 }
 .boton-secundario {
   background: transparent;
@@ -213,14 +235,14 @@ pre {
   background: transparent;
   color: var(--tinta);
   text-decoration: underline;
-  text-decoration-color: var(--linea);
+  text-decoration-color: var(--acento);
   text-underline-offset: 3px;
   padding-inline: 6px;
 }
 
 .contenedor {
   width: 100%;
-  max-width: calc(var(--ancho-lectura) + 2 * var(--gutter));
+  max-width: calc(var(--ancho-pagina) + 2 * var(--gutter));
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -264,4 +286,18 @@ pre {
     border: 1px solid #ccc;
     white-space: pre-wrap;
   }
+}
+
+/* Etiqueta chica en mono, como los datos del portfolio ("años de experiencia"). */
+.dato {
+  font: 500 0.75rem/1.4 var(--fuente-codigo);
+  color: var(--tinta-suave);
+}
+
+/* Tarjeta base: superficie con borde sutil, radio 16px. */
+.tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
 }
