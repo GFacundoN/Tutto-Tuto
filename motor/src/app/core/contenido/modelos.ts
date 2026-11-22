@@ -6,8 +6,10 @@ export interface CursoResumen {
   id: string;
   titulo: string;
   descripcion: string;
-  /** Color de la "línea" del curso en el mapa (hex). */
+  /** Color de marca del curso (hex): tiñe el fondo del logo en el catálogo. */
   color: string;
+  /** Logo del curso, ruta relativa a contenido/ (ej. "angular/logo.svg"). */
+  logo?: string;
 }
 
 /** contenido/<curso>/curso.json */

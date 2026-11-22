@@ -137,7 +137,8 @@ function validarLeccion(cursoId, id, plantilla, versiones) {
 }
 
 const indice = leerJson(join(raiz, 'cursos.json')) ?? [];
-for (const { id: cursoId } of indice) {
+for (const { id: cursoId, logo } of indice) {
+  if (logo && !existsSync(join(raiz, logo))) error(cursoId, `el logo "${logo}" no existe en contenido/`);
   const curso = leerJson(join(raiz, cursoId, 'curso.json'));
   if (!curso) continue;
   const plantilla = leerCarpeta(join(raiz, cursoId, 'plantilla-proyecto'));
