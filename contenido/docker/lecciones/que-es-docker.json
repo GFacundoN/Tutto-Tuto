@@ -1,0 +1,77 @@
+{
+  "id": "que-es-docker",
+  "titulo": "Qué es Docker y qué problema resuelve",
+  "minutos": 10,
+  "objetivo": "explicar qué es una imagen, qué es un contenedor y por qué el equipo usa Docker.",
+  "explicacion": [
+    { "tipo": "texto", "md": "El problema clásico: la app anda en la PC de quien la hizo y en la tuya no. Falta una versión de Java, la base de datos es otra, una variable de entorno no está. **Docker** empaqueta el programa **junto con todo lo que necesita para correr** y lo corre igual en cualquier máquina que tenga Docker." },
+    { "tipo": "texto", "md": "Hay dos ideas que vas a usar todo el tiempo:" },
+    { "tipo": "lista", "items": [
+      "**Imagen**: el paquete. Tiene un sistema de archivos mínimo, el runtime (Java, Node…), tu programa y el comando para arrancarlo. Es de solo lectura: no cambia.",
+      "**Contenedor**: una imagen **corriendo**. Es un proceso aislado de tu PC, con su propio sistema de archivos, red y variables. De una misma imagen podés levantar muchos contenedores.",
+      "**Dockerfile**: la receta en texto para construir una imagen.",
+      "**Registro** (como Docker Hub): donde se guardan y comparten las imágenes, como un repositorio de Git pero de imágenes."
+    ] },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["semana"], "md": "Si venís de Java: la imagen es como la **clase** y el contenedor como el **objeto**. Una clase, muchas instancias. Y el Dockerfile se parece al `pom.xml`: describe cómo armar el resultado, pero acá el resultado incluye el sistema operativo y el runtime." },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["principiantes"], "md": "Pensalo como una receta y una torta: la **imagen** es la receta impresa (siempre igual) y cada **contenedor** es una torta hecha con esa receta. Podés hacer muchas tortas con la misma receta, y si una se arruina, la tirás y hacés otra." },
+    { "tipo": "texto", "md": "**¿Y una máquina virtual?** Una VM trae un sistema operativo entero, con su propio kernel: pesa gigas y tarda minutos en arrancar. Un contenedor **comparte el kernel** de la máquina donde corre y solo trae lo que el programa necesita: pesa megas y arranca en segundos. Por eso en tu PC podés tener el front, la API y la base corriendo a la vez sin que se arrastre." },
+    { "tipo": "texto", "md": "El camino de cualquier app en un equipo que usa Docker es siempre el mismo:" },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "Dockerfile ──docker build──▶ imagen ──docker push──▶ registro\n                                                       │\n                       servidor ◀──docker pull─────────┘\n                          │\n                          └──docker run──▶ contenedor" },
+    { "tipo": "nota", "variante": "dato", "md": "En la empresa, quien hace el deploy no instala Java ni MySQL en el servidor: baja las imágenes que armó el equipo y las corre. Lo mismo hacés vos en tu PC para tener todo el sistema funcionando en minutos." }
+  ],
+  "recursos": {
+    "video": { "id": "AquOM-ISsnA", "titulo": "Introducción, Docker vs VMs, OCI y casos de uso (Curso Docker 1)", "canal": "Pabpereza", "inicio": 115, "fin": 417, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: ¿Qué es un contenedor?", "url": "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/" },
+      { "titulo": "docs.docker.com: ¿Qué es una imagen?", "url": "https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená el camino que hace una app desde el código hasta estar corriendo en el servidor.",
+    "lenguaje": "text",
+    "lineas": [
+      "Escribís el Dockerfile con la receta de la app",
+      "docker build arma la imagen a partir del Dockerfile",
+      "docker push sube la imagen al registro del equipo",
+      "En el servidor, docker pull baja esa imagen",
+      "docker run crea un contenedor a partir de la imagen"
+    ],
+    "pistas": [
+      "Primero se construye la imagen (con su receta) y recién después se comparte.",
+      "El contenedor es lo último: es la imagen corriendo, y para correrla el servidor primero tiene que tenerla."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Todavía no hace falta tener nada instalado. Si querés adelantarte, seguí la guía de instalación del curso." }
+      ],
+      "resultadoEsperado": "Podés contar con tus palabras la diferencia entre imagen y contenedor."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Cuál es la diferencia entre una imagen y un contenedor?",
+      "opciones": [
+        { "texto": "La imagen es el paquete de solo lectura; el contenedor es esa imagen corriendo.", "correcta": true, "explicacion": "De una imagen salen muchos contenedores, y cada uno es un proceso aislado." },
+        { "texto": "Son lo mismo con distinto nombre.", "correcta": false, "explicacion": "La imagen no corre: es la plantilla. El contenedor es la ejecución." },
+        { "texto": "El contenedor es el archivo de texto con la receta.", "correcta": false, "explicacion": "La receta es el Dockerfile." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué un contenedor arranca mucho más rápido que una máquina virtual?",
+      "opciones": [
+        { "texto": "Porque comparte el kernel del sistema donde corre y no tiene que arrancar un sistema operativo entero.", "correcta": true, "explicacion": "Solo arranca el proceso de tu programa, aislado." },
+        { "texto": "Porque no usa la CPU.", "correcta": false, "explicacion": "Usa la CPU como cualquier proceso." },
+        { "texto": "Porque corre en la nube.", "correcta": false, "explicacion": "Corre en tu PC o en cualquier servidor con Docker." }
+      ]
+    },
+    {
+      "pregunta": "Tu compañero dice: \"en mi PC anda\". ¿Qué cambia si el proyecto tiene un Dockerfile?",
+      "opciones": [
+        { "texto": "Los dos corren la misma imagen, con el mismo runtime y dependencias, así que el entorno es el mismo.", "correcta": true, "explicacion": "Ese es justamente el problema que resuelve Docker." },
+        { "texto": "Nada: cada uno sigue necesitando instalar todo a mano.", "correcta": false, "explicacion": "Con la imagen, solo necesitás Docker." },
+        { "texto": "La app pasa a andar más rápido.", "correcta": false, "explicacion": "Docker no hace el código más rápido: hace el entorno reproducible." }
+      ]
+    }
+  ]
+}

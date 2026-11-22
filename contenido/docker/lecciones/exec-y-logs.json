@@ -1,0 +1,76 @@
+{
+  "id": "exec-y-logs",
+  "titulo": "Ver logs y entrar a un contenedor",
+  "minutos": 11,
+  "objetivo": "leer los logs de un contenedor, seguirlos en vivo y abrir una terminal adentro.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Todo lo que el programa escribe en consola (lo que en Spring Boot ves al arrancar) queda guardado como **logs** del contenedor:" },
+    { "tipo": "comando", "comando": "docker logs api", "salida": "  .   ____          _            __ _ _\n ...\nStarted TareasApplication in 3.214 seconds" },
+    { "tipo": "lista", "items": [
+      "`docker logs -f api`: los **sigue** en vivo (*follow*), como `tail -f`. Salís con Ctrl+C, y el contenedor sigue corriendo.",
+      "`docker logs --tail 50 api`: solo las últimas 50 líneas.",
+      "`docker logs -t api`: con la hora de cada línea."
+    ] },
+    { "tipo": "texto", "md": "A veces necesitás mirar **adentro**: qué archivos hay, si llega a la base, qué variables tiene. `docker exec` corre un comando en un contenedor que ya está corriendo:" },
+    { "tipo": "comando", "comando": "docker exec web ls /usr/share/nginx/html", "salida": "50x.html\nindex.html" },
+    { "tipo": "texto", "md": "Con `-it` (*interactive* + *tty*) abrís una terminal adentro y quedás \"parado\" en el contenedor. Salís con `exit`:" },
+    { "tipo": "comando", "comando": "docker exec -it web sh", "salida": "# cat /etc/os-release\nPRETTY_NAME=\"Debian GNU/Linux ...\"\n# exit" },
+    { "tipo": "nota", "variante": "dato", "md": "Muchas imágenes chicas (las `alpine` o las *distroless*) no traen `bash`. Probá primero `sh`. Algunas no traen ni eso: en ese caso los logs son tu herramienta principal." },
+    { "tipo": "texto", "md": "Para ver toda la configuración de un contenedor (variables, puertos, volúmenes, estado y hasta el código de salida) está `docker inspect`. Devuelve un JSON largo; con `--format` sacás solo un dato:" },
+    { "tipo": "comando", "comando": "docker inspect --format \"{{.State.Status}}\" web", "salida": "running" },
+    { "tipo": "nota", "variante": "error-comun", "md": "`Error response from daemon: container ... is not running`: `exec` solo funciona en contenedores corriendo. Si se cayó, mirá `docker logs` para saber por qué." }
+  ],
+  "recursos": {
+    "video": { "id": "wlFP0krYphg", "titulo": "Gestión de contenedores: exec, conflictos, rm y prune (Curso Docker 5)", "canal": "Pabpereza", "inicio": 19, "fin": 228, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: docker container logs", "url": "https://docs.docker.com/reference/cli/docker/container/logs/" },
+      { "titulo": "docs.docker.com: docker container exec", "url": "https://docs.docker.com/reference/cli/docker/container/exec/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "La API del equipo corre en un contenedor llamado `api` y algo no anda. Investigá.",
+    "pasos": [
+      { "consigna": "Seguí los logs de `api` en vivo.", "soluciones": ["docker logs -f api"], "salida": "2026-11-22T10:15:02  INFO  Started TareasApplication in 3.2 seconds\n2026-11-22T10:15:40  WARN  Connection refused: db:3306\n^C" },
+      { "consigna": "Abrí una terminal interactiva con `sh` dentro de `api`.", "soluciones": ["docker exec -it api sh"], "salida": "/app #" },
+      { "consigna": "Sin entrar, mostrá solo el estado de `db` con `docker inspect --format \"{{.State.Status}}\" db`.", "soluciones": ["docker inspect --format \"{{.State.Status}}\" db", "docker inspect -f \"{{.State.Status}}\" db"], "salida": "exited" }
+    ],
+    "pistas": [
+      "Para seguir los logs se agrega `-f` a `docker logs`. Para entrar: `docker exec`, las opciones `-it`, el contenedor y el programa (`sh`).",
+      "El último está escrito en la consigna: copiá el comando tal cual, con las comillas."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Con un nginx corriendo (`docker run -d --name web nginx`), probá `docker logs -f web` y en otra pestaña `curl http://localhost` o abrilo en el navegador si publicaste el puerto: vas a ver aparecer cada pedido." },
+        { "tipo": "texto", "md": "Después entrá con `docker exec -it web sh`, corré `ls /usr/share/nginx/html` y salí con `exit`." }
+      ],
+      "resultadoEsperado": "Ves los pedidos en los logs en vivo y pudiste listar los archivos de nginx desde adentro."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Estás siguiendo `docker logs -f api` y apretás Ctrl+C. ¿Qué pasa con el contenedor?",
+      "opciones": [
+        { "texto": "Sigue corriendo: solo dejaste de mirar los logs.", "correcta": true, "explicacion": "logs -f es un visor; cortarlo no afecta al contenedor." },
+        { "texto": "Se frena.", "correcta": false, "explicacion": "Para frenarlo es docker stop." },
+        { "texto": "Se borra.", "correcta": false, "explicacion": "Nada se borra por cortar el visor." }
+      ]
+    },
+    {
+      "pregunta": "`docker exec -it db bash` responde *executable file not found*. ¿Qué probás?",
+      "opciones": [
+        { "texto": "`docker exec -it db sh`: la imagen no trae bash.", "correcta": true, "explicacion": "Las imágenes chicas suelen traer solo sh." },
+        { "texto": "Reinstalar Docker.", "correcta": false, "explicacion": "No es un problema de Docker sino de lo que trae la imagen." },
+        { "texto": "`docker run -it db bash`.", "correcta": false, "explicacion": "run crea un contenedor nuevo de una imagen; db es un contenedor existente." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué diferencia hay entre `docker run` y `docker exec`?",
+      "opciones": [
+        { "texto": "run crea un contenedor nuevo desde una imagen; exec corre un comando en uno que ya existe y está corriendo.", "correcta": true, "explicacion": "exec es para meterse en algo que ya está andando." },
+        { "texto": "Son sinónimos.", "correcta": false, "explicacion": "Hacen cosas distintas." },
+        { "texto": "exec descarga la imagen y run no.", "correcta": false, "explicacion": "exec ni siquiera usa imágenes: trabaja sobre un contenedor." }
+      ]
+    }
+  ]
+}

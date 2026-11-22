@@ -1,0 +1,82 @@
+{
+  "id": "puertos-y-variables",
+  "titulo": "Puertos y variables de entorno",
+  "minutos": 12,
+  "objetivo": "publicar puertos y configurar un contenedor con variables de entorno, como una base MySQL.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un contenedor tiene su propia red. Si adentro un programa escucha en el puerto 80, **desde tu PC no lo ves** hasta que lo publicás con `-p puertoDeTuPC:puertoDelContenedor`." },
+    { "tipo": "comando", "comando": "docker run -d --name web -p 8080:80 nginx", "salida": "Abrí http://localhost:8080" },
+    { "tipo": "lista", "items": [
+      "Podés publicar varios: `-p 8080:80 -p 8443:443`.",
+      "El puerto de tu PC tiene que estar libre. Dos contenedores pueden escuchar en el 80 **adentro**, pero no pueden usar los dos el 8080 de **afuera**.",
+      "`docker port web` te muestra qué puertos tiene publicados."
+    ] },
+    { "tipo": "texto", "md": "La configuración (contraseñas, URLs, perfiles) no va adentro de la imagen: se pasa al crear el contenedor con **variables de entorno**, usando `-e NOMBRE=valor`. Cada imagen documenta cuáles lee. La de MySQL, por ejemplo, necesita la contraseña de root:" },
+    { "tipo": "comando", "comando": "docker run -d --name db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secreta -e MYSQL_DATABASE=tareas mysql:8.4", "salida": "c0ffee12ab34..." },
+    { "tipo": "texto", "md": "Con eso tenés un MySQL 8.4 en `localhost:3306`, con la base `tareas` creada. Tu API de Spring Boot en la PC se conecta como si estuviera instalado." },
+    { "tipo": "nota", "variante": "dato", "md": "Si son muchas variables, ponelas en un archivo `.env` (una por línea, `NOMBRE=valor`) y pasalo con `--env-file .env`. Ese archivo **no se sube a Git**: tiene secretos." },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["semana"], "md": "Spring Boot lee las variables de entorno automáticamente: `SPRING_DATASOURCE_URL` pisa a `spring.datasource.url` del `application.properties`. Así la misma imagen de la API sirve para tu PC, testing y producción, cambiando solo las variables." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`Bind for 0.0.0.0:8080 failed: port is already allocated`: ese puerto de tu PC ya lo usa otro contenedor (o un programa, como tu propia API corriendo). Usá otro (`-p 8081:80`) o frená el que lo ocupa." }
+  ],
+  "recursos": {
+    "video": { "id": "ImLoqbY9DNA", "titulo": "Redirigir puertos y opciones extra de docker run (Curso Docker 4)", "canal": "Pabpereza", "inicio": 463, "fin": 650, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Publicar puertos", "url": "https://docs.docker.com/engine/network/port-publishing/" },
+      { "titulo": "docs.docker.com: docker run -e (variables de entorno)", "url": "https://docs.docker.com/reference/cli/docker/container/run/#env" },
+      { "titulo": "Docker Hub: imagen oficial de MySQL", "url": "https://hub.docker.com/_/mysql" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Levantá una base MySQL para desarrollar y revisá sus puertos.",
+    "pasos": [
+      {
+        "consigna": "Corré `mysql:8.4` en segundo plano, llamado `db`, con el puerto **3306** publicado en el **3306** y la variable `MYSQL_ROOT_PASSWORD=secreta`.",
+        "soluciones": ["docker run -d --name db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secreta mysql:8.4"],
+        "salida": "c0ffee12ab34cd56ef78ab90cd12ef34ab56cd78ef90ab12cd34ef56ab78cd90"
+      },
+      {
+        "consigna": "Mostrá qué puertos tiene publicados el contenedor `db`.",
+        "soluciones": ["docker port db"],
+        "salida": "3306/tcp -> 0.0.0.0:3306"
+      }
+    ],
+    "pistas": [
+      "Las variables se pasan con `-e NOMBRE=valor` y los puertos con `-p afuera:adentro`. La imagen con su etiqueta va al final: `mysql:8.4`.",
+      "Para los puertos hay un comando propio: `docker port` seguido del nombre del contenedor."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Corré el `docker run` de MySQL y esperá unos segundos a que inicialice (lo ves con `docker logs db`)." },
+        { "tipo": "texto", "md": "Conectate desde DBeaver, MySQL Workbench o la extensión de VS Code a `localhost:3306`, usuario `root`, contraseña `secreta`." }
+      ],
+      "resultadoEsperado": "El cliente de base de datos se conecta y ves las bases de sistema de MySQL."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Querés dos nginx a la vez en tu PC. ¿Qué combinación funciona?",
+      "opciones": [
+        { "texto": "`-p 8080:80` en uno y `-p 8081:80` en el otro.", "correcta": true, "explicacion": "Adentro pueden usar el mismo puerto; afuera cada uno necesita uno libre." },
+        { "texto": "`-p 8080:80` en los dos.", "correcta": false, "explicacion": "El segundo falla: el 8080 de tu PC ya está ocupado." },
+        { "texto": "Es imposible: nginx usa siempre el 80.", "correcta": false, "explicacion": "Usa el 80 adentro de su contenedor; afuera elegís vos." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué la contraseña de la base se pasa con `-e` y no se escribe dentro de la imagen?",
+      "opciones": [
+        { "texto": "Para que la misma imagen sirva en todos los entornos y los secretos no queden guardados en ella.", "correcta": true, "explicacion": "La imagen se comparte; la configuración cambia por entorno." },
+        { "texto": "Porque las imágenes no pueden tener texto.", "correcta": false, "explicacion": "Pueden tener cualquier archivo, pero no conviene meter secretos." },
+        { "texto": "Porque con -e la base anda más rápido.", "correcta": false, "explicacion": "No tiene que ver con la velocidad." }
+      ]
+    },
+    {
+      "pregunta": "En `-p 3306:3306`, ¿cuál número es el de tu PC?",
+      "opciones": [
+        { "texto": "El primero.", "correcta": true, "explicacion": "Siempre afuera:adentro." },
+        { "texto": "El segundo.", "correcta": false, "explicacion": "El segundo es el puerto dentro del contenedor." },
+        { "texto": "Depende de la imagen.", "correcta": false, "explicacion": "El orden es siempre el mismo." }
+      ]
+    }
+  ]
+}

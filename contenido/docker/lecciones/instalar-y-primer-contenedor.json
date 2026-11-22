@@ -1,0 +1,89 @@
+{
+  "id": "instalar-y-primer-contenedor",
+  "titulo": "Instalar Docker y correr tu primer contenedor",
+  "minutos": 12,
+  "objetivo": "comprobar que Docker funciona y levantar un servidor web con un solo comando.",
+  "explicacion": [
+    { "tipo": "texto", "md": "En Windows y Mac se usa **Docker Desktop**: trae el motor de Docker (Docker Engine), la herramienta de línea de comandos `docker` y Compose. En Windows corre sobre **WSL 2**, un Linux liviano integrado al sistema. La guía de instalación del curso tiene el paso a paso." },
+    { "tipo": "texto", "md": "Para saber si quedó bien, pedile a Docker su versión. Si responde con dos bloques, **Client** y **Server**, el motor está andando:" },
+    { "tipo": "comando", "comando": "docker version", "salida": "Client:\n Version:           29.x.x\n ...\nServer: Docker Desktop\n Engine:\n  Version:          29.x.x" },
+    { "tipo": "nota", "variante": "error-comun", "md": "Si dice `Cannot connect to the Docker daemon` (o en Windows `open //./pipe/dockerDesktopLinuxEngine`), el cliente está instalado pero el motor no arrancó: abrí Docker Desktop y esperá a que diga *Engine running*." },
+    { "tipo": "texto", "md": "El clásico primer comando descarga una imagen de prueba y la corre. Leé lo que imprime: te cuenta exactamente lo que hizo Docker." },
+    { "tipo": "comando", "comando": "docker run hello-world", "salida": "Unable to find image 'hello-world:latest' locally\nlatest: Pulling from library/hello-world\n...\nHello from Docker!\nThis message shows that your installation appears to be working correctly." },
+    { "tipo": "texto", "md": "Ahora algo útil: un servidor web **nginx** que queda corriendo de fondo y se ve en el navegador." },
+    { "tipo": "comando", "comando": "docker run -d -p 8080:80 nginx", "salida": "3f1c9a2b7d4e... (el id del contenedor)" },
+    { "tipo": "lista", "items": [
+      "`docker run`: crea un contenedor a partir de una imagen y lo arranca. Si la imagen no está en tu PC, la descarga de Docker Hub.",
+      "`-d` (*detach*): lo deja corriendo en segundo plano y te devuelve la terminal.",
+      "`-p 8080:80`: conecta el puerto **8080 de tu PC** con el puerto **80 del contenedor**, donde escucha nginx. Primero va el de afuera, después el de adentro.",
+      "`nginx`: la imagen. Sin etiqueta, Docker usa `nginx:latest`."
+    ] },
+    { "tipo": "texto", "md": "Abrí http://localhost:8080 y vas a ver *Welcome to nginx!*. Ese servidor no está instalado en tu PC: vive dentro del contenedor y desaparece cuando lo borrás." },
+    { "tipo": "nota", "variante": "comparacion", "soloVersiones": ["semana"], "md": "Es como `mvn spring-boot:run` o `ng serve`, pero sin tener Java, Node ni nginx instalados: todo lo que el programa necesita viene dentro de la imagen." }
+  ],
+  "recursos": {
+    "video": { "id": "obALwLV-49U", "titulo": "Instalación de Docker Desktop y Engine en Windows, Mac y Linux (Curso Docker 2)", "canal": "Pabpereza", "inicio": 22, "fin": 580, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Instalar Docker Desktop en Windows", "url": "https://docs.docker.com/desktop/setup/install/windows-install/" },
+      { "titulo": "docs.docker.com: docker container run", "url": "https://docs.docker.com/reference/cli/docker/container/run/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Comprobá la instalación y levantá tu primer servidor. Escribí cada comando en la terminal y apretá Enter.",
+    "pasos": [
+      {
+        "consigna": "Fijate qué versión de Docker tenés (y que el motor responda).",
+        "soluciones": ["docker version"],
+        "salida": "Client:\n Version:           29.x.x\nServer: Docker Desktop\n Engine:\n  Version:          29.x.x"
+      },
+      {
+        "consigna": "Corré la imagen de prueba `hello-world`.",
+        "soluciones": ["docker run hello-world"],
+        "salida": "Hello from Docker!\nThis message shows that your installation appears to be working correctly."
+      },
+      {
+        "consigna": "Levantá **nginx** en segundo plano, con el puerto **8080** de tu PC apuntando al **80** del contenedor.",
+        "soluciones": ["docker run -d -p 8080:80 nginx"],
+        "salida": "3f1c9a2b7d4e8c0b5a6f1e2d3c4b5a69788f7e6d5c4b3a2918f7e6d5c4b3a291\n\nAbrí http://localhost:8080 → Welcome to nginx!"
+      }
+    ],
+    "pistas": [
+      "Los comandos empiezan con `docker` y después una acción: `version` para la versión y `run` para correr una imagen.",
+      "Para el último: `-d` lo deja en segundo plano y `-p afuera:adentro` publica el puerto. La imagen va al final: `nginx`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Con Docker Desktop abierto, corré los mismos tres comandos en PowerShell o en la terminal de VS Code y abrí http://localhost:8080." },
+        { "tipo": "texto", "md": "Para no dejarlo corriendo, buscá su id con `docker ps` y frenalo con `docker stop <id>` (lo vemos en la próxima lección)." }
+      ],
+      "resultadoEsperado": "docker version muestra Client y Server, hello-world imprime \"Hello from Docker!\" y en http://localhost:8080 ves \"Welcome to nginx!\"."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "En `docker run -d -p 8080:80 nginx`, ¿qué significa `8080:80`?",
+      "opciones": [
+        { "texto": "El puerto 8080 de tu PC se conecta con el 80 del contenedor.", "correcta": true, "explicacion": "Primero va el puerto de afuera (tu PC) y después el de adentro (donde escucha nginx)." },
+        { "texto": "El puerto 80 de tu PC se conecta con el 8080 del contenedor.", "correcta": false, "explicacion": "Es al revés: afuera:adentro." },
+        { "texto": "nginx usa los puertos 8080 y 80 a la vez.", "correcta": false, "explicacion": "Es un solo mapeo: un puerto de tu PC hacia uno del contenedor." }
+      ]
+    },
+    {
+      "pregunta": "`docker version` muestra el bloque Client pero da error al buscar el Server. ¿Qué pasa?",
+      "opciones": [
+        { "texto": "El motor de Docker no está corriendo: hay que abrir Docker Desktop.", "correcta": true, "explicacion": "El cliente (el comando docker) habla con el motor; si el motor no arrancó, no hay a quién hablarle." },
+        { "texto": "Hay que reinstalar Docker.", "correcta": false, "explicacion": "Casi nunca hace falta: alcanza con arrancar el motor." },
+        { "texto": "Falta descargar la imagen hello-world.", "correcta": false, "explicacion": "La versión no depende de ninguna imagen." }
+      ]
+    },
+    {
+      "pregunta": "Corrés `docker run nginx` (sin `-d`). ¿Qué pasa con la terminal?",
+      "opciones": [
+        { "texto": "Queda ocupada mostrando los logs de nginx hasta que lo frenes con Ctrl+C.", "correcta": true, "explicacion": "Sin -d el contenedor corre en primer plano, conectado a tu terminal." },
+        { "texto": "Se cierra.", "correcta": false, "explicacion": "La terminal no se cierra: queda mostrando la salida del contenedor." },
+        { "texto": "Nada: igual queda de fondo.", "correcta": false, "explicacion": "Eso es lo que hace -d (detach)." }
+      ]
+    }
+  ]
+}
