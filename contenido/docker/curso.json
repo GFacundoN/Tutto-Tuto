@@ -2,7 +2,7 @@
   "id": "docker",
   "titulo": "Docker",
   "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
-  "color": "#6172FF",
+  "color": "#1D63ED",
   "logo": "docker/logo.svg",
   "versionHerramienta": "Docker Engine 29 · Compose v5",
   "caminos": {

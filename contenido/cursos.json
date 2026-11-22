@@ -24,7 +24,7 @@
     "id": "docker",
     "titulo": "Docker",
     "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
-    "color": "#6172FF",
+    "color": "#1D63ED",
     "logo": "docker/logo.svg",
     "estado": "disponible",
     "area": "Infraestructura",
@@ -45,6 +45,7 @@
     "titulo": "Java y Spring Boot",
     "descripcion": "La API que consume el frontend: controladores REST, servicios, JPA, validaciones y seguridad con JWT.",
     "color": "#3d8b37",
+    "logo": "java-spring/logo.svg",
     "estado": "proximamente",
     "area": "Backend",
     "usas": [
@@ -64,6 +65,7 @@
     "titulo": "SQL y bases relacionales",
     "descripcion": "Diseñar tablas, consultar y unir datos con MySQL: lo que está debajo de cada pantalla de la app.",
     "color": "#00758f",
+    "logo": "sql/logo.svg",
     "estado": "proximamente",
     "area": "Datos",
     "usas": [
@@ -83,6 +85,7 @@
     "titulo": "Git y trabajo en equipo",
     "descripcion": "Ramas, pull requests y revisiones de código, con el tablero de tareas del equipo en Trello.",
     "color": "#f05032",
+    "logo": "git-equipo/logo.svg",
     "estado": "proximamente",
     "area": "Equipo",
     "usas": [
