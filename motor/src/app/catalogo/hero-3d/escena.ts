@@ -26,15 +26,25 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 export interface BloqueCurso {
   id: string;
   titulo: string;
-  color: string;
   /** URL del logo (SVG). Sin logo, la cara muestra el nombre. */
   logo?: string;
   disponible: boolean;
 }
 
+/** Colores del tema del sitio (se leen de las variables CSS): los cubos no usan el color de cada curso. */
+export interface Paleta {
+  /** Cubos de cursos disponibles. */
+  cubo: string;
+  /** Cubos de cursos en preparación. */
+  apagado: string;
+  /** Nombre escrito en las caras de los cursos sin logo. */
+  texto: string;
+}
+
 export interface OpcionesEscena {
   canvas: HTMLCanvasElement;
   bloques: BloqueCurso[];
+  paleta: Paleta;
   movimientoReducido: boolean;
   /** Se llama con el bloque bajo el puntero (o null) y su posición en pantalla, para la etiqueta. */
   alResaltar: (bloque: BloqueCurso | null, x: number, y: number) => void;
@@ -43,6 +53,8 @@ export interface OpcionesEscena {
 
 /** Interfaz mínima que usa el componente: arrancar/parar el dibujo y liberar la GPU. */
 export interface EscenaHero {
+  /** Cambia los colores (por ejemplo, al pasar de tema oscuro a claro). */
+  cambiarPaleta(paleta: Paleta): void;
   reanudar(): void;
   pausar(): void;
   destruir(): void;
@@ -87,11 +99,9 @@ export function crearEscena(op: OpcionesEscena): EscenaHero {
   const piezas: { malla: Mesh; base: Vector3; escala: number; desfase: number; bloque: BloqueCurso; foco: number }[] = [];
 
   op.bloques.slice(0, LUGARES.length).forEach((bloque, i) => {
-    const color = new Color(bloque.color);
     // Los cursos que todavía no están quedan más apagados y mate.
-    if (!bloque.disponible) color.lerp(new Color('#8a8fa3'), 0.45);
     const material = new MeshPhysicalMaterial({
-      color,
+      color: new Color(bloque.disponible ? op.paleta.cubo : op.paleta.apagado),
       roughness: bloque.disponible ? 0.28 : 0.55,
       metalness: 0,
       clearcoat: bloque.disponible ? 1 : 0.3,
@@ -106,7 +116,7 @@ export function crearEscena(op: OpcionesEscena): EscenaHero {
     malla.userData['indice'] = piezas.length;
 
     // La cara de adelante lleva el logo (o el nombre), dibujado en un canvas 2D.
-    const cara = new Mesh(geometriaCara, new MeshBasicMaterial({ map: texturaCara(bloque), transparent: true }));
+    const cara = new Mesh(geometriaCara, new MeshBasicMaterial({ map: texturaCara(bloque, op.paleta), transparent: true }));
     cara.position.z = 0.501;
     malla.add(cara);
 
@@ -244,6 +254,18 @@ export function crearEscena(op: OpcionesEscena): EscenaHero {
   ajustar();
 
   return {
+    cambiarPaleta(paleta: Paleta) {
+      for (const p of piezas) {
+        (p.malla.material as MeshPhysicalMaterial).color.set(p.bloque.disponible ? paleta.cubo : paleta.apagado);
+        // Las caras con logo no cambian; las que tienen el nombre se vuelven a dibujar con el color nuevo.
+        if (!p.bloque.logo) {
+          const cara = p.malla.children[0] as Mesh<PlaneGeometry, MeshBasicMaterial>;
+          cara.material.map?.dispose();
+          cara.material.map = texturaCara(p.bloque, paleta);
+        }
+      }
+      pedirCuadro();
+    },
     reanudar() {
       if (activa) return;
       activa = true;
@@ -284,7 +306,7 @@ function limitar(valor: number, min: number, max: number): number {
 }
 
 /** Dibuja la cara del bloque: el logo sobre una placa clara, o el nombre si no hay logo. */
-function texturaCara(bloque: BloqueCurso): CanvasTexture {
+function texturaCara(bloque: BloqueCurso, paleta: Paleta): CanvasTexture {
   const lado = 512;
   const lienzo = document.createElement('canvas');
   lienzo.width = lienzo.height = lado;
@@ -293,13 +315,12 @@ function texturaCara(bloque: BloqueCurso): CanvasTexture {
   textura.colorSpace = SRGBColorSpace;
   textura.anisotropy = 4;
 
-  // Placa clara redondeada: así cualquier logo oficial se ve con sus colores reales.
-  ctx.fillStyle = bloque.disponible ? '#fffdfa' : 'rgba(255,253,250,0.18)';
-  ctx.beginPath();
-  ctx.roundRect(8, 8, lado - 16, lado - 16, 96);
-  ctx.fill();
-
   if (bloque.logo) {
+    // Placa clara redondeada: así cualquier logo oficial se ve con sus colores reales.
+    ctx.fillStyle = '#fffdfa';
+    ctx.beginPath();
+    ctx.roundRect(56, 56, lado - 112, lado - 112, 72);
+    ctx.fill();
     const img = new Image();
     img.onload = () => {
       // Un SVG con solo viewBox informa un tamaño "natural" con su proporción: escalamos a la caja.
@@ -313,7 +334,7 @@ function texturaCara(bloque: BloqueCurso): CanvasTexture {
     img.src = bloque.logo;
   } else {
     const palabra = bloque.titulo.split(' ')[0];
-    ctx.fillStyle = '#fffdfa';
+    ctx.fillStyle = paleta.texto;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     let tam = 150;

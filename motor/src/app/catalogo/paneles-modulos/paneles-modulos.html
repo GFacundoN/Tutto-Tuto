@@ -16,7 +16,7 @@
 
   <ul class="pista" #pista (scroll)="alDesplazar()" aria-label="Cursos por área">
     @for (p of paneles(); track p.resumen.id; let i = $index) {
-      <li class="panel" [class.activo]="activo() === i" [style.--marca]="p.resumen.color" (mouseenter)="alPasar(i)" (focusin)="activar(i)">
+      <li class="panel" [class.activo]="activo() === i" (mouseenter)="alPasar(i)" (focusin)="activar(i)">
         <!-- Toda la tarjeta es clickeable para abrirla; el botón es lo que se enfoca con teclado. -->
         <button
           type="button"
