@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "contenido": "node scripts/copiar-contenido.mjs",
+    "contenido:watch": "node scripts/copiar-contenido.mjs --watch",
+    "prestart": "npm run contenido",
     "start": "ng serve",
+    "prebuild": "npm run contenido",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -17,6 +21,7 @@
     "@angular/forms": "^22.3.0",
     "@angular/platform-browser": "^22.3.0",
     "@angular/router": "^22.3.0",
+    "@stackblitz/sdk": "^1.11.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
