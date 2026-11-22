@@ -1,14 +1,17 @@
 :host {
   display: block;
-  position: relative;
+  --panel-fondo: var(--superficie-2);
+  --panel-activo: #3b30c4;
+  --panel-tinta-activa: #ffffff;
+  --curva: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Flechas arriba a la derecha, como en los carruseles de producto. */
+/* Flechas sobre la pista, a la derecha. */
 .controles {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 .flecha {
   display: grid;
@@ -17,22 +20,17 @@
   height: 44px;
   border-radius: 50%;
   border: 1px solid var(--borde-control);
-  background: var(--superficie);
+  background: transparent;
   color: var(--tinta);
   cursor: pointer;
-  transition:
-    background var(--dur),
-    opacity var(--dur);
-}
-.flecha:hover:not(:disabled) {
-  background: var(--superficie-2);
+  transition: opacity var(--dur);
 }
 .flecha:disabled {
-  opacity: 0.35;
+  opacity: 0.3;
   cursor: default;
 }
 .flecha path,
-.lista path {
+.logros path {
   fill: none;
   stroke: currentColor;
   stroke-width: 2.2;
@@ -45,91 +43,129 @@
   margin: 0;
   padding: 0;
   display: flex;
-  gap: 16px;
+  gap: 12px;
 }
 
+/* Tarjeta */
 .panel {
   position: relative;
-  min-width: 0;
-  border-radius: 20px;
-  border: 1px solid var(--borde);
-  background:
-    radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--acento) 18%, transparent), transparent 60%),
-    var(--superficie);
-  box-shadow: var(--sombra);
-  overflow: hidden;
-}
-.panel.activo {
-  border-color: color-mix(in oklab, var(--acento) 55%, var(--borde));
-}
-
-.cabecera {
   display: flex;
-  align-items: flex-start;
+  min-width: 0;
+  border-radius: 16px;
+  padding: 32px;
+  overflow: hidden;
+  background-color: var(--panel-fondo);
+  border: 1px solid var(--borde);
+}
+/* Arte de fondo: brillo índigo y una grilla tenue, solo en la tarjeta activa. */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(70% 60% at 100% 100%, rgb(168 85 247 / 0.55), transparent 70%),
+    radial-gradient(60% 50% at 0% 0%, rgb(129 140 248 / 0.35), transparent 70%),
+    repeating-linear-gradient(90deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 32px);
+  opacity: 0;
+  transition: opacity 0.35s var(--curva);
+}
+.cubierta {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: 16px;
+}
+.cubierta:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: -4px;
+}
+.panel.activo .cubierta {
+  /* Abierta, deja pasar los clics al botón "Empezar". */
+  pointer-events: none;
+}
+.interior {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   width: 100%;
-  padding: 24px 24px 0;
-  background: none;
-  border: 0;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
 }
-.cabecera:focus-visible {
-  outline-offset: -4px;
-  border-radius: 20px;
-}
-.numero {
-  font: 500 0.95rem var(--fuente-codigo);
-  color: var(--acento);
-  flex-shrink: 0;
-}
-.titulo-corto {
-  font-weight: 700;
-  font-size: 1.05rem;
+.titulo {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   line-height: 1.3;
-}
-
-.detalle {
-  padding: 4px 24px 24px;
-}
-.detalle h3 {
-  font-size: 1.5rem;
-  letter-spacing: -0.02em;
-  margin: 6px 0 8px;
+  margin: 0;
 }
 .desc {
+  margin: 0;
   color: var(--tinta-suave);
+  font-size: 0.95rem;
 }
-.vas {
-  margin: 16px 0 8px;
+.usas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
 }
-.lista {
+.chip {
+  padding: 3px 10px;
+  border-radius: 8px;
+  font: 500 0.78rem var(--fuente-codigo);
+  background: rgb(255 255 255 / 0.15);
+}
+.logros {
   list-style: none;
-  margin: 0 0 20px;
+  margin: 0;
   padding: 0;
   display: grid;
   gap: 8px;
+  font-size: 0.92rem;
 }
-.lista li {
+.logros li {
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  font-size: 0.95rem;
+  gap: 12px;
 }
-.lista svg {
+.logros svg {
   flex-shrink: 0;
-  margin-top: 4px;
-  color: var(--exito);
+  margin-top: 3px;
+  color: #34d399;
+}
+.pie {
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
+}
+.ir {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 28px;
+  border-radius: 8px;
+  border: 1.5px solid currentColor;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background var(--dur);
+}
+.ir:hover {
+  background: rgb(255 255 255 / 0.1);
 }
 
-/* Puntos de navegación */
+/* Puntos */
 .puntos {
   display: flex;
   justify-content: center;
-  gap: 4px;
-  margin-top: 20px;
+  gap: 2px;
+  margin-top: 24px;
 }
 .punto {
   display: grid;
@@ -141,13 +177,12 @@
   cursor: pointer;
 }
 .punto span {
-  display: block;
   width: 8px;
   height: 8px;
   border-radius: 4px;
   background: var(--borde-control);
   transition:
-    width 260ms var(--ease-salida),
+    width 0.35s var(--curva),
     background var(--dur);
 }
 .punto.activo span {
@@ -156,76 +191,80 @@
 }
 
 /*
-  Desktop: paneles que se expanden. El activo crece (flex-grow) y los demás quedan
-  angostos mostrando número y título en vertical. El detalle aparece con un leve
-  retraso para que no se vea el texto "apretado" mientras el panel se agranda.
+  Desktop: alturas escalonadas alineadas abajo (2ª al 50%, 4ª al 75%).
+  La activa crece en ancho (flex-grow 2.9) y en alto (100%) en 0,35 s, cambia al color
+  de marca con su arte, y el detalle aparece recién cuando terminó de crecer.
 */
-@media (min-width: 900px) {
+@media (min-width: 1025px) {
+  .controles,
+  .puntos {
+    display: none;
+  }
   .pista {
-    height: 520px;
+    align-items: flex-end;
+    gap: 8px;
+    height: 440px;
   }
   .panel {
     flex: 1 1 0;
+    height: 100%;
     transition:
-      flex-grow 520ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      border-color var(--dur);
+      flex-grow 0.35s var(--curva),
+      height 0.35s var(--curva),
+      background-color 0.35s var(--curva),
+      color 0.35s var(--curva);
+  }
+  .panel:nth-child(2):not(.activo) {
+    height: 50%;
+  }
+  .panel:nth-child(4):not(.activo) {
+    height: 75%;
   }
   .panel.activo {
-    flex-grow: 5;
+    flex-grow: 2.9;
+    background-color: var(--panel-activo);
+    border-color: transparent;
+    color: var(--panel-tinta-activa);
   }
-  .panel:not(.activo) .cabecera {
-    height: 100%;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 0;
-  }
-  .panel:not(.activo) .titulo-corto {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 420px;
-    color: var(--tinta-suave);
-  }
-  .panel.activo .titulo-corto {
-    display: none;
-  }
-  .detalle {
-    position: absolute;
-    inset: 56px 0 0;
-    width: max(420px, 100%);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(8px);
-    transition:
-      opacity 200ms ease-in,
-      transform 200ms ease-in,
-      visibility 0s 200ms;
-  }
-  .panel.activo .detalle {
+  .panel.activo::before {
     opacity: 1;
-    visibility: visible;
-    transform: none;
-    transition:
-      opacity 320ms 220ms var(--ease-salida),
-      transform 320ms 220ms var(--ease-salida),
-      visibility 0s;
   }
-  .ir {
-    position: absolute;
-    left: 24px;
-    bottom: 24px;
+  .panel.activo .desc {
+    color: rgb(255 255 255 / 0.78);
+  }
+  /* El detalle se oculta rápido al cerrar y aparece con retraso al abrir. */
+  .desc,
+  .usas,
+  .logros,
+  .pie {
+    opacity: 0;
+    transition: opacity 0.12s var(--curva);
+  }
+  .panel:not(.activo) .pie {
+    visibility: hidden;
+  }
+  /* Mientras está cerrada, el detalle no puede achicar la tarjeta ni desbordar. */
+  .panel:not(.activo) .interior > :not(.titulo) {
+    width: 320px;
+  }
+  .panel.activo .desc,
+  .panel.activo .usas,
+  .panel.activo .logros,
+  .panel.activo .pie {
+    opacity: 1;
+    transition: opacity 0.22s var(--curva) 0.35s;
+  }
+  .interior {
+    min-width: 0;
   }
 }
 
-/* Celular y tablet: carrusel horizontal con snap; todos los paneles se ven completos. */
-@media (max-width: 899px) {
+/* Celular y tablet: carrusel; todas las tarjetas abiertas y con el color de marca. */
+@media (max-width: 1024px) {
   .pista {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    padding-bottom: 4px;
     margin-inline: calc(-1 * var(--gutter));
     padding-inline: var(--gutter);
     scroll-padding-inline: var(--gutter);
@@ -234,20 +273,34 @@
     display: none;
   }
   .panel {
-    flex: 0 0 min(85%, 360px);
+    flex: 0 0 min(85%, 340px);
     scroll-snap-align: start;
+    padding: 24px;
+    background-color: var(--panel-activo);
+    color: var(--panel-tinta-activa);
+    border-color: transparent;
   }
-  .titulo-corto {
+  .panel::before {
+    opacity: 1;
+  }
+  .desc {
+    color: rgb(255 255 255 / 0.78);
+  }
+  .cubierta {
     display: none;
   }
-  .cabecera {
-    pointer-events: none;
+  .pie {
+    margin-top: 8px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .panel,
-  .detalle,
+  .panel::before,
+  .desc,
+  .usas,
+  .logros,
+  .pie,
   .punto span {
     transition: none !important;
   }

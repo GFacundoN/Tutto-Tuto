@@ -230,33 +230,35 @@ progress::-moz-progress-bar {
   background: var(--error-fondo);
 }
 
-/* Sección de módulos: título grande con segunda línea atenuada y descripción al costado. */
+/* Sección de tarjetas: título grande con segunda línea atenuada y descripción al costado. */
 .modulos {
-  margin: 8px 0 72px;
+  margin: 16px 0 88px;
 }
 .titular {
   display: grid;
   gap: 16px;
-  margin-bottom: 8px;
-  align-items: end;
+  margin-bottom: 40px;
 }
-@media (min-width: 900px) {
+@media (min-width: 1025px) {
   .titular {
-    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
-    gap: 48px;
+    grid-template-columns: 1fr 450px;
+    gap: 32px 80px;
   }
 }
 .titular h2 {
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  font-size: clamp(2.1rem, 4.5vw, 3rem);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  max-width: 480px;
   margin: 0;
 }
 .atenuado {
   color: var(--tinta-suave);
 }
 .titular-desc {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--tinta-suave);
   margin: 0;
+  padding-top: 8px;
 }
