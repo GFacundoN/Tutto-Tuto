@@ -44,7 +44,7 @@
   display: grid;
   place-items: center;
   border-radius: var(--radio-chico);
-  border: 1px solid color-mix(in oklab, var(--codigo-tinta) 30%, transparent);
+  border: 1px solid color-mix(in oklab, var(--codigo-tinta) 60%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;

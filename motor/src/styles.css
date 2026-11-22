@@ -12,6 +12,8 @@
   --tinta: #16213a;
   --tinta-suave: #4a5672;
   --borde: #d3d9e4;
+  /* Borde de controles interactivos: 3:1 contra el fondo (WCAG 1.4.11). --borde es solo decorativo. */
+  --borde-control: #737e97;
   --linea: #c8235f;
   --linea-tinta: #ffffff;
   --exito: #17784f;
@@ -52,6 +54,7 @@
     --tinta: #e7ebf4;
     --tinta-suave: #a7b1c8;
     --borde: #2e3a57;
+    --borde-control: #64739a;
     --linea: #ff5c93;
     --linea-tinta: #1a0710;
     --exito: #5fd39d;
@@ -72,6 +75,7 @@
   --tinta: #e7ebf4;
   --tinta-suave: #a7b1c8;
   --borde: #2e3a57;
+  --borde-control: #64739a;
   --linea: #ff5c93;
   --linea-tinta: #1a0710;
   --exito: #5fd39d;
@@ -200,7 +204,7 @@ pre {
 .boton-secundario {
   background: transparent;
   color: var(--tinta);
-  border-color: var(--borde);
+  border-color: var(--borde-control);
 }
 .boton-secundario:hover {
   border-color: var(--tinta-suave);

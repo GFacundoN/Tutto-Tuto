@@ -37,7 +37,7 @@ legend {
   display: grid;
   gap: 4px;
   padding: 16px 16px 16px 48px;
-  border: 2px solid var(--borde);
+  border: 2px solid var(--borde-control);
   border-radius: var(--radio);
   background: var(--superficie);
   cursor: pointer;

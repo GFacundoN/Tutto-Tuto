@@ -49,7 +49,7 @@ textarea {
   font: 0.9rem/1.5 var(--fuente-codigo);
   background: var(--codigo-fondo);
   color: var(--codigo-tinta);
-  border: 1px solid var(--borde);
+  border: 1px solid var(--borde-control);
   border-radius: var(--radio-chico);
   padding: 10px 12px;
   resize: vertical;
