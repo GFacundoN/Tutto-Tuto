@@ -51,6 +51,12 @@ describe('repaso espaciado', () => {
     expect(r).toEqual(['errada', 'nueva']);
   });
 
+  it('en empate no se queda siempre con las primeras', () => {
+    const claves = Array.from({ length: 12 }, (_, i) => `l${Math.floor(i / 3)}#${i % 3}`);
+    const r = elegirRepaso(claves, {}, 3, '2026-11-22');
+    expect(r).not.toEqual(claves.slice(0, 3));
+  });
+
   it('devuelve menos si no hay suficientes', () => {
     expect(elegirRepaso(['x'], {}, 3)).toEqual(['x']);
   });

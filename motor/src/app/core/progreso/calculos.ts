@@ -79,7 +79,15 @@ export function elegirRepaso(
       const pb = puntaje(b);
       if (pa.vencida !== pb.vencida) return pa.vencida ? -1 : 1;
       if (pa.caja !== pb.caja) return pa.caja - pb.caja;
-      return pb.atraso - pa.atraso;
+      if (pa.atraso !== pb.atraso) return pb.atraso - pa.atraso;
+      // Empate: orden pseudoaleatorio que cambia cada día, para mezclar lecciones.
+      return hash(a + hoy) - hash(b + hoy);
     })
     .slice(0, cantidad);
+}
+
+function hash(texto: string): number {
+  let h = 0;
+  for (const c of texto) h = (Math.imul(31, h) + c.charCodeAt(0)) | 0;
+  return h;
 }
