@@ -1,8 +1,10 @@
-# Recursos externos del curso de Angular
+# Recursos externos de los cursos
+
+## Angular
 
 Verificados el 22/11/2026: cada video existe, permite embeberse, su idioma se confirmó con los subtítulos automáticos de YouTube y el tramo (inicio–fin) está dentro de la duración real. Cada enlace de documentación respondió 200 con el título esperado.
 
-## Videos
+### Videos
 
 | Lección | Video | Canal | Tramo | Idioma | OK |
 |---|---|---|---|---|---|
@@ -39,7 +41,7 @@ Verificados el 22/11/2026: cada video existe, permite embeberse, su idioma se co
 | TypeScript esencial | [Interfaces TypeScript - Curso Typescript desde cero](https://www.youtube.com/watch?v=CmE3okASUJo&t=0s) | Domini Code | 0:00–7:31 (de 19:36) | es (subtítulos auto: es) | ✓ |
 | Cómo funciona una página: HTML y CSS | [HTML en 5 minutos | Te lo explico así nomás.](https://www.youtube.com/watch?v=EvKm8yhM7V8&t=0s) | Dot Dager | 0:00–6:23 (de 6:23) | es (subtítulos auto: es) | ✓ |
 
-## Documentación
+### Documentación
 
 - [angular.dev: Qué es Angular](https://angular.dev/overview) (Angular hoy)
 - [angular.dev: Essentials (resumen oficial de conceptos)](https://angular.dev/essentials) (Angular hoy)
@@ -104,3 +106,77 @@ Verificados el 22/11/2026: cada video existe, permite embeberse, su idioma se co
 - [TypeScript: Object types e interfaces (en inglés)](https://www.typescriptlang.org/docs/handbook/2/objects.html) (TypeScript esencial)
 - [MDN: Primeros pasos con HTML](https://developer.mozilla.org/es/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax) (Cómo funciona una página: HTML y CSS)
 - [MDN: ¿Qué es CSS?](https://developer.mozilla.org/es/docs/Learn_web_development/Core/Styling_basics/What_is_CSS) (Cómo funciona una página: HTML y CSS)
+
+## Docker
+
+Verificados el 22/11/2026 con el mismo criterio: cada video existe, se puede embeber, tiene subtítulos automáticos en español y el tramo está dentro de la duración real. Cada enlace respondió 200.
+
+### Videos
+
+| Lección | Video | Canal | Tramo | Idioma | OK |
+|---|---|---|---|---|---|
+| Buenas prácticas para producción | [Puesta en producción, seguridad y buenas prácticas básicas - Curso docker 15](https://www.youtube.com/watch?v=eh4YS9x9CDU&t=278s) | Pabpereza | 4:38–12:50 (de 18:29) | es (subtítulos auto: es) | ✓ |
+| Builds rápidos: cache de capas y .dockerignore | [Dockerfile y Docker build, construir imágenes, optimizar cache - Curso Docker 7](https://www.youtube.com/watch?v=A8oXDTDhZWU&t=364s) | Pabpereza | 6:04–10:35 (de 11:09) | es (subtítulos auto: es) | ✓ |
+| Compose en el día a día | [Docker Compose, orquestar múltiples contenedores y despliegue de servicios - Curso Docker 12](https://www.youtube.com/watch?v=oR0nBx5C9DM&t=319s) | Pabpereza | 5:19–7:22 (de 16:22) | es (subtítulos auto: es) | ✓ |
+| Cuando un contenedor no arranca | — (solo docs) | | | | |
+| Docker Compose: todo en un archivo | [Docker Compose, orquestar múltiples contenedores y despliegue de servicios - Curso Docker 12](https://www.youtube.com/watch?v=oR0nBx5C9DM&t=21s) | Pabpereza | 0:21–7:22 (de 16:22) | es (subtítulos auto: es) | ✓ |
+| El ciclo de vida de un contenedor | [Ejecución de contenedores, run, logs, puertos, procesos y más - Curso Docker 4](https://www.youtube.com/watch?v=ImLoqbY9DNA&t=34s) | Pabpereza | 0:34–4:59 (de 11:48) | es (subtítulos auto: es) | ✓ |
+| Front, API y base con Compose | [Docker Compose, orquestar múltiples contenedores y despliegue de servicios - Curso Docker 12](https://www.youtube.com/watch?v=oR0nBx5C9DM&t=559s) | Pabpereza | 9:19–15:10 (de 16:22) | es (subtítulos auto: es) | ✓ |
+| Imágenes chicas con multi-stage | [Docker Multi-Stage y Distroless: de 1GB a 2MB paso a paso](https://www.youtube.com/watch?v=6p-z8ozXlqM&t=32s) | Pabpereza | 0:32–5:52 (de 10:30) | es (subtítulos auto: es) | ✓ |
+| Imágenes, etiquetas y registros | [Imágenes de contenedor, pull, layers, rmi, search, prune y más - Curso docker 6](https://www.youtube.com/watch?v=Q0AIECxW8Fo&t=45s) | Pabpereza | 0:45–10:28 (de 10:51) | es (subtítulos auto: es) | ✓ |
+| Instalar Docker y correr tu primer contenedor | [Instalación Docker Desktop y Engine en Windows, Mac y Linux - Curso Docker 2](https://www.youtube.com/watch?v=obALwLV-49U&t=22s) | Pabpereza | 0:22–9:40 (de 9:40) | es (subtítulos auto: es) | ✓ |
+| La terminal, sin miedo | — (solo docs) | | | | |
+| Publicar imágenes en un registro | [Gestión de imágenes - commit, save, load, tag, push a dockerhub - Curso Docker 9](https://www.youtube.com/watch?v=5CNQMeYUBPs&t=244s) | Pabpereza | 4:04–8:03 (de 8:26) | es (subtítulos auto: es) | ✓ |
+| Puertos y variables de entorno | [Ejecución de contenedores, run, logs, puertos, procesos y más - Curso Docker 4](https://www.youtube.com/watch?v=ImLoqbY9DNA&t=463s) | Pabpereza | 7:43–10:50 (de 11:48) | es (subtítulos auto: es) | ✓ |
+| Qué es Docker y qué problema resuelve | [Introducción, docker vs VMs, OCI, casos de uso... - Curso Docker 1](https://www.youtube.com/watch?v=AquOM-ISsnA&t=115s) | Pabpereza | 1:55–6:57 (de 11:45) | es (subtítulos auto: es) | ✓ |
+| Redes: contenedores que se hablan por nombre | [Redes, principales tipos, segregación de red en Docker network - Curso Docker 11](https://www.youtube.com/watch?v=lQoh9gaEvvc&t=60s) | Pabpereza | 1:00–7:17 (de 7:54) | es (subtítulos auto: es) | ✓ |
+| Servidores, localhost y puertos | — (solo docs) | | | | |
+| Tu primer Dockerfile | [Dockerfile y Docker build, construir imágenes, optimizar cache - Curso Docker 7](https://www.youtube.com/watch?v=A8oXDTDhZWU&t=18s) | Pabpereza | 0:18–6:04 (de 11:09) | es (subtítulos auto: es) | ✓ |
+| Variables y secretos con .env | [Construye, empaqueta y ejecuta tu primera app en un contenedor Docker - Curso Docker 14](https://www.youtube.com/watch?v=hXh_ej-hsMg&t=309s) | Pabpereza | 5:09–11:44 (de 12:28) | es (subtítulos auto: es) | ✓ |
+| Ver logs y entrar a un contenedor | [Gestión de contenedores, exec, conflictos, rm, prune y más - Curso Docker 5](https://www.youtube.com/watch?v=wlFP0krYphg&t=19s) | Pabpereza | 0:19–3:48 (de 8:26) | es (subtítulos auto: es) | ✓ |
+| Volúmenes: que los datos no se pierdan | [Volúmenes, montaje de archivos y backups en Docker - Curso Docker 10](https://www.youtube.com/watch?v=APgKgrcibvs&t=42s) | Pabpereza | 0:42–8:41 (de 11:48) | es (subtítulos auto: es) | ✓ |
+
+### Documentación
+
+- [docs.docker.com: Buenas prácticas para construir imágenes](https://docs.docker.com/build/building/best-practices/)
+- [docs.docker.com: restart en Compose](https://docs.docker.com/reference/compose-file/services/#restart)
+- [docs.docker.com: Usar la cache de build](https://docs.docker.com/get-started/docker-concepts/building-images/using-the-build-cache/)
+- [docs.docker.com: Archivos .dockerignore](https://docs.docker.com/build/concepts/context/#dockerignore-files)
+- [docs.docker.com: docker compose (referencia CLI)](https://docs.docker.com/reference/cli/docker/compose/)
+- [docs.docker.com: docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/)
+- [docs.docker.com: docker container inspect](https://docs.docker.com/reference/cli/docker/container/inspect/)
+- [docs.docker.com: Limpiar recursos sin uso (prune)](https://docs.docker.com/engine/manage-resources/pruning/)
+- [docs.docker.com: docker system df](https://docs.docker.com/reference/cli/docker/system/df/)
+- [docs.docker.com: Cómo funciona Compose](https://docs.docker.com/compose/intro/compose-application-model/)
+- [docs.docker.com: Referencia de services](https://docs.docker.com/reference/compose-file/services/)
+- [docs.docker.com: docker container ls](https://docs.docker.com/reference/cli/docker/container/ls/)
+- [docs.docker.com: docker container rm](https://docs.docker.com/reference/cli/docker/container/rm/)
+- [docs.docker.com: Controlar el orden de arranque](https://docs.docker.com/compose/how-tos/startup-order/)
+- [docs.docker.com: healthcheck en Compose](https://docs.docker.com/reference/compose-file/services/#healthcheck)
+- [docs.docker.com: Multi-stage builds](https://docs.docker.com/get-started/docker-concepts/building-images/multi-stage-builds/)
+- [spring.io: Spring Boot con Docker](https://spring.io/guides/gs/spring-boot-docker/)
+- [docs.docker.com: ¿Qué es un registro?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-registry/)
+- [docs.docker.com: docker image prune](https://docs.docker.com/reference/cli/docker/image/prune/)
+- [docs.docker.com: Instalar Docker Desktop en Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+- [docs.docker.com: docker container run](https://docs.docker.com/reference/cli/docker/container/run/)
+- [Microsoft Learn: Introducción a PowerShell](https://learn.microsoft.com/es-es/powershell/scripting/overview)
+- [MDN (en inglés): Curso intensivo de línea de comandos](https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Command_line)
+- [docs.docker.com: Construir, etiquetar y publicar una imagen](https://docs.docker.com/get-started/docker-concepts/building-images/build-tag-and-publish-an-image/)
+- [docs.github.com: Trabajar con el registro de contenedores](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- [docs.docker.com: Publicar puertos](https://docs.docker.com/engine/network/port-publishing/)
+- [docs.docker.com: docker run -e (variables de entorno)](https://docs.docker.com/reference/cli/docker/container/run/#env)
+- [Docker Hub: imagen oficial de MySQL](https://hub.docker.com/_/mysql)
+- [docs.docker.com: ¿Qué es un contenedor?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-a-container/)
+- [docs.docker.com: ¿Qué es una imagen?](https://docs.docker.com/get-started/docker-concepts/the-basics/what-is-an-image/)
+- [docs.docker.com: Redes en Docker](https://docs.docker.com/engine/network/)
+- [docs.docker.com: Redes bridge](https://docs.docker.com/engine/network/drivers/bridge/)
+- [MDN: ¿Cómo funciona la web?](https://developer.mozilla.org/es/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works)
+- [MDN: ¿Qué es un servidor web?](https://developer.mozilla.org/es/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server)
+- [docs.docker.com: Escribir un Dockerfile](https://docs.docker.com/get-started/docker-concepts/building-images/writing-a-dockerfile/)
+- [docs.docker.com: Referencia del Dockerfile](https://docs.docker.com/reference/dockerfile/)
+- [docs.docker.com: Variables en Compose](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)
+- [docs.docker.com: Setear variables de entorno en contenedores](https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/)
+- [docs.docker.com: docker container logs](https://docs.docker.com/reference/cli/docker/container/logs/)
+- [docs.docker.com: docker container exec](https://docs.docker.com/reference/cli/docker/container/exec/)
+- [docs.docker.com: Persistir datos de un contenedor](https://docs.docker.com/get-started/docker-concepts/running-containers/persisting-container-data/)
+- [docs.docker.com: Volúmenes](https://docs.docker.com/engine/storage/volumes/)
