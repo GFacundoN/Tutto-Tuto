@@ -10,8 +10,6 @@ export interface CursoResumen {
   color: string;
   /** Logo del curso, ruta relativa a contenido/ (ej. "angular/logo.svg"). */
   logo?: string;
-  /** Imagen de portada para la tarjeta del home (relativa a contenido/). Sin ella se dibuja una con el color. */
-  portada?: string;
   /** "proximamente": se anuncia en el home pero todavía no tiene curso.json. Por defecto, disponible. */
   estado?: 'disponible' | 'proximamente';
   /** Parte del stack que cubre, ej. "Frontend". */

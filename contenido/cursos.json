@@ -5,7 +5,6 @@
     "descripcion": "Del primer componente a una app que consume tu API de Spring Boot. Angular 22 con signals y componentes standalone.",
     "color": "#c8235f",
     "logo": "angular/logo.svg",
-    "portada": "angular/portada.svg",
     "estado": "disponible",
     "area": "Frontend",
     "usas": [
@@ -25,9 +24,8 @@
     "id": "docker",
     "titulo": "Docker",
     "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
-    "color": "#1d63ed",
+    "color": "#6172FF",
     "logo": "docker/logo.svg",
-    "portada": "docker/portada.svg",
     "estado": "disponible",
     "area": "Infraestructura",
     "usas": [
