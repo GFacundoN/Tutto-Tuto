@@ -86,3 +86,7 @@ textarea {
 .solucion {
   margin-top: 16px;
 }
+
+.ayuda-editor {
+  font-size: 0.9rem;
+}

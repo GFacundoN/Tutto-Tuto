@@ -13,7 +13,14 @@
             de tu navegador. La primera vez tarda entre 30 y 60 segundos en instalar dependencias.
           </p>
           <div class="fila-acciones">
-            <button type="button" class="boton boton-principal" (click)="abrirEditor()">Abrir el proyecto</button>
+            <button
+              type="button"
+              class="boton boton-principal"
+              (click)="abrirEditor()"
+              [disabled]="!plantillaLista()"
+            >
+              {{ plantillaLista() ? 'Abrir el proyecto' : 'Preparando el proyecto…' }}
+            </button>
             <button type="button" class="boton boton-secundario" (click)="modoPegar.set(true)">
               Prefiero hacerlo en mi PC
             </button>
@@ -23,6 +30,15 @@
     }
     @case ('cargando') {
       <p class="tinta-suave" role="status">Cargando el editor…</p>
+    }
+    @case ('listo') {
+      @if (!modoPegar()) {
+        <p class="tinta-suave ayuda-editor">
+          ¿La vista previa dice que no puede correr el proyecto? Algunos navegadores no permiten correrlo embebido.
+          <button type="button" class="boton boton-texto" (click)="abrirEnPestana()">Abrilo en una pestaña nueva</button>
+          y, cuando termines, pegá tus archivos acá para corregirlos.
+        </p>
+      }
     }
     @case ('error') {
       @if (!modoPegar()) {

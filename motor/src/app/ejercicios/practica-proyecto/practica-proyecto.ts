@@ -51,6 +51,8 @@ export class PracticaProyecto {
   protected readonly archivosAVerificar = computed(() => [
     ...new Set(this.ejercicio().verificaciones.map((v) => v.archivo)),
   ]);
+  /** La plantilla base llega por HTTP: sin ella el proyecto no tiene package.json. */
+  protected readonly plantillaLista = computed(() => Object.keys(this.plantilla()).length > 0);
   protected readonly solucion = computed(() => Object.entries(this.ejercicio().solucion));
 
   private proyecto() {
