@@ -550,5 +550,77 @@
         }
       ]
     }
+  ],
+  "destacados": [
+    {
+      "titulo": "Pantallas con componentes",
+      "descripcion": "Armá la interfaz como piezas reutilizables que muestran datos y responden a lo que hace el usuario, con el estado en signals.",
+      "usas": [
+        "Standalone",
+        "Signals",
+        "@if / @for"
+      ],
+      "logros": [
+        "Componentes con input() y output()",
+        "Templates con control flow moderno",
+        "Estado que se actualiza solo con computed()"
+      ]
+    },
+    {
+      "titulo": "Lógica ordenada y navegación",
+      "descripcion": "Separá la lógica de la pantalla en servicios, compartí estado entre componentes y armá varias pantallas con el router.",
+      "usas": [
+        "Servicios",
+        "inject()",
+        "Router"
+      ],
+      "logros": [
+        "Servicios singleton con estado compartido",
+        "Rutas con parámetros y carga diferida",
+        "Rutas protegidas con guards"
+      ]
+    },
+    {
+      "titulo": "Conectado a tu API de Spring Boot",
+      "descripcion": "Pedí y mandá datos a una API REST, manejá carga y errores, y agregá el token a cada pedido en un solo lugar.",
+      "usas": [
+        "HttpClient",
+        "RxJS",
+        "httpResource"
+      ],
+      "logros": [
+        "GET, POST y PATCH desde servicios",
+        "Interceptors para JWT y errores 401",
+        "Proxy y CORS en desarrollo"
+      ]
+    },
+    {
+      "titulo": "Formularios con validaciones",
+      "descripcion": "Construí formularios tipados, validalos y mostrá errores claros, con la API que más se usa en empresas y la nueva de Angular 22.",
+      "usas": [
+        "Reactive Forms",
+        "Signal Forms",
+        "Validators"
+      ],
+      "logros": [
+        "Validaciones y mensajes de error útiles",
+        "Enviar sin perder datos ni recargar",
+        "Reconocer ngModel en código existente"
+      ]
+    },
+    {
+      "titulo": "Listo para el equipo",
+      "descripcion": "Leé código Angular clásico, entendé por qué la pantalla no se actualiza, escribí tests y empaquetá la app en Docker.",
+      "usas": [
+        "Vitest",
+        "Docker",
+        "DevTools"
+      ],
+      "logros": [
+        "Traducir NgModules y *ngIf al Angular moderno",
+        "Tests con TestBed y HTTP simulado",
+        "Build de producción servido con nginx"
+      ]
+    }
   ]
 }

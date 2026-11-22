@@ -21,8 +21,20 @@ export interface Curso extends CursoResumen {
   instalacion: Bloque[];
   proyectoFinal: ProyectoFinal;
   referencia: SeccionReferencia[];
+  /** Tarjetas destacadas para el home (lo que vas a poder hacer). Si falta, se usan los niveles. */
+  destacados?: Destacado[];
   /** JSON con los archivos base del proyecto StackBlitz (ruta relativa a la carpeta del curso). */
   plantillaProyecto?: string;
+}
+
+/** Tarjeta del home: agrupa módulos en algo que vas a poder hacer. */
+export interface Destacado {
+  titulo: string;
+  descripcion: string;
+  /** Herramientas o conceptos que vas a usar (chips). */
+  usas: string[];
+  /** Lo que vas a poder hacer, en frases cortas. */
+  logros: string[];
 }
 
 /** Un mismo curso puede tener recorridos distintos (ej. "en una semana" y "desde cero"). */
