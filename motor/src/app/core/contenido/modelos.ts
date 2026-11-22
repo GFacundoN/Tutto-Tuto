@@ -10,6 +10,16 @@ export interface CursoResumen {
   color: string;
   /** Logo del curso, ruta relativa a contenido/ (ej. "angular/logo.svg"). */
   logo?: string;
+  /** Imagen de portada para la tarjeta del home (relativa a contenido/). Sin ella se dibuja una con el color. */
+  portada?: string;
+  /** "proximamente": se anuncia en el home pero todavía no tiene curso.json. Por defecto, disponible. */
+  estado?: 'disponible' | 'proximamente';
+  /** Parte del stack que cubre, ej. "Frontend". */
+  area?: string;
+  /** Herramientas o conceptos principales (chips). */
+  usas?: string[];
+  /** Lo que vas a poder hacer al terminarlo, en frases cortas. */
+  logros?: string[];
 }
 
 /** contenido/<curso>/curso.json */
@@ -21,22 +31,8 @@ export interface Curso extends CursoResumen {
   instalacion: Bloque[];
   proyectoFinal: ProyectoFinal;
   referencia: SeccionReferencia[];
-  /** Tarjetas destacadas para el home (lo que vas a poder hacer). Si falta, se usan los niveles. */
-  destacados?: Destacado[];
   /** JSON con los archivos base del proyecto StackBlitz (ruta relativa a la carpeta del curso). */
   plantillaProyecto?: string;
-}
-
-/** Tarjeta del home: agrupa módulos en algo que vas a poder hacer. */
-export interface Destacado {
-  titulo: string;
-  descripcion: string;
-  /** Herramientas o conceptos que vas a usar (chips). */
-  usas: string[];
-  /** Lo que vas a poder hacer, en frases cortas. */
-  logros: string[];
-  /** Ids de los niveles que abarca (para contar lecciones y minutos). */
-  modulos?: string[];
 }
 
 /** Un mismo curso puede tener recorridos distintos (ej. "en una semana" y "desde cero"). */

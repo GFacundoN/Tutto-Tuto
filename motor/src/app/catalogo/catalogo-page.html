@@ -8,7 +8,10 @@
       solo y un quiz. Tu progreso queda guardado en este navegador.
     </p>
     <ul class="meta" aria-label="Datos de la plataforma">
-      <li><strong>{{ lista().length }}</strong> {{ lista().length === 1 ? 'curso' : 'cursos' }}</li>
+      <li><strong>{{ disponibles() }}</strong> {{ disponibles() === 1 ? 'curso disponible' : 'cursos disponibles' }}</li>
+      @if (lista().length > disponibles()) {
+        <li><strong>{{ lista().length - disponibles() }}</strong> en preparación</li>
+      }
       <li><strong>{{ totalLecciones() }}</strong> lecciones</li>
       <li>Gratis y sin registrarte</li>
       <li>Practicás en el navegador o en tu PC</li>
@@ -27,42 +30,83 @@
     } @else {
       <ul class="cursos">
         @for (c of lista(); track c.resumen.id) {
-          <li>
-            <a class="curso tarjeta" [routerLink]="['/', c.resumen.id]">
-              <span class="logo" [style.--marca]="c.resumen.color">
-                @if (c.resumen.logo) {
-                  <img [src]="'contenido/' + c.resumen.logo" alt="" width="56" height="56" />
+          <!--
+            Tarjeta con portada completa. Al pasar el mouse (o al enfocarla con teclado) la imagen
+            se acerca y el panel de abajo se extiende con la descripción, los datos y tu avance.
+          -->
+          <li
+            class="curso"
+            [class.proximo]="!c.disponible"
+            [style.--marca]="c.resumen.color"
+            [attr.tabindex]="c.disponible ? null : 0"
+          >
+            <div class="arte" aria-hidden="true">
+              @if (c.resumen.portada) {
+                <img [src]="'contenido/' + c.resumen.portada" alt="" loading="lazy" />
+              } @else {
+                <span class="arte-dibujada"><span>{{ palabra(c.resumen.titulo) }}</span></span>
+              }
+            </div>
+            <div class="contenido">
+              <div class="etiquetas">
+                @if (c.resumen.area) {
+                  <span class="etiqueta">{{ c.resumen.area }}</span>
+                }
+                @if (c.disponible) {
+                  @if (c.versionHerramienta) {
+                    <span class="etiqueta">{{ c.versionHerramienta }}</span>
+                  }
                 } @else {
-                  <span class="inicial" aria-hidden="true">{{ c.resumen.titulo[0] }}</span>
+                  <span class="etiqueta etiqueta-proximo">Próximamente</span>
                 }
-              </span>
-              <span class="cuerpo">
-                @if (c.versionHerramienta) {
-                  <span class="dato">Curso · {{ c.versionHerramienta }}</span>
+              </div>
+              <h3 class="titulo">
+                @if (c.resumen.logo) {
+                  <img [src]="'contenido/' + c.resumen.logo" alt="" width="28" height="28" />
                 }
-                <span class="titulo">{{ c.resumen.titulo }}</span>
-                <span class="desc">{{ c.resumen.descripcion }}</span>
-                @if (c.recorridos.length) {
-                  <span class="recorridos">
-                    @for (r of c.recorridos; track r) {
-                      <span class="chip">{{ r }}</span>
-                    }
-                  </span>
+                @if (c.disponible) {
+                  <!-- El enlace cubre toda la tarjeta (::after), así el nombre del curso es el texto del link. -->
+                  <a class="enlace" [routerLink]="['/', c.resumen.id]">{{ c.resumen.titulo }}</a>
+                } @else {
+                  {{ c.resumen.titulo }}
                 }
-              </span>
-              <span class="pie">
-                @if (c.completadas > 0) {
+              </h3>
+
+              <div class="mas">
+                <div class="mas-interior">
+                  <p class="desc">{{ c.resumen.descripcion }}</p>
+                  @if (c.resumen.usas?.length) {
+                    <ul class="usas" aria-label="Vas a usar">
+                      @for (u of c.resumen.usas; track u) {
+                        <li>{{ u }}</li>
+                      }
+                    </ul>
+                  }
+                  @if (c.disponible) {
+                    <dl class="numeros">
+                      <div><dt>Lecciones</dt><dd>{{ c.lecciones }}</dd></div>
+                      <div><dt>Módulos</dt><dd>{{ c.modulos }}</dd></div>
+                      <div><dt>Recorridos</dt><dd>{{ c.recorridos.length }}</dd></div>
+                    </dl>
+                  }
+                </div>
+              </div>
+
+              <div class="pie">
+                @if (!c.disponible) {
+                  <span class="dato">En preparación</span>
+                } @else if (c.completadas > 0) {
                   <span class="avance">
                     <span class="dato">{{ c.completadas }} de {{ c.lecciones }} lecciones</span>
                     <progress [value]="c.completadas" [max]="c.lecciones" aria-label="Tu avance en el curso"></progress>
                   </span>
                   <span class="accion">Continuar</span>
                 } @else {
-                  <span class="dato">{{ c.lecciones }} lecciones</span>
+                  <span class="dato">{{ c.lecciones }} lecciones · gratis</span>
                   <span class="accion">Empezar</span>
                 }
-              </span>
-            </a>
+              </div>
+            </div>
           </li>
         } @empty {
           <li class="tinta-suave">Todavía no hay cursos publicados.</li>
@@ -71,19 +115,19 @@
     }
   </section>
 
-  @if (lista()[0]; as destacado) {
-    <section id="seccion-modulos" class="modulos" aria-labelledby="titulo-modulos">
+  @if (lista().length) {
+    <section id="seccion-areas" class="modulos" aria-labelledby="titulo-areas">
       <div class="titular">
-        <h2 id="titulo-modulos">
-          Un curso.<br />
+        <h2 id="titulo-areas">
+          Un curso por herramienta.<br />
           <span class="atenuado">Todo lo que usás en el trabajo</span>
         </h2>
         <p class="titular-desc">
-          Pantallas, servicios, rutas, formularios y conexión con tu API de Spring Boot: lo que hace un equipo
-          con {{ destacado.resumen.titulo }} todos los días, en lecciones de 10 minutos.
+          Frontend, backend, datos, infraestructura y trabajo en equipo: cada curso cubre una parte del stack de un
+          proyecto real, en lecciones cortas que se corrigen solas. Pasá por cada tarjeta para ver qué vas a poder hacer.
         </p>
       </div>
-      <app-paneles-modulos [cursoId]="destacado.resumen.id" />
+      <app-paneles-modulos [cursos]="lista()" />
     </section>
   }
 
