@@ -1,0 +1,65 @@
+{
+  "id": "js-esencial",
+  "titulo": "JavaScript esencial",
+  "minutos": 15,
+  "objetivo": "usar variables, funciones flecha, objetos, arrays y sus métodos map y filter, que aparecen en todo código Angular.",
+  "explicacion": [
+    { "tipo": "texto", "md": "JavaScript es el lenguaje que corre en el navegador. Angular se escribe en TypeScript, que es JavaScript con tipos: todo lo de esta lección vale igual." },
+    { "tipo": "codigo", "lenguaje": "javascript", "archivo": "tareas.js", "codigo": "// Variables: const no se puede reasignar, let sí. (Evitá var.)\nconst equipo = 'Plataforma';\nlet pendientes = 3;\npendientes = pendientes - 1;\n\n// Objeto: datos agrupados con nombre\nconst tarea = { id: 1, titulo: 'Configurar CI', hecha: false };\nconsole.log(tarea.titulo);   // 'Configurar CI'\n\n// Array: lista ordenada\nconst tareas = [\n  { id: 1, titulo: 'Configurar CI', hecha: false },\n  { id: 2, titulo: 'Login con JWT', hecha: true },\n];\n\n// Función flecha\nconst saludar = (nombre) => `Hola, ${nombre}`;   // template string con ${ }\n\n// map: transforma cada elemento y devuelve un array NUEVO\nconst titulos = tareas.map((t) => t.titulo);       // ['Configurar CI', 'Login con JWT']\n\n// filter: se queda con los que cumplen la condición\nconst sinTerminar = tareas.filter((t) => !t.hecha); // [{ id: 1, ... }]\n\n// spread: copiar y agregar sin modificar el original\nconst conNueva = [...tareas, { id: 3, titulo: 'Dockerizar', hecha: false }];\nconst editada = { ...tarea, hecha: true };" },
+    { "tipo": "lista", "items": [
+      "`===` compara valor y tipo (usalo siempre). `!` niega: `!t.hecha` es \"no hecha\".",
+      "`map` y `filter` **no modifican** el array original: devuelven uno nuevo. En Angular eso es importante (lo vas a ver con signals).",
+      "`...` (spread) copia el contenido de un array u objeto dentro de otro nuevo."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "Probá cualquier línea en la **consola del navegador**: F12 → pestaña Console, pegá el código y Enter." }
+  ],
+  "recursos": {
+    "video": { "id": "5DaZXXbHI_U", "titulo": "Arrays y Objetos en JavaScript en 15 minutos", "canal": "deivchoi", "inicio": 0, "fin": 704, "idioma": "es" },
+    "docs": [
+      { "titulo": "MDN: Funciones flecha", "url": "https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Functions/Arrow_functions" },
+      { "titulo": "MDN: Array.prototype.map", "url": "https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/map" },
+      { "titulo": "MDN: Array.prototype.filter", "url": "https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Array/filter" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el código: quedate solo con las tareas hechas, sacá sus títulos, y creá una copia de la lista con una tarea nueva al final.",
+    "lenguaje": "javascript",
+    "plantilla": "const hechas = tareas.{{0}}((t) => t.hecha);\nconst titulos = hechas.{{1}}((t) => t.titulo);\nconst conNueva = [{{2}}, { id: 9, titulo: 'Revisar PR', hecha: false }];",
+    "huecos": [
+      { "respuestas": ["filter"], "ancho": 7 },
+      { "respuestas": ["map"], "ancho": 4 },
+      { "respuestas": ["...tareas"], "ancho": 10 }
+    ],
+    "pistas": [
+      "Uno \"filtra\" y otro \"transforma\". Para copiar el array original adentro del nuevo se usan tres puntos.",
+      "Las respuestas son `filter`, `map` y `...tareas`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué devuelve `[1, 2, 3].map((n) => n * 2)`?",
+      "opciones": [
+        { "texto": "`[2, 4, 6]`", "correcta": true, "explicacion": "map aplica la función a cada elemento y arma un array nuevo." },
+        { "texto": "`12`", "correcta": false, "explicacion": "Eso sería sumar todo (reduce)." },
+        { "texto": "`[1, 2, 3]` con el original duplicado", "correcta": false, "explicacion": "map transforma; no duplica." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué diferencia hay entre `const` y `let`?",
+      "opciones": [
+        { "texto": "`const` no se puede reasignar; `let` sí.", "correcta": true, "explicacion": "Usá const por defecto y let solo si vas a reasignar." },
+        { "texto": "`const` es para números y `let` para textos.", "correcta": false, "explicacion": "Ambos sirven para cualquier tipo." },
+        { "texto": "Ninguna.", "correcta": false, "explicacion": "Sí hay: la reasignación." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué hace `{ ...tarea, hecha: true }`?",
+      "opciones": [
+        { "texto": "Crea un objeto nuevo con todo lo de `tarea`, pero con `hecha` en true.", "correcta": true, "explicacion": "El original no cambia." },
+        { "texto": "Modifica `tarea` poniendo hecha en true.", "correcta": false, "explicacion": "Spread crea una copia." },
+        { "texto": "Da error de sintaxis.", "correcta": false, "explicacion": "Es sintaxis válida y muy usada." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "id": "terminal-node-npm",
+  "titulo": "Terminal, Node y npm",
+  "minutos": 10,
+  "objetivo": "moverte en la terminal de Windows y entender qué son Node.js, npm y package.json.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Las herramientas de Angular se usan desde la **terminal**: una ventana donde escribís comandos. En Windows usá **PowerShell** (o la terminal integrada de VS Code con `Ctrl + ñ`)." },
+    { "tipo": "comando", "comando": "cd Documentos\\proyectos", "salida": "(te mueve a esa carpeta)" },
+    { "tipo": "lista", "items": [
+      "`cd carpeta`: entrar a una carpeta. `cd ..`: volver a la anterior.",
+      "`ls` (o `dir`): ver qué archivos hay.",
+      "`mkdir nombre`: crear una carpeta.",
+      "Flecha arriba: repetir el comando anterior. `Tab`: autocompletar nombres.",
+      "`Ctrl + C`: frenar el programa que está corriendo (por ejemplo, el servidor)."
+    ] },
+    { "tipo": "texto", "md": "**Node.js** ejecuta JavaScript fuera del navegador. Angular lo usa para sus herramientas (compilar, levantar el servidor de desarrollo). **npm** viene con Node y descarga **paquetes** (librerías) de internet." },
+    { "tipo": "texto", "md": "Cada proyecto tiene un **`package.json`**: la lista de paquetes que necesita y atajos de comandos (`scripts`). Los paquetes se descargan en la carpeta `node_modules` (que no se sube a Git)." },
+    { "tipo": "codigo", "lenguaje": "json", "archivo": "package.json", "codigo": "{\n  \"name\": \"tablero\",\n  \"scripts\": {\n    \"start\": \"ng serve\",\n    \"test\": \"ng test\"\n  },\n  \"dependencies\": {\n    \"@angular/core\": \"^22.3.0\"\n  }\n}" },
+    { "tipo": "comando", "comando": "npm install", "salida": "added 312 packages in 25s" },
+    { "tipo": "comando", "comando": "npm start", "salida": "(corre el script \"start\": ng serve)" },
+    { "tipo": "nota", "variante": "dato", "md": "Cuando clones un proyecto de la empresa, lo primero es `npm install` (descarga todo lo del package.json) y después `npm start`." }
+  ],
+  "recursos": {
+    "video": { "id": "9U8EaVjuq6U", "titulo": "¿Qué es Node.js? ¿Para qué sirve?", "canal": "Fazt", "inicio": 0, "fin": 252, "idioma": "es" },
+    "docs": [
+      { "titulo": "nodejs.org: Descargas", "url": "https://nodejs.org/es/download" },
+      { "titulo": "docs.npmjs.com: Qué es package.json (en inglés)", "url": "https://docs.npmjs.com/cli/v11/configuring-npm/package-json" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Clonaste el proyecto de la empresa en `C:\\proyectos\\tablero`. Ordená los comandos para levantarlo por primera vez.",
+    "lenguaje": "terminal",
+    "lineas": [
+      "cd C:\\proyectos\\tablero",
+      "npm install",
+      "npm start",
+      "Abrir http://localhost:4200 en el navegador"
+    ],
+    "pistas": [
+      "Primero tenés que estar parado en la carpeta del proyecto. Antes de arrancarlo, hay que descargar sus paquetes.",
+      "Orden: `cd`, `npm install`, `npm start`, abrir el navegador."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Seguí la guía de **Instalación en tu PC** (enlace al pie del recorrido) y después probá:" },
+        { "tipo": "comando", "comando": "node -v\nnpm -v" }
+      ],
+      "resultadoEsperado": "Ves dos números de versión (por ejemplo v24.x.x y 11.x.x)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué hace `npm install` en un proyecto?",
+      "opciones": [
+        { "texto": "Descarga los paquetes que figuran en package.json a la carpeta node_modules.", "correcta": true, "explicacion": "Es lo primero después de clonar un proyecto." },
+        { "texto": "Instala Node.js.", "correcta": false, "explicacion": "npm viene con Node; Node se instala aparte." },
+        { "texto": "Levanta la aplicación.", "correcta": false, "explicacion": "Eso es `npm start` (o `ng serve`)." }
+      ]
+    },
+    {
+      "pregunta": "El servidor de desarrollo está corriendo y querés frenarlo. ¿Qué hacés?",
+      "opciones": [
+        { "texto": "`Ctrl + C` en la terminal.", "correcta": true, "explicacion": "Corta el programa que está corriendo en esa terminal." },
+        { "texto": "Cerrar el navegador.", "correcta": false, "explicacion": "El servidor sigue corriendo en la terminal." },
+        { "texto": "Escribir `stop`.", "correcta": false, "explicacion": "No existe ese comando." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "id": "web-html-css",
+  "titulo": "Cómo funciona una página: HTML y CSS",
+  "minutos": 12,
+  "objetivo": "leer y escribir el HTML básico de una página, y entender qué hace el CSS.",
+  "explicacion": [
+    {
+      "tipo": "texto",
+      "md": "Cuando abrís una página, el navegador descarga tres tipos de archivo: **HTML** (qué hay: textos, botones, imágenes), **CSS** (cómo se ve: colores, tamaños, posiciones) y **JavaScript** (qué hace cuando interactuás)."
+    },
+    {
+      "tipo": "texto",
+      "md": "HTML se escribe con **etiquetas**: una de apertura `<p>`, el contenido y una de cierre `</p>`. Las etiquetas pueden tener **atributos** que las configuran:"
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "html",
+      "archivo": "index.html",
+      "codigo": "<h1>Tablero del equipo</h1>\n<p>Tareas para esta semana:</p>\n<ul>\n  <li>Configurar CI</li>\n  <li>Login con JWT</li>\n</ul>\n<img src=\"logo.png\" alt=\"Logo de la empresa\" />\n<button type=\"button\" class=\"principal\">Agregar tarea</button>"
+    },
+    {
+      "tipo": "lista",
+      "items": [
+        "`h1`…`h6`: títulos, del más importante al menos importante.",
+        "`p`: párrafo. `ul` + `li`: lista con viñetas.",
+        "`img`: imagen. `src` dice cuál y `alt` la describe para quien no puede verla.",
+        "`button`: botón. `class` le pone un nombre para darle estilo con CSS.",
+        "Las etiquetas se **anidan**: los `li` van adentro del `ul`. Esa estructura de cajas dentro de cajas se llama **DOM**."
+      ]
+    },
+    {
+      "tipo": "texto",
+      "md": "CSS elige elementos con un **selector** y les aplica **propiedades**:"
+    },
+    {
+      "tipo": "codigo",
+      "lenguaje": "css",
+      "archivo": "styles.css",
+      "codigo": "h1 {\n  color: #16213a;\n  font-size: 2rem;\n}\n\n.principal {          /* el punto elige por class */\n  background: #c8235f;\n  color: white;\n  padding: 8px 16px;\n  border-radius: 8px;\n}"
+    },
+    {
+      "tipo": "nota",
+      "variante": "dato",
+      "md": "En Angular vas a escribir HTML todo el tiempo: cada componente tiene su propio pedacito de HTML (el *template*) y su propio CSS. Lo que aprendés acá se usa tal cual."
+    }
+  ],
+  "recursos": {
+    "video": {
+      "id": "EvKm8yhM7V8",
+      "titulo": "HTML en 5 minutos | Te lo explico así nomás",
+      "canal": "Dot Dager",
+      "inicio": 0,
+      "fin": 383,
+      "idioma": "es"
+    },
+    "docs": [
+      {
+        "titulo": "MDN: Primeros pasos con HTML",
+        "url": "https://developer.mozilla.org/es/docs/Learn_web_development/Core/Structuring_content/Basic_HTML_syntax"
+      },
+      {
+        "titulo": "MDN: ¿Qué es CSS?",
+        "url": "https://developer.mozilla.org/es/docs/Learn_web_development/Core/Styling_basics/What_is_CSS"
+      }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el HTML: la imagen tiene que mostrar `logo.png` y describirse como \"Logo del equipo\", y el botón tiene que tener la clase `principal`.",
+    "lenguaje": "html",
+    "plantilla": "<h1>Mis tareas</h1>\n<img {{0}}=\"logo.png\" {{1}}=\"Logo del equipo\" />\n<button type=\"button\" {{2}}=\"principal\">Agregar</button>",
+    "huecos": [
+      {
+        "respuestas": [
+          "src"
+        ],
+        "ancho": 4
+      },
+      {
+        "respuestas": [
+          "alt"
+        ],
+        "ancho": 4
+      },
+      {
+        "respuestas": [
+          "class"
+        ],
+        "ancho": 6
+      }
+    ],
+    "pistas": [
+      "El atributo que dice qué archivo mostrar es el \"source\" abreviado; el que describe la imagen es el \"texto alternativo\". El de los estilos es el mismo que usa el selector con punto en CSS.",
+      "Las respuestas son `src`, `alt` y `class`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Para qué sirve el atributo `alt` de una imagen?",
+      "opciones": [
+        {
+          "texto": "Describe la imagen para lectores de pantalla y por si no carga.",
+          "correcta": true,
+          "explicacion": "Es clave para accesibilidad."
+        },
+        {
+          "texto": "Cambia el tamaño de la imagen.",
+          "correcta": false,
+          "explicacion": "El tamaño se maneja con CSS o con width/height."
+        },
+        {
+          "texto": "Es el título que aparece arriba de la imagen.",
+          "correcta": false,
+          "explicacion": "No se muestra si la imagen carga bien."
+        }
+      ]
+    },
+    {
+      "pregunta": "En CSS, ¿qué elige el selector `.principal`?",
+      "opciones": [
+        {
+          "texto": "Los elementos que tienen `class=\"principal\"`.",
+          "correcta": true,
+          "explicacion": "El punto significa \"por clase\"."
+        },
+        {
+          "texto": "Las etiquetas `<principal>`.",
+          "correcta": false,
+          "explicacion": "Eso sería el selector `principal` sin punto."
+        },
+        {
+          "texto": "El elemento con `id=\"principal\"`.",
+          "correcta": false,
+          "explicacion": "Por id se usa `#principal`."
+        }
+      ]
+    }
+  ]
+}

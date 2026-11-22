@@ -1,0 +1,59 @@
+{
+  "id": "ts-esencial",
+  "titulo": "TypeScript esencial",
+  "minutos": 13,
+  "objetivo": "declarar tipos, interfaces y clases en TypeScript, que es como se escribe todo en Angular.",
+  "explicacion": [
+    { "tipo": "texto", "md": "**TypeScript** es JavaScript con **tipos**: le decís qué forma tienen tus datos y el editor te avisa los errores **antes** de ejecutar. Angular está escrito en TypeScript y espera que vos también." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tarea.ts", "codigo": "// Tipos básicos\nconst titulo: string = 'Configurar CI';\nconst prioridad: number = 2;\nconst hecha: boolean = false;\n\n// Interface: la \"forma\" de un objeto\nexport interface Tarea {\n  id: number;\n  titulo: string;\n  hecha: boolean;\n  responsable?: string;                          // ? = opcional\n  estado: 'pendiente' | 'en-curso' | 'hecha';    // solo estos valores\n}\n\nconst tareas: Tarea[] = [];                       // array de Tarea\n\n// Función con tipos en parámetros y resultado\nfunction contarPendientes(lista: Tarea[]): number {\n  return lista.filter((t) => !t.hecha).length;\n}\n\n// Clase: datos + funciones juntos (los componentes de Angular son clases)\nexport class Tablero {\n  nombre = 'Equipo Plataforma';\n  private tareas: Tarea[] = [];\n\n  agregar(tarea: Tarea): void {\n    this.tareas.push(tarea);\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "Muchas veces no hace falta escribir el tipo: TypeScript lo **infiere** (`const x = 3` ya es `number`).",
+      "`interface` describe objetos. `Tarea[]` es un array de tareas.",
+      "Un `|` entre valores crea un tipo que solo acepta esos valores: si escribís `'terminada'` te marca error.",
+      "En una clase, `this` es \"este objeto\". `private` hace que solo se use adentro de la clase.",
+      "`export` permite usar algo desde otro archivo con `import { Tarea } from './tarea';`."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Evitá el tipo `any`: apaga los controles de TypeScript y los errores vuelven a aparecer recién cuando el usuario usa la app." }
+  ],
+  "recursos": {
+    "video": { "id": "CmE3okASUJo", "titulo": "Interfaces TypeScript - Curso desde cero", "canal": "Domini Code", "inicio": 0, "fin": 451, "idioma": "es" },
+    "docs": [
+      { "titulo": "TypeScript: TypeScript para programadores de JavaScript (en inglés)", "url": "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html" },
+      { "titulo": "TypeScript: Object types e interfaces (en inglés)", "url": "https://www.typescriptlang.org/docs/handbook/2/objects.html" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá la interface de un usuario del equipo y una función tipada que devuelve su nombre en mayúsculas.",
+    "lenguaje": "typescript",
+    "plantilla": "export {{0}} Usuario {\n  id: number;\n  nombre: {{1}};\n  rol: 'dev' | 'qa' | 'pm';\n  email{{2}}: string;   // opcional\n}\n\nfunction nombreEnMayusculas(u: {{3}}): string {\n  return u.nombre.toUpperCase();\n}",
+    "huecos": [
+      { "respuestas": ["interface"], "ancho": 10 },
+      { "respuestas": ["string"], "ancho": 7 },
+      { "respuestas": ["?"], "ancho": 2 },
+      { "respuestas": ["Usuario"], "ancho": 8 }
+    ],
+    "pistas": [
+      "La palabra que define la forma de un objeto es la misma que usamos con `Tarea`. Un nombre es texto. Lo opcional lleva un signo.",
+      "Las respuestas son `interface`, `string`, `?` y `Usuario`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "Con `estado: 'pendiente' | 'hecha'`, ¿qué pasa si escribís `estado: 'terminada'`?",
+      "opciones": [
+        { "texto": "El editor marca error antes de ejecutar.", "correcta": true, "explicacion": "Ese es el valor de TypeScript: detectar errores temprano." },
+        { "texto": "Funciona igual.", "correcta": false, "explicacion": "El tipo solo acepta esos dos valores." },
+        { "texto": "Falla recién cuando el usuario lo usa.", "correcta": false, "explicacion": "Eso pasaría en JavaScript sin tipos." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué significa el `?` en `responsable?: string`?",
+      "opciones": [
+        { "texto": "Que la propiedad es opcional: puede no estar.", "correcta": true, "explicacion": "Su tipo real es `string | undefined`." },
+        { "texto": "Que es privada.", "correcta": false, "explicacion": "Para eso es `private` en clases." },
+        { "texto": "Que puede ser cualquier tipo.", "correcta": false, "explicacion": "Sigue siendo string cuando está." }
+      ]
+    }
+  ]
+}
