@@ -1,23 +1,21 @@
 import { afterNextRender, Component, computed, DestroyRef, ElementRef, inject, input, signal, viewChild } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TarjetaCurso } from '../tarjeta-curso';
 import type { EscenaHero, Paleta } from './escena';
 
 /**
- * Hero 3D: un carrusel con los logos oficiales de los cursos en relieve.
- * Pasa solo cada pocos segundos; se frena al pasar el mouse, al arrastrar o con el botón de pausa
- * (y nunca se mueve solo si el sistema pide "reducir movimiento"). También se gira arrastrando o con
- * las flechas, y el curso del frente se abre con un clic o con su botón.
+ * Hero 3D: los logos oficiales de los cursos, en relieve, flotando dispersos como en una atmósfera.
+ * La atmósfera gira sola muy despacio y se puede girar arrastrando. Al pasar el mouse por un logo
+ * se agranda un poco y aparece su nombre; con un clic se entra al curso.
  *
  * Rendimiento:
  * - Three.js se carga con import() recién después del primer dibujo (afterNextRender), en un chunk aparte.
  * - Solo se dibuja mientras el hero está en pantalla (IntersectionObserver) y la pestaña está visible.
  * - Si el navegador no tiene WebGL, queda la ilustración en SVG de antes.
- * Accesibilidad: el canvas es decorativo (aria-hidden); las flechas y el botón son controles reales.
+ * Accesibilidad: es decorativo (aria-hidden). Los mismos cursos, con sus enlaces, están en la lista de abajo.
  */
 @Component({
   selector: 'app-hero-3d',
-  imports: [RouterLink],
   templateUrl: './hero-3d.html',
   styleUrl: './hero-3d.css',
 })
@@ -25,20 +23,13 @@ export class Hero3d {
   readonly cursos = input.required<TarjetaCurso[]>();
 
   protected readonly estado = signal<'cargando' | 'lista' | 'sin-webgl'>('cargando');
-  protected readonly indice = signal(0);
-  protected readonly actual = computed(() => this.conLogo()[this.indice()]);
+  protected readonly etiqueta = signal<{ texto: string; x: number; y: number } | null>(null);
 
-  /** Pasa solo (autoplay). Arranca apagado si el sistema pide reducir el movimiento. */
-  protected readonly reproduciendo = signal(!matchMedia('(prefers-reduced-motion: reduce)').matches);
-  /** true mientras el puntero o el foco están sobre el carrusel: ahí no avanza solo. */
-  private readonly enUso = signal(false);
-  /** true si el último cambio lo hizo la persona: solo entonces se anuncia a los lectores de pantalla. */
-  protected readonly cambioManual = signal(false);
-
-  /** Solo los cursos que tienen logo entran al carrusel. */
-  protected readonly conLogo = computed(() => this.cursos().filter((c) => !!c.resumen.logo));
+  /** Solo los cursos que tienen logo flotan en la escena. */
+  private readonly conLogo = computed(() => this.cursos().filter((c) => !!c.resumen.logo));
 
   private readonly canvas = viewChild.required<ElementRef<HTMLCanvasElement>>('lienzo');
+  private readonly marco = viewChild.required<ElementRef<HTMLElement>>('marco');
   private readonly router = inject(Router);
   private escena?: EscenaHero;
 
@@ -67,10 +58,23 @@ export class Hero3d {
       const lienzo = this.canvas().nativeElement;
       this.escena = crearEscena({
         canvas: lienzo,
+        superficie: this.marco().nativeElement,
         logos: cursos.map((c, i) => ({ svg: svgs[i], disponible: c.disponible })),
         paleta: leerPaleta(),
         movimientoReducido: matchMedia('(prefers-reduced-motion: reduce)').matches,
-        alCambiar: (i) => this.indice.set(i),
+        alResaltar: (i, x, y) => {
+          const actual = this.etiqueta();
+          if (i === null) {
+            if (actual) this.etiqueta.set(null);
+            return;
+          }
+          const c = cursos[i];
+          const texto = `${c.resumen.titulo} · ${c.disponible ? `${c.lecciones} lecciones` : 'próximamente'}`;
+          // Solo actualizamos si cambió algo visible: evita trabajo de más en cada cuadro.
+          if (!actual || actual.texto !== texto || Math.abs(actual.x - x) > 1 || Math.abs(actual.y - y) > 1) {
+            this.etiqueta.set({ texto, x, y });
+          }
+        },
         alElegir: (i) => {
           if (cursos[i].disponible) this.router.navigate(['/', cursos[i].resumen.id]);
         },
@@ -87,15 +91,6 @@ export class Hero3d {
       visible.observe(lienzo);
       document.addEventListener('visibilitychange', actualizar);
 
-      // Autoplay: cada 4 s pasa al siguiente, salvo que esté en pausa, en uso o fuera de pantalla.
-      const reloj = setInterval(() => {
-        if (this.reproduciendo() && !this.enUso() && enPantalla && !document.hidden) {
-          this.cambioManual.set(false);
-          this.avanzar(1);
-        }
-      }, 4000);
-      destroyRef.onDestroy(() => clearInterval(reloj));
-
       // El tema cambia con el selector (atributo data-theme en <html>) o con el sistema operativo.
       const recolorear = () => requestAnimationFrame(() => this.escena?.cambiarPaleta(leerPaleta()));
       const tema = new MutationObserver(recolorear);
@@ -110,28 +105,6 @@ export class Hero3d {
         document.removeEventListener('visibilitychange', actualizar);
       });
     });
-  }
-
-  /** Flechas: cambio hecho por la persona (se anuncia y el autoplay espera a que deje de usarlo). */
-  protected mover(delta: number): void {
-    this.cambioManual.set(true);
-    this.avanzar(delta);
-  }
-
-  protected alternarReproduccion(): void {
-    this.reproduciendo.update((r) => !r);
-  }
-
-  /** El puntero o el foco entran/salen del carrusel (y al arrastrar en el canvas). */
-  protected usar(enUso: boolean): void {
-    this.enUso.set(enUso);
-  }
-
-  private avanzar(delta: number): void {
-    const n = this.conLogo().length;
-    const destino = (this.indice() + delta + n) % n;
-    this.indice.set(destino);
-    this.escena?.irA(destino);
   }
 }
 

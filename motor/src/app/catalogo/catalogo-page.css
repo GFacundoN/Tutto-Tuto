@@ -1,6 +1,8 @@
 :host {
   display: block;
   padding-top: 56px;
+  /* El canvas 3D del hero sobresale de su caja: clip evita scroll horizontal sin romper position: sticky. */
+  overflow-x: clip;
 }
 
 .portada {

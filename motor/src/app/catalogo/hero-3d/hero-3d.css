@@ -5,100 +5,55 @@
 /* El lugar se reserva desde el principio (aspect-ratio): cuando carga Three.js no se mueve nada. */
 .marco {
   position: relative;
-  aspect-ratio: 1 / 0.8;
+  aspect-ratio: 1 / 0.9;
   width: 100%;
-}
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
   cursor: grab;
-  /* En celular el scroll vertical sigue funcionando; el arrastre horizontal gira el carrusel. */
+  /* En celular el scroll vertical sigue funcionando; el arrastre horizontal gira la atmósfera. */
   touch-action: pan-y;
+}
+/*
+  El canvas es más grande que la caja (sobresale un 16% por cada lado) y es transparente: así un logo
+  que al girar se acerca al borde no queda cortado. No recibe eventos (pointer-events: none): los
+  escucha la caja, para no tapar el texto del hero.
+*/
+canvas {
+  position: absolute;
+  inset: -16%;
+  width: 132%;
+  height: 132%;
+  pointer-events: none;
   opacity: 0;
-  transition: opacity 600ms var(--ease-salida);
+  transition: opacity 800ms var(--ease-salida);
 }
 .lista canvas {
   opacity: 1;
 }
-canvas:active {
-  cursor: grabbing;
-}
 
-/* Controles del carrusel: el nombre del curso del frente entre dos flechas, y el botón para entrar. */
-.controles {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  margin-top: 4px;
-}
-.flecha {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--borde-control);
-  background: transparent;
-  color: var(--tinta);
-  cursor: pointer;
-  transition: background var(--dur);
-}
-.flecha:hover {
-  background: color-mix(in oklab, var(--tinta) 6%, transparent);
-}
-.flecha path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.actual {
-  display: grid;
-  justify-items: center;
-  min-width: 160px;
-  text-align: center;
-}
-.actual strong {
-  font-size: 1.05rem;
-}
-.actual span {
-  font-size: 0.85rem;
-  color: var(--tinta-suave);
-}
-.pie {
-  flex-basis: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-}
-.pausa {
-  min-height: 44px;
-  padding: 0 4px;
-  border: 0;
-  background: none;
-  color: var(--tinta-suave);
-  font: 500 0.88rem var(--fuente-texto);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  cursor: pointer;
-}
-.pausa:hover {
-  color: var(--tinta);
-}
-.entrar {
-  text-align: center;
+/* Nombre del curso sobre el logo resaltado. */
+.etiqueta {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 8px));
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--primario-fondo);
+  color: var(--primario-tinta);
   font-weight: 600;
-  color: var(--acento);
-  text-underline-offset: 4px;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: aparecer-etiqueta 180ms var(--ease-salida);
+}
+@keyframes aparecer-etiqueta {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 2px));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  canvas {
+  canvas,
+  .etiqueta {
     transition: none;
+    animation: none;
   }
 }
