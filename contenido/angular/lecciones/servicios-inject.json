@@ -1,0 +1,84 @@
+{
+  "id": "servicios-inject",
+  "titulo": "Servicios e inject()",
+  "minutos": 12,
+  "objetivo": "crear un servicio, pedirlo con inject() y explicar qué hace providedIn: 'root'.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **servicio** es una clase para la lógica que no es de pantalla: hablar con la API, guardar estado compartido, calcular cosas. Los componentes lo **piden** y Angular se lo entrega: eso es **inyección de dependencias** (DI)." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tareas/tareas-service.ts", "codigo": "import { Injectable } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })\nexport class TareasService {\n  private proximoId = 3;\n\n  crearTitulo(base: string): string {\n    return `#${this.proximoId++} ${base}`;\n  }\n}" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tareas/nueva-tarea.ts", "codigo": "import { Component, inject } from '@angular/core';\nimport { TareasService } from './tareas-service';\n\n@Component({ selector: 'app-nueva-tarea', template: `…` })\nexport class NuevaTarea {\n  private readonly tareasService = inject(TareasService);\n\n  crear() {\n    console.log(this.tareasService.crearTitulo('Revisar PR'));\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "`@Injectable({ providedIn: 'root' })`: hay **una sola instancia** para toda la app (singleton) y se crea la primera vez que alguien la pide. Si nadie la usa, no entra en el bundle.",
+      "`inject(Clase)`: pide la instancia. Se usa en la inicialización de propiedades (o en el constructor).",
+      "Se puede proveer en un componente (`providers: [TareasService]`) para tener una instancia **por componente**. Es la excepción, no la regla."
+    ] },
+    { "tipo": "nota", "variante": "version", "md": "En código existente vas a ver la inyección por constructor: `constructor(private tareasService: TareasService) {}`. Hace lo mismo que `inject()`. Hay una migración automática: `ng generate @angular/core:inject`." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Un servicio `providedIn: 'root'` cumple el rol de un Context de React o de un store chico, sin Provider en el árbol. Si venís de Spring: es un `@Service` y `inject()` es como `@Autowired`.", "soloVersiones": ["semana"] },
+    { "tipo": "nota", "variante": "error-comun", "md": "`inject()` solo funciona en un \"contexto de inyección\" (al construir la clase). Llamarlo dentro de un método que se ejecuta después, como un click, da el error NG0203." }
+  ],
+  "recursos": {
+    "video": { "id": "ipdC8xo_o3c", "titulo": "Servicios en Angular", "canal": "Fernando Herrera", "inicio": 0, "fin": 560, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Inyección de dependencias (Essentials)", "url": "https://angular.dev/essentials/dependency-injection" },
+      { "titulo": "angular.dev: Crear un servicio inyectable", "url": "https://angular.dev/guide/di/creating-injectable-service" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "Movés la lista de tareas a un servicio. Completá `TareasService` (singleton) con un método `listar()` que devuelva las tareas, e inyectalo en `App` con `inject()` para mostrarlas.",
+    "archivos": {
+      "src/app/tareas-service.ts": "// TODO: convertí esta clase en un servicio singleton\nexport class TareasService {\n  private readonly tareas = ['Configurar CI', 'Login con JWT', 'Dockerizar el front'];\n\n  // TODO: agregá listar() que devuelva las tareas\n}\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas</h1>\n    <ul>\n      <!-- TODO: recorré tareas -->\n    </ul>\n  `,\n})\nexport class App {\n  // TODO: inyectá TareasService y guardá el resultado de listar()\n}\n"
+    },
+    "abrirArchivo": "src/app/tareas-service.ts,src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/tareas-service.ts", "patron": "@Injectable\\s*\\(\\s*\\{\\s*providedIn\\s*:\\s*['\"]root['\"]", "mensaje": "TareasService tiene @Injectable({ providedIn: 'root' })." },
+      { "archivo": "src/app/tareas-service.ts", "patron": "listar\\s*\\([^)]*\\)[^{]*\\{[^}]*return\\s+this\\.tareas", "mensaje": "listar() devuelve this.tareas." },
+      { "archivo": "src/app/app.ts", "patron": "inject\\s*\\(\\s*TareasService\\s*\\)", "mensaje": "App usa inject(TareasService)." },
+      { "archivo": "src/app/app.ts", "patron": "constructor\\s*\\(\\s*private", "debeCoincidir": false, "mensaje": "Usás inject() en vez de inyección por constructor." },
+      { "archivo": "src/app/app.ts", "patron": "\\.listar\\s*\\(\\s*\\)", "mensaje": "App llama a listar()." },
+      { "archivo": "src/app/app.ts", "patron": "@for\\s*\\(", "mensaje": "El template recorre las tareas con @for." }
+    ],
+    "pistas": [
+      "Al servicio le falta `import { Injectable } from '@angular/core';` y el decorador arriba de la clase. `listar() { return this.tareas; }`.",
+      "En App: `private readonly tareasService = inject(TareasService);` y `protected readonly tareas = this.tareasService.listar();`. En el template: `@for (t of tareas; track t) { <li>{{ t }}</li> }`."
+    ],
+    "solucion": {
+      "src/app/tareas-service.ts": "import { Injectable } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })\nexport class TareasService {\n  private readonly tareas = ['Configurar CI', 'Login con JWT', 'Dockerizar el front'];\n\n  listar(): string[] {\n    return this.tareas;\n  }\n}\n",
+      "src/app/app.ts": "import { Component, inject } from '@angular/core';\nimport { TareasService } from './tareas-service';\n\n@Component({\n  selector: 'app-root',\n  template: `\n    <h1>Tareas</h1>\n    <ul>\n      @for (t of tareas; track t) {\n        <li>{{ t }}</li>\n      }\n    </ul>\n  `,\n})\nexport class App {\n  private readonly tareasService = inject(TareasService);\n  protected readonly tareas = this.tareasService.listar();\n}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "comando", "comando": "ng g s tareas-service --flat" },
+        { "tipo": "texto", "md": "La CLI genera el servicio con `@Injectable({ providedIn: 'root' })` ya puesto. Agregale la lista y `listar()`, e inyectalo en App." }
+      ],
+      "resultadoEsperado": "Ves la lista con las tres tareas que vienen del servicio."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué significa `providedIn: 'root'`?",
+      "opciones": [
+        { "texto": "Que hay una sola instancia del servicio para toda la app, creada la primera vez que se pide.", "correcta": true, "explicacion": "Es un singleton \"lazy\" y además se elimina del bundle si nadie lo usa." },
+        { "texto": "Que el servicio solo se puede usar en AppComponent.", "correcta": false, "explicacion": "Se puede inyectar en cualquier lado." },
+        { "texto": "Que se crea una instancia nueva por cada componente.", "correcta": false, "explicacion": "Eso pasa si lo ponés en `providers` del componente." }
+      ]
+    },
+    {
+      "pregunta": "Ves `constructor(private http: HttpClient) {}` en el código del equipo. ¿Cuál es el equivalente moderno?",
+      "opciones": [
+        { "texto": "`private readonly http = inject(HttpClient);`", "correcta": true, "explicacion": "Mismo resultado, más simple y funciona también en funciones (guards, interceptors)." },
+        { "texto": "`private http = new HttpClient();`", "correcta": false, "explicacion": "Nunca instancies servicios con new: perdés la configuración y la DI." },
+        { "texto": "`@Autowired http: HttpClient;`", "correcta": false, "explicacion": "Eso es Spring, no Angular." }
+      ]
+    },
+    {
+      "pregunta": "Llamás a `inject(TareasService)` dentro de un método que corre al hacer clic y aparece el error NG0203. ¿Por qué?",
+      "opciones": [
+        { "texto": "Porque inject() solo funciona mientras se construye la clase (contexto de inyección).", "correcta": true, "explicacion": "Inyectalo en una propiedad y usá esa propiedad dentro del método." },
+        { "texto": "Porque el servicio no tiene providedIn.", "correcta": false, "explicacion": "Eso daría otro error (NullInjectorError)." },
+        { "texto": "Porque inject() es asíncrono.", "correcta": false, "explicacion": "inject() es síncrono." }
+      ]
+    }
+  ]
+}

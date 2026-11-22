@@ -1,0 +1,59 @@
+{
+  "id": "estado-en-servicios",
+  "titulo": "Estado compartido en un servicio con signals",
+  "minutos": 11,
+  "objetivo": "compartir estado entre componentes con un servicio que expone signals de solo lectura.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Cuando dos componentes lejanos necesitan los mismos datos (el contador del encabezado y la lista de tareas), el estado se sube a un **servicio**. El patrón más usado hoy: un signal **privado** que solo el servicio modifica y una versión **de solo lectura** para el resto." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "tareas/tareas-store.ts", "codigo": "import { computed, effect, Injectable, signal } from '@angular/core';\n\n@Injectable({ providedIn: 'root' })\nexport class TareasStore {\n  private readonly _tareas = signal<Tarea[]>(JSON.parse(localStorage.getItem('tareas') ?? '[]'));\n\n  readonly tareas = this._tareas.asReadonly();\n  readonly pendientes = computed(() => this._tareas().filter(t => !t.hecha).length);\n\n  constructor() {\n    effect(() => localStorage.setItem('tareas', JSON.stringify(this._tareas())));\n  }\n\n  agregar(titulo: string) {\n    this._tareas.update(l => [...l, { id: crypto.randomUUID(), titulo, hecha: false }]);\n  }\n\n  completar(id: string) {\n    this._tareas.update(l => l.map(t => (t.id === id ? { ...t, hecha: true } : t)));\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "`asReadonly()`: los componentes pueden **leer** `tareas()` pero no hacer `.set()`. Toda modificación pasa por métodos con nombre (`agregar`, `completar`), así sabés dónde cambia el estado.",
+      "`effect` para persistir: es un efecto hacia afuera de Angular, el uso correcto.",
+      "Cualquier componente que haga `inject(TareasStore)` ve el mismo estado y se actualiza solo."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "En apps grandes vas a encontrar **NgRx** (store tipo Redux) o **NgRx Signal Store**. Se apoyan en la misma idea: estado en un lugar, cambios por acciones con nombre. Con lo de esta lección vas a entender el 80% de lo que hacen." },
+    { "tipo": "nota", "variante": "version", "md": "Antes de signals, este patrón se hacía con `BehaviorSubject` de RxJS: `private tareas$ = new BehaviorSubject<Tarea[]>([])` y `tareas$.asObservable()`. Es muy común en código existente." }
+  ],
+  "recursos": {
+    "video": { "id": "vsVWZ8X2nnA", "titulo": "Efectos y LocalStorage", "canal": "Fernando Herrera", "inicio": 0, "fin": 497, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Signals (readonly, computed, effect)", "url": "https://angular.dev/guide/signals" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená las líneas para armar un store de tareas: primero el estado privado, después lo que se expone, y al final los métodos que lo modifican.",
+    "lenguaje": "typescript",
+    "lineas": [
+      "@Injectable({ providedIn: 'root' })",
+      "export class TareasStore {",
+      "  private readonly _tareas = signal<Tarea[]>([]);",
+      "  readonly tareas = this._tareas.asReadonly();",
+      "  readonly total = computed(() => this._tareas().length);",
+      "  agregar(t: Tarea) { this._tareas.update(l => [...l, t]); }",
+      "}"
+    ],
+    "pistas": [
+      "El decorador va antes de la clase. Lo que se expone (`tareas`, `total`) depende de `_tareas`, así que `_tareas` va primero.",
+      "Orden: decorador, `export class`, `_tareas`, `tareas`, `total`, `agregar`, y la llave de cierre."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Para qué sirve exponer `this._tareas.asReadonly()` en vez del signal original?",
+      "opciones": [
+        { "texto": "Para que los componentes puedan leer pero no modificar: los cambios pasan por métodos del servicio.", "correcta": true, "explicacion": "Así el estado solo cambia en lugares conocidos y con nombre." },
+        { "texto": "Porque es más rápido de leer.", "correcta": false, "explicacion": "No cambia el rendimiento." },
+        { "texto": "Porque los signals originales no se pueden usar en templates.", "correcta": false, "explicacion": "Se pueden usar; es una decisión de diseño." }
+      ]
+    },
+    {
+      "pregunta": "En código viejo ves `private tareas$ = new BehaviorSubject<Tarea[]>([])`. ¿Qué es?",
+      "opciones": [
+        { "texto": "El mismo patrón de estado compartido, pero con RxJS en vez de signals.", "correcta": true, "explicacion": "Antes de Angular 16 era la forma estándar. Se lee con `| async` o `subscribe`." },
+        { "texto": "Un error: BehaviorSubject no existe en Angular.", "correcta": false, "explicacion": "Es de RxJS, que viene con Angular." },
+        { "texto": "Un componente.", "correcta": false, "explicacion": "Es un Observable con valor actual, típico en servicios." }
+      ]
+    }
+  ]
+}
