@@ -72,7 +72,7 @@ Ejemplo: abrís `#/angular/leccion/signals`.
 | `@Injectable`, `providedIn: 'root'` | `core/curso-actual.ts` |
 | `signal`, `computed`, `effect`, `linkedSignal`, `httpResource` | `core/curso-actual.ts` |
 | `inject()` en clases | `core/progreso/progreso.ts` |
-| `@Component`, `imports`, `protected` | `app.ts` |
+| `@Component`, `imports`, `protected`, `host` con eventos globales, `routerLinkActive`, `takeUntilDestroyed` | `app.ts` / `app.html` |
 | Interpolación, property binding, `[class.x]`, `@if`, `(click)`, `routerLink`, `<router-outlet>` | `app.html` |
 | `input()` / `input.required()` | `shared/bloques/bloques.ts` |
 | `@for` + `track`, `@switch`, `[innerHTML]` | `shared/bloques/bloques.html` |

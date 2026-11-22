@@ -13,12 +13,13 @@
   top: 12px;
 }
 
+/* Barra superior: vidrio oscuro sobre los focos de luz del fondo. */
 .barra {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: color-mix(in oklab, var(--superficie) 85%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--fondo) 72%, transparent);
+  backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--borde);
   padding-top: env(safe-area-inset-top);
 }
@@ -26,11 +27,11 @@
 .barra-interior {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   max-width: calc(var(--ancho-pagina) + 2 * var(--gutter));
   margin-inline: auto;
-  padding: 8px var(--gutter);
-  min-height: 60px;
+  padding: 10px var(--gutter);
+  min-height: 68px;
 }
 
 .marca {
@@ -38,75 +39,179 @@
   align-items: center;
   gap: 10px;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   letter-spacing: -0.02em;
   text-decoration: none;
   min-height: 44px;
+  flex-shrink: 0;
 }
 .marca-logo {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--acento);
-  color: var(--acento-tinta);
-  font: 700 0.8rem var(--fuente-codigo);
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6d5cf6, #4f46e5 60%, #3b2fb8);
+  box-shadow: 0 0 24px rgb(109 92 246 / 0.45);
+  color: #fff;
+  font: 700 0.85rem var(--fuente-codigo);
 }
 
 .separador {
   width: 1px;
   height: 24px;
   background: var(--borde);
+  flex-shrink: 0;
 }
 
 .curso {
-  font-weight: 600;
-  color: var(--tinta-suave);
-  text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 44px;
   display: inline-flex;
   align-items: center;
-}
-.curso:hover {
-  color: var(--tinta);
-}
-
-.stats {
-  display: flex;
   gap: 8px;
-  margin: 0 0 0 auto;
-}
-.stats div {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid var(--borde);
-  border-radius: 999px;
-  background: var(--superficie-2);
-}
-.stats dt {
-  font: 500 0.72rem var(--fuente-codigo);
-  color: var(--tinta-suave);
-}
-.stats dd {
-  margin: 0;
+  min-height: 44px;
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.stats dd.activa {
-  color: var(--exito);
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-app-selector-tema {
+/* Navegación */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.nav a,
+.nav button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 0;
+  background: none;
+  color: var(--tinta-suave);
+  font: 500 0.95rem var(--fuente-texto);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--dur),
+    background var(--dur);
+}
+.nav a:hover,
+.nav button:hover {
+  color: var(--tinta);
+  background: color-mix(in oklab, var(--tinta) 6%, transparent);
+}
+.nav a.activo {
+  color: var(--tinta);
+  background: color-mix(in oklab, var(--tinta) 8%, transparent);
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-left: auto;
 }
-.stats + app-selector-tema {
-  margin-left: 0;
+
+/* Progreso compacto: anillo de avance, racha y XP en una sola píldora. */
+.stats {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--superficie) 70%, transparent);
+}
+.stats div + div {
+  border-left: 1px solid var(--borde);
+}
+.stats dd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 10px;
+  font: 600 0.82rem var(--fuente-codigo);
+  font-variant-numeric: tabular-nums;
+}
+.stats svg {
+  fill: var(--tinta-suave);
+}
+.stats dd.activa svg {
+  fill: #f59e0b;
+}
+.unidad {
+  color: var(--tinta-suave);
+  font-weight: 500;
+}
+/* Anillo de avance dibujado con conic-gradient: sin SVG ni JS. */
+.anillo {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, var(--superficie) 62%, transparent 64%),
+    conic-gradient(var(--exito) calc(var(--p) * 1%), var(--borde) 0);
+}
+
+.cta {
+  min-height: 40px;
+  padding: 8px 18px;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+/* Hamburguesa: solo en pantallas chicas. */
+.hamburguesa {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--borde-control);
+  background: none;
+  color: var(--tinta);
+  cursor: pointer;
+}
+.hamburguesa span,
+.hamburguesa span::before,
+.hamburguesa span::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  transition:
+    transform 220ms var(--ease-salida),
+    opacity 150ms;
+}
+.hamburguesa span {
+  position: relative;
+}
+.hamburguesa span::before,
+.hamburguesa span::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+.hamburguesa span::before {
+  transform: translateY(-6px);
+}
+.hamburguesa span::after {
+  transform: translateY(6px);
+}
+.abierta .hamburguesa span {
+  background: transparent;
+}
+.abierta .hamburguesa span::before {
+  transform: rotate(45deg);
+}
+.abierta .hamburguesa span::after {
+  transform: rotate(-45deg);
 }
 
 main {
@@ -116,13 +221,133 @@ main:focus {
   outline: none;
 }
 
-@media (max-width: 560px) {
-  .curso,
+.corto {
+  display: none;
+}
+
+/*
+  Tablet: la navegación pasa al menú desplegable. Dentro de un curso la barra tiene más
+  elementos (curso, progreso), así que el menú aparece antes (1200px en vez de 960px).
+*/
+@media (max-width: 960px) {
+  .barra:not(.con-curso) .hamburguesa {
+    display: grid;
+  }
+  .barra:not(.con-curso) .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 8px var(--gutter) 16px;
+    background: var(--fondo);
+    border-bottom: 1px solid var(--borde);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 150ms ease-in,
+      transform 150ms ease-in,
+      visibility 0s 150ms;
+  }
+  .barra.abierta:not(.con-curso) .nav {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 220ms var(--ease-salida),
+      transform 220ms var(--ease-salida),
+      visibility 0s;
+  }
+}
+@media (max-width: 1200px) {
+  .con-curso .hamburguesa {
+    display: grid;
+  }
+  .con-curso .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 8px var(--gutter) 16px;
+    /* Fondo opaco: un backdrop-filter anidado dentro de otro no funciona. */
+    background: var(--fondo);
+    border-bottom: 1px solid var(--borde);
+    /* Cerrado: fuera de la vista y sin foco (visibility). */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 150ms ease-in,
+      transform 150ms ease-in,
+      visibility 0s 150ms;
+  }
+  .abierta.con-curso .nav {
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 220ms var(--ease-salida),
+      transform 220ms var(--ease-salida),
+      visibility 0s;
+  }
+}
+@media (max-width: 1200px) {
+  .con-curso .nav a {
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+}
+@media (max-width: 960px) {
+  .nav a,
+  .nav button {
+    min-height: 48px;
+    border-radius: 12px;
+    font-size: 1rem;
+  }
+}
+
+/* Celular: se esconden el texto de la marca, el nombre del curso y el XP para que entre todo. */
+@media (max-width: 600px) {
+  .barra-interior {
+    gap: 10px;
+  }
+  .marca-texto,
+  .curso span,
   .separador,
-  .marca-texto {
+  .stats div:last-child {
     display: none;
   }
-  .stats div {
-    padding: 4px 10px;
+  .cta {
+    padding: 8px 14px;
+  }
+  .largo {
+    display: none;
+  }
+  .corto {
+    display: inline;
+  }
+  .acciones {
+    gap: 6px;
+  }
+}
+@media (max-width: 400px) {
+  .stats {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav,
+  .hamburguesa span,
+  .hamburguesa span::before,
+  .hamburguesa span::after {
+    transition: none !important;
   }
 }

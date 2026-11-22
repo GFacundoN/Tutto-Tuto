@@ -17,7 +17,7 @@
     <app-ilustracion-hero class="portada-ilustracion" />
   </section>
 
-  <section aria-labelledby="titulo-cursos">
+  <section id="seccion-cursos" aria-labelledby="titulo-cursos">
     <h2 id="titulo-cursos">Cursos</h2>
 
     @if (cursos.error()) {
@@ -72,7 +72,7 @@
   </section>
 
   @if (lista()[0]; as destacado) {
-    <section class="modulos" aria-labelledby="titulo-modulos">
+    <section id="seccion-modulos" class="modulos" aria-labelledby="titulo-modulos">
       <div class="titular">
         <h2 id="titulo-modulos">
           Un curso.<br />
@@ -87,7 +87,7 @@
     </section>
   }
 
-  <section class="como" aria-labelledby="titulo-como">
+  <section id="seccion-como" class="como" aria-labelledby="titulo-como">
     <h2 id="titulo-como">Cómo es cada lección</h2>
     <ol class="pasos" appAlAparecer>
       <li class="tarjeta">

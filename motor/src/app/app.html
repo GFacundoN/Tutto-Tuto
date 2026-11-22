@@ -4,10 +4,10 @@
 -->
 <button type="button" class="saltar boton boton-principal" (click)="saltarAlContenido()">Saltar al contenido</button>
 
-<header class="barra no-imprimir">
+<header class="barra no-imprimir" [class.abierta]="menuAbierto()" [class.con-curso]="!!curso()">
   <div class="barra-interior">
     <!-- routerLink: navega sin recargar la página (como <Link> en React Router). -->
-    <a class="marca" routerLink="/" aria-label="Tutto-Tuto, ver todos los cursos">
+    <a class="marca" routerLink="/" aria-label="Tutto-Tuto, ir al inicio">
       <span class="marca-logo" aria-hidden="true">tt</span>
       <span class="marca-texto">Tutto-Tuto</span>
     </a>
@@ -18,26 +18,85 @@
       (En código viejo vas a ver *ngIf="curso() as curso", que hace lo mismo.)
     -->
     @if (curso(); as curso) {
-      <!-- [propiedad]="expresión": property binding. Evalúa TypeScript y lo asigna (acá, un array de ruta). -->
       <span class="separador" aria-hidden="true"></span>
-      <a class="curso" [routerLink]="['/', curso.id]">{{ curso.titulo }}</a>
-      <dl class="stats" aria-label="Tu progreso">
-        <div>
-          <dt>Racha</dt>
-          <!-- {{ }}: interpolación. Muestra el valor como texto (escapado, sin riesgo de XSS). -->
-          <!-- [class.activa]: agrega o saca la clase según el booleano. -->
-          <dd [class.activa]="progreso.practicoHoy()">
-            {{ progreso.racha() }} {{ progreso.racha() === 1 ? 'día' : 'días' }}
-          </dd>
-        </div>
-        <div>
-          <dt>XP</dt>
-          <dd>{{ progreso.xp() }}</dd>
-        </div>
-      </dl>
+      <!-- [propiedad]="expresión": property binding. Evalúa TypeScript y lo asigna (acá, un array de ruta). -->
+      <a class="curso" [routerLink]="['/', curso.id]">
+        @if (curso.logo) {
+          <img [src]="'contenido/' + curso.logo" alt="" width="22" height="22" />
+        }
+        <span>{{ curso.titulo }}</span>
+      </a>
     }
 
-    <app-selector-tema />
+    <nav class="nav" id="menu-principal" aria-label="Principal">
+      @if (curso(); as curso) {
+        <!-- routerLinkActive agrega la clase cuando la ruta está activa; exact: solo si coincide entera. -->
+        <a [routerLink]="['/', curso.id]" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">Temario</a>
+        <a [routerLink]="['/', curso.id, 'referencia']" routerLinkActive="activo">Referencia</a>
+        <a [routerLink]="['/', curso.id, 'proyecto']" routerLinkActive="activo">Proyecto final</a>
+        <a routerLink="/">Todos los cursos</a>
+      } @else {
+        <button type="button" (click)="irASeccion('seccion-cursos')">Cursos</button>
+        <button type="button" (click)="irASeccion('seccion-modulos')">Módulos</button>
+        <button type="button" (click)="irASeccion('seccion-como')">Cómo funciona</button>
+      }
+    </nav>
+
+    <div class="acciones">
+      @if (curso() && cursoActual.version()) {
+        <!-- {{ }}: interpolación. Muestra el valor como texto (escapado, sin riesgo de XSS). -->
+        <dl class="stats" aria-label="Tu progreso">
+          <div title="Lecciones completadas">
+            <dt class="solo-lectores">Avance</dt>
+            <dd>
+              <span class="anillo" [style.--p]="avance().porcentaje" aria-hidden="true"></span>
+              {{ avance().hechas }}/{{ avance().total }}
+            </dd>
+          </div>
+          <div title="Días seguidos practicando">
+            <dt class="solo-lectores">Racha</dt>
+            <!-- [class.activa]: agrega o saca la clase según el booleano. -->
+            <dd [class.activa]="progreso.practicoHoy()">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                <path d="M8 1.5c.6 2.4 3.5 3.6 3.5 7a3.5 3.5 0 0 1-7 0c0-1.5.8-2.5 1.5-3.2.1 1 .6 1.7 1.2 2C7.5 5.4 7.4 3.4 8 1.5z" />
+              </svg>
+              {{ progreso.racha() }} <span class="solo-lectores">{{ progreso.racha() === 1 ? 'día' : 'días' }}</span>
+            </dd>
+          </div>
+          <div title="Puntos de experiencia">
+            <dt class="solo-lectores">XP</dt>
+            <dd>{{ progreso.xp() }} <span class="unidad">XP</span></dd>
+          </div>
+        </dl>
+      }
+
+      <app-selector-tema />
+
+      @if (curso(); as curso) {
+        @if (!cursoActual.version()) {
+          <a class="boton boton-principal cta" [routerLink]="['/', curso.id, 'empezar']">Empezar</a>
+        } @else if (proxima(); as proxima) {
+          <a class="boton boton-principal cta" [routerLink]="['/', curso.id, 'leccion', proxima]"><span class="largo">Seguir aprendiendo</span><span class="corto">Seguir</span></a>
+        } @else {
+          <a class="boton boton-principal cta" [routerLink]="['/', curso.id, 'proyecto']">Proyecto final</a>
+        }
+      } @else if (ultimoCurso(); as ultimo) {
+        <a class="boton boton-principal cta" [routerLink]="['/', ultimo]"><span class="largo">Seguir aprendiendo</span><span class="corto">Seguir</span></a>
+      } @else {
+        <button type="button" class="boton boton-principal cta" (click)="irASeccion('seccion-cursos')"><span class="largo">Empezar gratis</span><span class="corto">Empezar</span></button>
+      }
+
+      <button
+        type="button"
+        class="hamburguesa"
+        (click)="menuAbierto.set(!menuAbierto())"
+        [attr.aria-expanded]="menuAbierto()"
+        aria-controls="menu-principal"
+        [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+      >
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
 </header>
 
