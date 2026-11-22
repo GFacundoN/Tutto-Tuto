@@ -1,0 +1,41 @@
+<!--
+  @for recorre una lista. "track" le dice a Angular cómo identificar cada elemento
+  para reutilizar el DOM en vez de recrearlo (en @for es obligatorio).
+  $index es una variable implícita con la posición.
+-->
+@for (bloque of bloques(); track $index) {
+  <!-- @switch elige un bloque según el valor, como un switch de TypeScript. -->
+  @switch (bloque.tipo) {
+    @case ('texto') {
+      <!-- [innerHTML]: property binding a una propiedad del DOM. Angular sanitiza el HTML. -->
+      <p [innerHTML]="bloque.md | textoMd"></p>
+    }
+    @case ('codigo') {
+      <app-codigo-copiable [codigo]="bloque.codigo" [archivo]="bloque.archivo" [lenguaje]="bloque.lenguaje" />
+    }
+    @case ('comando') {
+      <app-codigo-copiable [codigo]="bloque.comando" lenguaje="terminal" [salida]="bloque.salida" />
+    }
+    @case ('lista') {
+      @if (bloque.ordenada) {
+        <ol>
+          @for (item of bloque.items; track $index) {
+            <li [innerHTML]="item | textoMd"></li>
+          }
+        </ol>
+      } @else {
+        <ul>
+          @for (item of bloque.items; track $index) {
+            <li [innerHTML]="item | textoMd"></li>
+          }
+        </ul>
+      }
+    }
+    @case ('nota') {
+      <aside class="nota" [class]="'nota nota-' + bloque.variante">
+        <strong>{{ tituloNota[bloque.variante] }}</strong>
+        <p [innerHTML]="bloque.md | textoMd"></p>
+      </aside>
+    }
+  }
+}
