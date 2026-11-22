@@ -34,7 +34,7 @@ li + li {
   background: var(--error-fondo);
 }
 .nota-comparacion {
-  border-left-color: var(--linea);
+  border-left-color: var(--acento);
 }
 .nota-dato {
   background: var(--aviso-fondo);

@@ -46,7 +46,7 @@ legend {
   transition: border-color var(--dur), background var(--dur);
 }
 .opcion:hover:not([aria-disabled='true']) {
-  border-color: var(--linea);
+  border-color: var(--acento);
 }
 .opcion[aria-disabled='true'] {
   cursor: default;

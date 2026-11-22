@@ -34,9 +34,9 @@ Leelo en este orden. Cada archivo usa lo que explicaron los anteriores.
 5. **`src/app/core/contenido/modelos.ts`**: los tipos del JSON. Es el contrato entre el contenido y el motor. Si entendés este archivo, entendés qué puede tener un curso.
 6. **`src/app/core/curso-actual.ts`**: el servicio central (`@Injectable`, `signal`, `httpResource`, `linkedSignal`, `computed`, `effect`).
 7. **`src/app/core/progreso/progreso.ts`** y **`calculos.ts`**: XP, racha, desbloqueo y repaso espaciado. La lógica pura vive en `calculos.ts`, que tiene tests.
-8. **`src/app/app.ts`** + **`app.html`**: el componente raíz (`@Component`, `imports`, `host`, `@if`, interpolación, `(click)`, `routerLink`, `<router-outlet>`).
+8. **`src/app/app.ts`** + **`app.html`**: el componente raíz (`@Component`, `imports`, `@if`, interpolación, property binding, `(click)`, `routerLink`, `<router-outlet>`).
 9. **`src/app/shared/`**: componentes chicos y reutilizables (`input()`, `@for` con `track`, `@switch`, pipe propio, `DomSanitizer`).
-10. **`src/app/mapa/`**: el recorrido como línea de subte (`rxResource`, `@let`).
+10. **`src/app/mapa/`**: la página del curso con el temario por módulos (`@let`, `<details>`). Los títulos de las lecciones los carga `core/contenido/titulos-lecciones.ts` (`rxResource`).
 11. **`src/app/leccion/leccion-page.ts`**: la pantalla más importante (ver el flujo abajo).
 12. **`src/app/ejercicios/`**: un componente por tipo de ejercicio, más `validacion.ts`, la corrección (funciones puras, testeadas). Acá aparecen `model()`, `output()` y `viewChild()`.
 13. **`src/app/repaso/repaso-page.ts`**: RxJS conectado con signals (`toObservable`, `switchMap`, `toSignal`).
@@ -72,7 +72,7 @@ Ejemplo: abrís `#/angular/leccion/signals`.
 | `@Injectable`, `providedIn: 'root'` | `core/curso-actual.ts` |
 | `signal`, `computed`, `effect`, `linkedSignal`, `httpResource` | `core/curso-actual.ts` |
 | `inject()` en clases | `core/progreso/progreso.ts` |
-| `@Component`, `imports`, `host`, `protected` | `app.ts` |
+| `@Component`, `imports`, `protected` | `app.ts` |
 | Interpolación, property binding, `[class.x]`, `@if`, `(click)`, `routerLink`, `<router-outlet>` | `app.html` |
 | `input()` / `input.required()` | `shared/bloques/bloques.ts` |
 | `@for` + `track`, `@switch`, `[innerHTML]` | `shared/bloques/bloques.html` |
@@ -82,7 +82,7 @@ Ejemplo: abrís `#/angular/leccion/signals`.
 | `viewChild()`, `import()` dinámico | `ejercicios/practica-proyecto/practica-proyecto.ts` |
 | `@let` | `quiz/pregunta/pregunta.html` |
 | `HttpClient`, `forkJoin`, `catchError`, `shareReplay` | `core/contenido/contenido-cursos.ts` |
-| `rxResource` | `mapa/titulos-lecciones.ts` |
+| `rxResource` | `core/contenido/titulos-lecciones.ts` |
 | `toObservable`, `switchMap`, `toSignal` | `repaso/repaso-page.ts` |
 
 ## Crear un curso nuevo (Docker, Java, SQL…)
@@ -109,11 +109,11 @@ Agregá un campo opcional `dificultad: 'baja' | 'media' | 'alta'` a las leccione
 
 ### 2. Un pipe para la duración total (fácil-media)
 
-Creá un pipe `duracion` que convierta minutos en texto: `75 | duracion` → `"1 h 15 min"` y `40 | duracion` → `"40 min"`. Usalo en el mapa para mostrar cuánto dura cada nivel (la suma de sus lecciones).
+Creá un pipe `duracion` que convierta minutos en texto: `75 | duracion` → `"1 h 15 min"` y `40 | duracion` → `"40 min"`. Usalo en la página del curso, donde hoy cada módulo y el total muestran "309 min".
 
-- **Archivos:** `ng g pipe shared/duracion`, `mapa-page.ts` (un `computed` con la suma) y `mapa-page.html`.
+- **Archivos:** `ng g pipe shared/duracion` y `mapa-page.html` (los minutos ya se calculan en `mapa-page.ts`).
 - **Practicás:** `@Pipe`, `computed`, y un test con Vitest para el pipe (`duracion.spec.ts`, como `texto-md.pipe.spec.ts`).
-- **Lo lograste si:** cada nivel muestra su duración y el test cubre 0, 40, 60 y 75 minutos.
+- **Lo lograste si:** el total y cada módulo se leen en horas y minutos, y el test cubre 0, 40, 60 y 75 minutos.
 
 ### 3. Un tipo de bloque nuevo: imagen con epígrafe (media)
 

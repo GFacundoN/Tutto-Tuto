@@ -43,7 +43,7 @@ legend {
   cursor: pointer;
 }
 .opcion.elegida {
-  border-color: var(--linea);
+  border-color: var(--acento);
 }
 .opcion:has(input:focus-visible) {
   outline: 3px solid var(--foco);
@@ -56,7 +56,7 @@ legend {
   width: 20px;
   height: 20px;
   margin: 0;
-  accent-color: var(--linea);
+  accent-color: var(--acento);
 }
 .opcion input:focus-visible {
   outline: none;

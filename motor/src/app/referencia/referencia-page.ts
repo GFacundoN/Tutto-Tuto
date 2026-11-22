@@ -61,7 +61,7 @@ import { TextoMdPipe } from '../shared/texto-md.pipe';
     }
     h2 {
       font-size: var(--t-2);
-      border-bottom: 3px solid var(--linea);
+      border-bottom: 3px solid var(--acento);
       padding-bottom: 4px;
     }
     h3 {

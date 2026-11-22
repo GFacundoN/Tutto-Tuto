@@ -18,8 +18,9 @@ import { CursoActual } from '../core/curso-actual';
       } @else {
         <ul class="cursos">
           @for (curso of lista(); track curso.id) {
-            <li [style.--color-curso]="curso.color">
+            <li>
               <a [routerLink]="['/', curso.id]">
+                <span class="dato">Curso</span>
                 <span class="titulo">{{ curso.titulo }}</span>
                 <span class="tinta-suave">{{ curso.descripcion }}</span>
               </a>
@@ -37,7 +38,8 @@ import { CursoActual } from '../core/curso-actual';
       padding-top: 40px;
     }
     h1 {
-      font-size: var(--t-5);
+      font-size: clamp(2.2rem, 6vw, 3rem);
+      letter-spacing: -0.03em;
       max-width: 18ch;
     }
     .bajada {
@@ -50,23 +52,28 @@ import { CursoActual } from '../core/curso-actual';
       display: grid;
       gap: 12px;
     }
+    .cursos {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
     .cursos a {
       display: grid;
-      gap: 4px;
-      padding: 18px 20px 18px 28px;
+      gap: 6px;
+      height: 100%;
+      padding: 24px;
       background: var(--superficie);
       border: 1px solid var(--borde);
-      border-left: 8px solid var(--color-curso);
       border-radius: var(--radio);
+      box-shadow: var(--sombra);
       text-decoration: none;
+      transition: border-color var(--dur);
     }
     .cursos a:hover {
-      border-color: var(--color-curso);
+      border-color: var(--acento);
     }
     .titulo {
-      font-family: var(--fuente-titulo);
       font-weight: 800;
       font-size: var(--t-3);
+      letter-spacing: -0.02em;
     }
   `,
 })
