@@ -1,0 +1,85 @@
+{
+  "id": "rutas-basicas",
+  "titulo": "Rutas: varias pantallas en una SPA",
+  "minutos": 12,
+  "objetivo": "definir rutas, navegar con routerLink y mostrar la pantalla activa con <router-outlet>.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Una SPA (single-page application) tiene una sola página HTML; el **router** cambia qué componente se ve según la URL, sin recargar. Se configura en tres partes:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "app.routes.ts", "codigo": "import { Routes } from '@angular/router';\nimport { ListaTareas } from './tareas/lista-tareas';\nimport { Equipo } from './equipo/equipo';\n\nexport const routes: Routes = [\n  { path: '', redirectTo: 'tareas', pathMatch: 'full' },\n  { path: 'tareas', component: ListaTareas, title: 'Tareas' },\n  { path: 'equipo', component: Equipo, title: 'Equipo' },\n  { path: '**', redirectTo: 'tareas' },   // cualquier otra URL\n];" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "app.config.ts", "codigo": "export const appConfig: ApplicationConfig = {\n  providers: [provideRouter(routes)],\n};" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "app.html", "codigo": "<nav>\n  <a routerLink=\"/tareas\" routerLinkActive=\"activo\">Tareas</a>\n  <a routerLink=\"/equipo\" routerLinkActive=\"activo\">Equipo</a>\n</nav>\n<router-outlet />" },
+    { "tipo": "lista", "items": [
+      "`routerLink` navega sin recargar. Para un `href` normal, el navegador recarga toda la app y se pierde el estado.",
+      "`routerLinkActive=\"activo\"` agrega la clase al link de la ruta actual.",
+      "`<router-outlet />` es el lugar donde se dibuja el componente de la ruta.",
+      "El orden importa: el router usa la **primera** ruta que coincide, por eso `**` va al final.",
+      "Para navegar desde código: `inject(Router).navigate(['/tareas'])`."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "`RouterLink` y `RouterOutlet` se importan en el `imports` del componente que los usa. Sin `RouterLink`, el `<a routerLink>` no hace nada (y no da error)." },
+    { "tipo": "nota", "variante": "comparacion", "md": "Es como React Router: `routes` ≈ `<Routes>`, `routerLink` ≈ `<Link to>`, `<router-outlet>` ≈ `<Outlet />`. Acá el router viene con Angular.", "soloVersiones": ["semana"] },
+    { "tipo": "nota", "variante": "dato", "md": "Al publicar una SPA en un servidor (nginx, GitHub Pages) hay que redirigir todas las rutas a `index.html`; si no, recargar en `/equipo` da 404. Lo ves en la lección de Docker." }
+  ],
+  "recursos": {
+    "video": { "id": "40WhtuhFsZE", "titulo": "RouterLink", "canal": "Fernando Herrera", "inicio": 0, "fin": 552, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Routing (guía)", "url": "https://angular.dev/guide/routing" },
+      { "titulo": "angular.dev: Definir rutas", "url": "https://angular.dev/guide/routing/define-routes" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "Ya existen los componentes `ListaTareas` y `Equipo`. Definí las rutas `tareas` y `equipo` (con `''` redirigiendo a `tareas`), registrá el router en `app.config.ts` y armá en `App` un menú con `routerLink` y el `<router-outlet />`.",
+    "archivos": {
+      "src/app/lista-tareas.ts": "import { Component } from '@angular/core';\n\n@Component({ selector: 'app-lista-tareas', template: `<h2>Lista de tareas</h2>` })\nexport class ListaTareas {}\n",
+      "src/app/equipo.ts": "import { Component } from '@angular/core';\n\n@Component({ selector: 'app-equipo', template: `<h2>Equipo</h2>` })\nexport class Equipo {}\n",
+      "src/app/app.routes.ts": "import { Routes } from '@angular/router';\n\nexport const routes: Routes = [\n  // TODO: rutas '', 'tareas' y 'equipo'\n];\n",
+      "src/app/app.config.ts": "import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [\n    provideBrowserGlobalErrorListeners(),\n    // TODO: registrá el router con las rutas\n  ],\n};\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  imports: [],\n  template: `\n    <h1>Tablero</h1>\n    <!-- TODO: menú y router-outlet -->\n  `,\n})\nexport class App {}\n"
+    },
+    "abrirArchivo": "src/app/app.routes.ts,src/app/app.config.ts,src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/app.routes.ts", "patron": "path\\s*:\\s*['\"]tareas['\"][^}]*component\\s*:\\s*ListaTareas", "mensaje": "La ruta 'tareas' muestra ListaTareas." },
+      { "archivo": "src/app/app.routes.ts", "patron": "path\\s*:\\s*['\"]equipo['\"][^}]*component\\s*:\\s*Equipo", "mensaje": "La ruta 'equipo' muestra Equipo." },
+      { "archivo": "src/app/app.routes.ts", "patron": "path\\s*:\\s*['\"]['\"][^}]*redirectTo\\s*:\\s*['\"]/?tareas['\"]", "mensaje": "La ruta vacía redirige a 'tareas'." },
+      { "archivo": "src/app/app.config.ts", "patron": "provideRouter\\s*\\(\\s*routes", "mensaje": "app.config.ts registra provideRouter(routes)." },
+      { "archivo": "src/app/app.ts", "patron": "imports\\s*:\\s*\\[[^\\]]*RouterOutlet", "mensaje": "App importa RouterOutlet." },
+      { "archivo": "src/app/app.ts", "patron": "imports\\s*:\\s*\\[[^\\]]*RouterLink", "mensaje": "App importa RouterLink." },
+      { "archivo": "src/app/app.ts", "patron": "routerLink\\s*=\\s*['\"]/?equipo['\"]", "mensaje": "Hay un routerLink a /equipo." },
+      { "archivo": "src/app/app.ts", "patron": "<router-outlet", "mensaje": "El template tiene <router-outlet />." }
+    ],
+    "pistas": [
+      "En `app.routes.ts` importá los dos componentes y agregá `{ path: 'tareas', component: ListaTareas }` y `{ path: 'equipo', component: Equipo }`. Para la vacía: `{ path: '', redirectTo: 'tareas', pathMatch: 'full' }`.",
+      "En `app.config.ts`: `import { provideRouter } from '@angular/router';`, `import { routes } from './app.routes';` y `provideRouter(routes)`. En `app.ts`: `imports: [RouterOutlet, RouterLink]` y en el template `<a routerLink=\"/tareas\">Tareas</a> <a routerLink=\"/equipo\">Equipo</a> <router-outlet />`."
+    ],
+    "solucion": {
+      "src/app/app.routes.ts": "import { Routes } from '@angular/router';\nimport { Equipo } from './equipo';\nimport { ListaTareas } from './lista-tareas';\n\nexport const routes: Routes = [\n  { path: '', redirectTo: 'tareas', pathMatch: 'full' },\n  { path: 'tareas', component: ListaTareas },\n  { path: 'equipo', component: Equipo },\n];\n",
+      "src/app/app.config.ts": "import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';\nimport { provideRouter } from '@angular/router';\nimport { routes } from './app.routes';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes)],\n};\n",
+      "src/app/app.ts": "import { Component } from '@angular/core';\nimport { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';\n\n@Component({\n  selector: 'app-root',\n  imports: [RouterOutlet, RouterLink, RouterLinkActive],\n  template: `\n    <h1>Tablero</h1>\n    <nav>\n      <a routerLink=\"/tareas\" routerLinkActive=\"activo\">Tareas</a> |\n      <a routerLink=\"/equipo\" routerLinkActive=\"activo\">Equipo</a>\n    </nav>\n    <router-outlet />\n  `,\n  styles: `.activo { font-weight: bold; }`,\n})\nexport class App {}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "comando", "comando": "ng g c lista-tareas --flat --inline-template --inline-style\nng g c equipo --flat --inline-template --inline-style" },
+        { "tipo": "texto", "md": "Tu proyecto ya tiene `app.routes.ts` y `provideRouter(routes)` (lo crea `ng new`). Agregá las rutas y el menú en `app.html`." }
+      ],
+      "resultadoEsperado": "Al abrir http://localhost:4200 te redirige a /tareas. Los links cambian la pantalla sin recargar (el ícono de recarga del navegador no gira)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué `{ path: '**', ... }` tiene que ir al final de la lista?",
+      "opciones": [
+        { "texto": "Porque el router usa la primera ruta que coincide, y `**` coincide con todo.", "correcta": true, "explicacion": "Si va primero, ninguna otra ruta se alcanzaría." },
+        { "texto": "Por convención, pero el orden no importa.", "correcta": false, "explicacion": "El orden sí importa." },
+        { "texto": "Porque si no, da error de compilación.", "correcta": false, "explicacion": "Compila; simplemente rompe la navegación." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué pasa si usás `<a href=\"/equipo\">` en vez de `routerLink`?",
+      "opciones": [
+        { "texto": "El navegador recarga toda la app y se pierde el estado en memoria.", "correcta": true, "explicacion": "`routerLink` navega dentro de la SPA sin recargar." },
+        { "texto": "Funciona igual.", "correcta": false, "explicacion": "Llega a la misma pantalla, pero recargando todo." },
+        { "texto": "No navega.", "correcta": false, "explicacion": "Navega, pero con recarga completa." }
+      ]
+    }
+  ]
+}

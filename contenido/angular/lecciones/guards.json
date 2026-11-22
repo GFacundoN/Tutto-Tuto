@@ -1,0 +1,59 @@
+{
+  "id": "guards",
+  "titulo": "Proteger rutas con guards",
+  "minutos": 10,
+  "objetivo": "impedir el acceso a una ruta con un guard funcional y redirigir al login.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Un **guard** decide si se puede entrar (o salir) de una ruta. Hoy se escriben como **funciones**: devuelven `true` para dejar pasar o una `UrlTree` para redirigir." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "auth/auth-guard.ts", "codigo": "import { inject } from '@angular/core';\nimport { CanActivateFn, Router } from '@angular/router';\nimport { Auth } from './auth';\n\nexport const authGuard: CanActivateFn = (route, state) => {\n  const auth = inject(Auth);\n  if (auth.logueado()) return true;\n  return inject(Router).createUrlTree(['/login'], { queryParams: { volver: state.url } });\n};" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "app.routes.ts", "codigo": "{ path: 'tareas/nueva', component: NuevaTarea, canActivate: [authGuard] }" },
+    { "tipo": "lista", "items": [
+      "`canActivate`: ¿puede entrar? El más común (login, permisos, rol).",
+      "`canDeactivate`: ¿puede salir? Para avisar \"tenés cambios sin guardar\".",
+      "`canMatch`: ¿esta ruta aplica? Sirve para mostrar distintas pantallas en la misma URL según el rol.",
+      "Pueden devolver `boolean`, `UrlTree`, o un Observable/Promise de eso (por ejemplo, si hay que preguntarle al backend)."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "El guard **no es seguridad**: el código del frontend se puede saltear. Protege la experiencia (no mostrar pantallas que van a fallar). La seguridad real la pone el backend (Spring Security) rechazando el pedido sin token." },
+    { "tipo": "nota", "variante": "version", "md": "Antes de Angular 15 los guards eran clases: `@Injectable() class AuthGuard implements CanActivate { canActivate() {…} }` y se usaban `canActivate: [AuthGuard]`. Las clases están deprecadas; `ng g guard` ya genera la versión funcional." }
+  ],
+  "recursos": {
+    "video": { "id": "ODIw02GU9r0", "titulo": "Functional route guards en Angular", "canal": "Programación en español", "inicio": 0, "fin": 679, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Route guards", "url": "https://angular.dev/guide/routing/route-guards" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el guard: si no hay usuario logueado, redirigí a `/login`. Después aplicalo a la ruta de nueva tarea.",
+    "lenguaje": "typescript",
+    "plantilla": "export const authGuard: {{0}} = () => {\n  if (inject(Auth).logueado()) return {{1}};\n  return inject(Router).{{2}}(['/login']);\n};\n\n// app.routes.ts\n{ path: 'tareas/nueva', component: NuevaTarea, {{3}}: [authGuard] }",
+    "huecos": [
+      { "respuestas": ["CanActivateFn"], "ancho": 14 },
+      { "respuestas": ["true"], "ancho": 5 },
+      { "respuestas": ["createUrlTree", "parseUrl"], "ancho": 14 },
+      { "respuestas": ["canActivate"], "ancho": 12 }
+    ],
+    "pistas": [
+      "El tipo del guard es el nombre de la propiedad de la ruta + `Fn`. Para redirigir, el Router crea un árbol de URL (no navega directamente).",
+      "Las respuestas son `CanActivateFn`, `true`, `createUrlTree` y `canActivate`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Alcanza un guard para que un usuario sin permiso no pueda borrar tareas?",
+      "opciones": [
+        { "texto": "No: el backend tiene que validar el permiso; el guard solo mejora la experiencia.", "correcta": true, "explicacion": "Cualquiera puede llamar a la API directamente sin pasar por el frontend." },
+        { "texto": "Sí, si el guard está bien escrito.", "correcta": false, "explicacion": "El código del navegador se puede modificar o saltear." },
+        { "texto": "Sí, si además usás canDeactivate.", "correcta": false, "explicacion": "Ningún guard es seguridad de servidor." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué el guard devuelve `createUrlTree(['/login'])` en vez de llamar a `router.navigate`?",
+      "opciones": [
+        { "texto": "Porque así el router cancela la navegación actual y redirige de forma limpia, sin navegaciones en paralelo.", "correcta": true, "explicacion": "Es la forma recomendada de redirigir desde un guard." },
+        { "texto": "Porque navigate no existe en guards.", "correcta": false, "explicacion": "Existe, pero es peor práctica dentro de un guard." },
+        { "texto": "Por rendimiento.", "correcta": false, "explicacion": "Es por corrección de la navegación." }
+      ]
+    }
+  ]
+}

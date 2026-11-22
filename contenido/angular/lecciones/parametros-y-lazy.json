@@ -1,0 +1,57 @@
+{
+  "id": "parametros-y-lazy",
+  "titulo": "Parámetros en la URL y carga diferida",
+  "minutos": 11,
+  "objetivo": "leer parámetros de la URL como inputs del componente y cargar pantallas recién cuando se visitan (lazy loading).",
+  "explicacion": [
+    { "tipo": "texto", "md": "Para el detalle de una tarea, la URL lleva el id: `/tareas/42`. En la ruta se marca con dos puntos:" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "app.routes.ts", "codigo": "export const routes: Routes = [\n  { path: 'tareas', component: ListaTareas },\n  { path: 'tareas/:id', component: DetalleTarea },\n  {\n    path: 'reportes',\n    loadComponent: () => import('./reportes/reportes').then(m => m.Reportes),\n  },\n];" },
+    { "tipo": "texto", "md": "Con `withComponentInputBinding()` el parámetro llega **como input** del componente (también los query params `?filtro=...`):" },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "detalle-tarea.ts", "codigo": "// app.config.ts\nprovideRouter(routes, withComponentInputBinding())\n\n// detalle-tarea.ts\nexport class DetalleTarea {\n  readonly id = input.required<string>();   // mismo nombre que :id\n  private readonly store = inject(TareasStore);\n  readonly tarea = computed(() => this.store.tareas().find(t => t.id === this.id()));\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "lista-tareas.html", "codigo": "<a [routerLink]=\"['/tareas', tarea.id]\">{{ tarea.titulo }}</a>" },
+    { "tipo": "texto", "md": "**`loadComponent`** hace *lazy loading*: el código de `Reportes` viaja en un archivo JavaScript aparte que se descarga recién cuando alguien entra a `/reportes`. La app arranca más rápido. En el build lo ves como \"Lazy chunk files\"." },
+    { "tipo": "nota", "variante": "version", "md": "Antes de `withComponentInputBinding()` (Angular 16) se leía así: `inject(ActivatedRoute).paramMap.subscribe(p => p.get('id'))`. Es lo que vas a ver en la mayoría del código existente. Y en vez de `loadComponent` vas a ver `loadChildren: () => import('./x.module').then(m => m.XModule)`." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Los parámetros de la URL **siempre son strings**. Si tus ids son numéricos, convertí con `Number(this.id())` o usá `input.required({ transform: numberAttribute })`." }
+  ],
+  "recursos": {
+    "video": { "id": "kPkYxPWS208", "titulo": "Lazy loading: loadComponent - Rutas", "canal": "DruCode", "inicio": 0, "fin": 562, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Leer parámetros de ruta", "url": "https://angular.dev/guide/routing/read-route-state" },
+      { "titulo": "angular.dev: Componentes con carga diferida (lazy)", "url": "https://angular.dev/guide/routing/define-routes#lazily-loaded-components-and-routes" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá la ruta de detalle con parámetro, la ruta de reportes con lazy loading, y el input que recibe el id.",
+    "lenguaje": "typescript",
+    "plantilla": "// app.routes.ts\n{ path: 'tareas/{{0}}', component: DetalleTarea },\n{ path: 'reportes', {{1}}: () => import('./reportes').then(m => m.Reportes) },\n\n// app.config.ts\nprovideRouter(routes, {{2}}())\n\n// detalle-tarea.ts\nreadonly id = {{3}}<string>();",
+    "huecos": [
+      { "respuestas": [":id"], "ancho": 4 },
+      { "respuestas": ["loadComponent"], "ancho": 14 },
+      { "respuestas": ["withComponentInputBinding"], "ancho": 26 },
+      { "respuestas": ["input.required"], "ancho": 15 }
+    ],
+    "pistas": [
+      "Los parámetros se marcan con dos puntos. La carga diferida de un componente es `load…`. La función que hace llegar los parámetros como inputs empieza con `with`.",
+      "Las respuestas son `:id`, `loadComponent`, `withComponentInputBinding` e `input.required`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué ganás con `loadComponent` en una ruta?",
+      "opciones": [
+        { "texto": "Que el código de esa pantalla se descargue recién cuando se visita, y la app arranque más rápido.", "correcta": true, "explicacion": "El build genera un chunk aparte para ese componente." },
+        { "texto": "Que el componente se cargue antes que los demás.", "correcta": false, "explicacion": "Es al revés: se difiere." },
+        { "texto": "Que el componente no necesite imports.", "correcta": false, "explicacion": "Los imports del componente siguen igual." }
+      ]
+    },
+    {
+      "pregunta": "Con `withComponentInputBinding()`, la ruta `tareas/:id` y `readonly id = input.required<string>()`, ¿qué valor tiene `id()` en `/tareas/42`?",
+      "opciones": [
+        { "texto": "El string \"42\".", "correcta": true, "explicacion": "Los parámetros de URL siempre son strings." },
+        { "texto": "El número 42.", "correcta": false, "explicacion": "Tenés que convertirlo si lo necesitás numérico." },
+        { "texto": "undefined, porque falta suscribirse a ActivatedRoute.", "correcta": false, "explicacion": "Con withComponentInputBinding no hace falta." }
+      ]
+    }
+  ]
+}
