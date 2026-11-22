@@ -19,6 +19,8 @@ export interface Curso extends CursoResumen {
   instalacion: Bloque[];
   proyectoFinal: ProyectoFinal;
   referencia: SeccionReferencia[];
+  /** JSON con los archivos base del proyecto StackBlitz (ruta relativa a la carpeta del curso). */
+  plantillaProyecto?: string;
 }
 
 /** Un mismo curso puede tener recorridos distintos (ej. "en una semana" y "desde cero"). */
@@ -54,12 +56,16 @@ export interface Leccion {
   variantes?: Record<string, Partial<Pick<Leccion, 'objetivo' | 'explicacion' | 'ejercicio' | 'quiz'>>>;
 }
 
-export type Bloque =
+export type Bloque = (
   | { tipo: 'texto'; md: string }
   | { tipo: 'codigo'; lenguaje: string; codigo: string; archivo?: string }
   | { tipo: 'nota'; variante: 'version' | 'error-comun' | 'comparacion' | 'dato'; md: string }
   | { tipo: 'lista'; items: string[]; ordenada?: boolean }
-  | { tipo: 'comando'; comando: string; salida?: string };
+  | { tipo: 'comando'; comando: string; salida?: string }
+) & {
+  /** Si se indica, el bloque solo se muestra en esas versiones (ej. comparaciones con React). */
+  soloVersiones?: string[];
+};
 
 export interface Recursos {
   video?: Video;
