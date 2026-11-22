@@ -144,6 +144,11 @@ progress::-moz-progress-bar {
 .nombre {
   font-weight: 600;
   text-decoration: none;
+  /* Área táctil de 44px aunque el texto sea más bajo. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -10px;
 }
 a.nombre:hover {
   text-decoration: underline;
