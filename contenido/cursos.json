@@ -8,7 +8,11 @@
     "portada": "angular/portada.svg",
     "estado": "disponible",
     "area": "Frontend",
-    "usas": ["Componentes", "Signals", "HttpClient"],
+    "usas": [
+      "Componentes",
+      "Signals",
+      "HttpClient"
+    ],
     "logros": [
       "Armar pantallas con componentes standalone y signals",
       "Navegar entre pantallas y proteger rutas",
@@ -18,13 +22,38 @@
     ]
   },
   {
+    "id": "docker",
+    "titulo": "Docker",
+    "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
+    "color": "#1d63ed",
+    "logo": "docker/logo.svg",
+    "portada": "docker/portada.svg",
+    "estado": "disponible",
+    "area": "Infraestructura",
+    "usas": [
+      "Dockerfile",
+      "Compose",
+      "Volúmenes"
+    ],
+    "logros": [
+      "Imágenes con Dockerfile multi-stage",
+      "Levantar todo el sistema con docker compose",
+      "Variables de entorno y volúmenes",
+      "Leer logs y depurar contenedores"
+    ]
+  },
+  {
     "id": "java-spring",
     "titulo": "Java y Spring Boot",
     "descripcion": "La API que consume el frontend: controladores REST, servicios, JPA, validaciones y seguridad con JWT.",
     "color": "#3d8b37",
     "estado": "proximamente",
     "area": "Backend",
-    "usas": ["Spring Web", "JPA", "Spring Security"],
+    "usas": [
+      "Spring Web",
+      "JPA",
+      "Spring Security"
+    ],
     "logros": [
       "Endpoints REST con validaciones",
       "Persistencia con Spring Data JPA",
@@ -39,27 +68,16 @@
     "color": "#00758f",
     "estado": "proximamente",
     "area": "Datos",
-    "usas": ["MySQL", "JOIN", "Índices"],
+    "usas": [
+      "MySQL",
+      "JOIN",
+      "Índices"
+    ],
     "logros": [
       "Modelar tablas y relaciones",
       "Consultas con JOIN, GROUP BY y subconsultas",
       "Transacciones e índices",
       "Migraciones sin romper datos"
-    ]
-  },
-  {
-    "id": "docker",
-    "titulo": "Docker",
-    "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
-    "color": "#1d63ed",
-    "estado": "proximamente",
-    "area": "Infraestructura",
-    "usas": ["Dockerfile", "Compose", "Volúmenes"],
-    "logros": [
-      "Imágenes con Dockerfile multi-stage",
-      "Levantar todo el sistema con docker compose",
-      "Variables de entorno y volúmenes",
-      "Leer logs y depurar contenedores"
     ]
   },
   {
@@ -69,7 +87,11 @@
     "color": "#f05032",
     "estado": "proximamente",
     "area": "Equipo",
-    "usas": ["Git", "Pull requests", "Trello"],
+    "usas": [
+      "Git",
+      "Pull requests",
+      "Trello"
+    ],
     "logros": [
       "Ramas, merge y rebase sin miedo",
       "Pull requests y code review",

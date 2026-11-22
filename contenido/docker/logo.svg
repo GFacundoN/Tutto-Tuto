@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Contenedores apilados: el ícono del curso (dibujo propio, no es la marca de Docker). -->
+  <defs>
+    <linearGradient id="g" x1="8" y1="8" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4c8dff"/><stop offset="1" stop-color="#1d63ed"/>
+    </linearGradient>
+  </defs>
+  <rect x="6" y="34" width="24" height="22" rx="4" fill="url(#g)"/>
+  <rect x="34" y="34" width="24" height="22" rx="4" fill="url(#g)"/>
+  <rect x="20" y="8" width="24" height="22" rx="4" fill="url(#g)"/>
+  <g stroke="#fff" stroke-opacity=".55" stroke-width="2.4" stroke-linecap="round">
+    <path d="M12 40v10M18 40v10M24 40v10M40 40v10M46 40v10M52 40v10M26 14v10M32 14v10M38 14v10"/>
+  </g>
+</svg>

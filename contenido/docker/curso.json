@@ -1,0 +1,451 @@
+{
+  "id": "docker",
+  "titulo": "Docker",
+  "descripcion": "Correr el front, la API y la base con un solo comando, igual en tu PC que en el servidor.",
+  "color": "#1d63ed",
+  "logo": "docker/logo.svg",
+  "versionHerramienta": "Docker Engine 29 · Compose v5",
+  "caminos": {
+    "navegador": "Sin instalar nada. Los comandos se escriben en una terminal simulada que los corrige, y los Dockerfile y compose se completan en pantalla.",
+    "local": "Instalás Docker Desktop y, además del ejercicio, corrés cada comando de verdad en tu PC, como en el trabajo."
+  },
+  "versiones": [
+    {
+      "id": "semana",
+      "titulo": "En una semana",
+      "descripcion": "Para quien ya programa (Java, Spring Boot, Angular o React). Va directo a lo que se usa en un equipo: imágenes, Dockerfile, volúmenes, redes y Compose. Unas 2 horas por día.",
+      "niveles": [
+        {
+          "id": "n0",
+          "dia": "Día 1",
+          "titulo": "Qué es Docker",
+          "descripcion": "El problema que resuelve, imagen y contenedor, y tu primer contenedor corriendo.",
+          "lecciones": [
+            "que-es-docker",
+            "instalar-y-primer-contenedor"
+          ]
+        },
+        {
+          "id": "n1",
+          "dia": "Día 2",
+          "titulo": "Contenedores",
+          "descripcion": "Arrancar, parar, ver logs, entrar a un contenedor y exponer puertos.",
+          "lecciones": [
+            "ciclo-de-vida",
+            "puertos-y-variables",
+            "exec-y-logs"
+          ]
+        },
+        {
+          "id": "n2",
+          "dia": "Día 3",
+          "titulo": "Imágenes y Dockerfile",
+          "descripcion": "De dónde salen las imágenes y cómo armar las tuyas, chicas y rápidas de construir.",
+          "lecciones": [
+            "imagenes-y-registros",
+            "primer-dockerfile",
+            "cache-y-dockerignore",
+            "multi-stage"
+          ]
+        },
+        {
+          "id": "n3",
+          "dia": "Día 4",
+          "titulo": "Datos y redes",
+          "descripcion": "Que la base no pierda los datos y que los contenedores se encuentren por nombre.",
+          "lecciones": [
+            "volumenes",
+            "redes"
+          ]
+        },
+        {
+          "id": "n4",
+          "dia": "Día 5",
+          "titulo": "Docker Compose",
+          "descripcion": "Todo el sistema (front, API y base) en un archivo y un comando.",
+          "lecciones": [
+            "compose-primeros-pasos",
+            "compose-stack-completo",
+            "compose-dia-a-dia",
+            "variables-y-env"
+          ]
+        },
+        {
+          "id": "n5",
+          "dia": "Día 6",
+          "titulo": "En el equipo",
+          "descripcion": "Publicar imágenes, encontrar por qué un contenedor no arranca y las buenas prácticas de siempre.",
+          "lecciones": [
+            "publicar-imagenes",
+            "depurar-contenedores",
+            "buenas-practicas"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "principiantes",
+      "titulo": "Desde cero",
+      "descripcion": "Para quien nunca usó la terminal ni levantó un servidor. Empieza por lo básico y llega hasta levantar una app con su base de datos usando Compose. A tu ritmo.",
+      "niveles": [
+        {
+          "id": "f",
+          "titulo": "Antes de Docker",
+          "descripcion": "La terminal, qué es un servidor y para qué sirven los puertos.",
+          "lecciones": [
+            "terminal-basica",
+            "servidores-y-puertos"
+          ]
+        },
+        {
+          "id": "n0",
+          "titulo": "Qué es Docker",
+          "descripcion": "El problema que resuelve, imagen y contenedor, y tu primer contenedor corriendo.",
+          "lecciones": [
+            "que-es-docker",
+            "instalar-y-primer-contenedor"
+          ]
+        },
+        {
+          "id": "n1",
+          "titulo": "Contenedores",
+          "descripcion": "Arrancar, parar, ver logs, entrar a un contenedor y exponer puertos.",
+          "lecciones": [
+            "ciclo-de-vida",
+            "puertos-y-variables",
+            "exec-y-logs"
+          ]
+        },
+        {
+          "id": "n2",
+          "titulo": "Imágenes y Dockerfile",
+          "descripcion": "De dónde salen las imágenes y cómo armar las tuyas.",
+          "lecciones": [
+            "imagenes-y-registros",
+            "primer-dockerfile",
+            "cache-y-dockerignore"
+          ]
+        },
+        {
+          "id": "n3",
+          "titulo": "Datos y redes",
+          "descripcion": "Que la base no pierda los datos y que los contenedores se encuentren por nombre.",
+          "lecciones": [
+            "volumenes",
+            "redes"
+          ]
+        },
+        {
+          "id": "n4",
+          "titulo": "Docker Compose",
+          "descripcion": "Todo el sistema en un archivo y un comando, y qué hacer cuando algo no arranca.",
+          "lecciones": [
+            "compose-primeros-pasos",
+            "compose-stack-completo",
+            "compose-dia-a-dia",
+            "depurar-contenedores"
+          ]
+        }
+      ]
+    }
+  ],
+  "instalacion": [
+    {
+      "tipo": "texto",
+      "md": "En Windows se instala **Docker Desktop**, que corre los contenedores sobre **WSL 2** (un Linux liviano integrado a Windows). Es gratis para uso personal, educativo y empresas chicas (menos de 250 empleados y menos de 10 millones de dólares de facturación anual); las más grandes necesitan una suscripción paga."
+    },
+    {
+      "tipo": "nota",
+      "variante": "version",
+      "md": "Requisitos (según la documentación oficial): Windows 11 23H2 o posterior, o Windows 10 22H2 (build 19045); 8 GB de RAM; virtualización activada en la BIOS; WSL 2.1.5 o posterior. Funciona en Windows Home, solo con contenedores Linux (que son los que se usan en este curso)."
+    },
+    {
+      "tipo": "texto",
+      "md": "**1. Instalá o actualizá WSL.** Abrí PowerShell como administrador y corré:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "wsl --install",
+      "salida": "Si ya estaba instalado, usá: wsl --update\nPuede pedirte reiniciar la PC."
+    },
+    {
+      "tipo": "texto",
+      "md": "**2. Descargá Docker Desktop** desde la [página oficial de instalación para Windows](https://docs.docker.com/desktop/setup/install/windows-install/) y ejecutá `Docker Desktop Installer.exe`. En la pantalla de configuración dejá marcada **Use WSL 2 instead of Hyper-V**."
+    },
+    {
+      "tipo": "texto",
+      "md": "**3. Abrilo.** No arranca solo después de instalar: buscá *Docker Desktop* en el menú Inicio. La primera vez te pide **aceptar el acuerdo de servicio**; sin aceptarlo, el motor no arranca. Iniciar sesión con una cuenta de Docker es opcional."
+    },
+    {
+      "tipo": "texto",
+      "md": "**4. Comprobá** en una terminal nueva que el cliente y el motor responden:"
+    },
+    {
+      "tipo": "comando",
+      "comando": "docker version\ndocker compose version\ndocker run hello-world",
+      "salida": "Client: ... Server: Docker Desktop ...\nDocker Compose version v5.x.x\nHello from Docker!"
+    },
+    {
+      "tipo": "nota",
+      "variante": "error-comun",
+      "md": "Si `docker version` muestra el Client pero da error en el Server (`open //./pipe/dockerDesktopLinuxEngine`), el motor no está corriendo: abrí Docker Desktop y esperá a que abajo a la izquierda diga **Engine running**. Si dice que falta WSL o la virtualización, revisá el paso 1 y la BIOS."
+    },
+    {
+      "tipo": "texto",
+      "md": "**5. Extensión recomendada:** instalá en VS Code la extensión **Container Tools** de Microsoft (antes llamada *Docker*): autocompleta Dockerfile y compose y muestra los contenedores en la barra lateral."
+    },
+    {
+      "tipo": "nota",
+      "variante": "dato",
+      "md": "En Mac se instala Docker Desktop (elegí el instalador para tu chip: Apple o Intel). En Linux podés usar Docker Engine directamente, sin Desktop: `curl -fsSL https://get.docker.com | sh`, y después agregá tu usuario al grupo `docker`."
+    }
+  ],
+  "proyectoFinal": {
+    "titulo": "El sistema del equipo en un solo comando",
+    "descripcion": [
+      {
+        "tipo": "texto",
+        "md": "Vas a dockerizar una app de tareas completa: un **front** (Angular, o cualquier SPA que tengas), una **API** (Spring Boot) y una base **MySQL**. La meta: que alguien que recién llega al equipo clone el repo, cree su `.env` y con **`docker compose up -d --build`** tenga todo andando en minutos, sin instalar Java, Node ni MySQL."
+      },
+      {
+        "tipo": "texto",
+        "md": "Si no tenés tus propios proyectos, usá el del curso de Angular para el front y generá la API en [start.spring.io](https://start.spring.io) con *Spring Web*, *Spring Data JPA*, *MySQL Driver* y *Spring Boot Actuator*, con un CRUD simple de tareas."
+      },
+      {
+        "tipo": "codigo",
+        "lenguaje": "text",
+        "codigo": "tareas/\n├── compose.yaml\n├── .env            (no va a Git)\n├── .env.example\n├── .gitignore\n├── README.md\n├── front/\n│   ├── Dockerfile\n│   ├── .dockerignore\n│   └── nginx.conf\n└── api/\n    ├── Dockerfile\n    └── .dockerignore"
+      },
+      {
+        "tipo": "texto",
+        "md": "Marcá cada punto cuando lo cumplas. Al final hacé la prueba de fuego: `docker compose down --rmi local` (baja todo y borra las imágenes del proyecto) y volvé a levantar desde cero."
+      }
+    ],
+    "criterios": [
+      {
+        "id": "api-dockerfile",
+        "texto": "La API tiene un Dockerfile multi-stage: compila con Maven y la imagen final solo tiene el JRE y el .jar.",
+        "leccion": "multi-stage",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "api-dockerfile-simple",
+        "texto": "La API tiene un Dockerfile que parte de eclipse-temurin:21-jre, copia el .jar y lo arranca con java -jar.",
+        "leccion": "primer-dockerfile",
+        "versiones": [
+          "principiantes"
+        ]
+      },
+      {
+        "id": "front-dockerfile",
+        "texto": "El front tiene un Dockerfile que sirve los archivos compilados con nginx.",
+        "leccion": "primer-dockerfile"
+      },
+      {
+        "id": "cache",
+        "texto": "Los Dockerfile copian primero las dependencias (pom.xml / package.json) y después el código, y hay .dockerignore en cada carpeta.",
+        "leccion": "cache-y-dockerignore"
+      },
+      {
+        "id": "compose",
+        "texto": "Un compose.yaml define los servicios front, api y db, sin la clave version.",
+        "leccion": "compose-primeros-pasos"
+      },
+      {
+        "id": "nombre-servicio",
+        "texto": "La API se conecta a la base usando el nombre del servicio (jdbc:mysql://db:3306/...), no localhost.",
+        "leccion": "redes"
+      },
+      {
+        "id": "volumen",
+        "texto": "MySQL guarda sus datos en un volumen con nombre: después de docker compose down y up, las tareas siguen ahí.",
+        "leccion": "volumenes"
+      },
+      {
+        "id": "healthcheck",
+        "texto": "La base tiene healthcheck y la API la espera con depends_on y condition: service_healthy.",
+        "leccion": "compose-stack-completo"
+      },
+      {
+        "id": "puertos",
+        "texto": "Solo se publican los puertos del front y de la API; la base no publica ninguno.",
+        "leccion": "compose-stack-completo"
+      },
+      {
+        "id": "env",
+        "texto": "Las contraseñas salen de un .env que está en el .gitignore, y hay un .env.example en el repo.",
+        "leccion": "variables-y-env",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "un-comando",
+        "texto": "docker compose up -d --build levanta todo desde cero y la app funciona en el navegador.",
+        "leccion": "compose-dia-a-dia"
+      },
+      {
+        "id": "depurar",
+        "texto": "Provocaste un error (por ejemplo, una URL de base mal escrita) y lo encontraste con docker compose ps y logs.",
+        "leccion": "depurar-contenedores"
+      },
+      {
+        "id": "usuario",
+        "texto": "La imagen de la API corre con un usuario que no es root (USER en el Dockerfile).",
+        "leccion": "buenas-practicas",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "restart",
+        "texto": "Los servicios tienen restart: unless-stopped y las imágenes base usan versiones fijas (nada de latest).",
+        "leccion": "buenas-practicas",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "publicar",
+        "texto": "Publicaste la imagen de la API con una etiqueta de versión en Docker Hub o ghcr.io.",
+        "leccion": "publicar-imagenes",
+        "versiones": [
+          "semana"
+        ]
+      },
+      {
+        "id": "readme",
+        "texto": "El README explica en tres pasos cómo levantar el proyecto (copiar .env.example, completar, docker compose up)."
+      },
+      {
+        "id": "explicar",
+        "texto": "Podés explicar sin mirar qué pasa desde que corrés docker compose up hasta que ves las tareas en el navegador."
+      }
+    ]
+  },
+  "referencia": [
+    {
+      "titulo": "Contenedores",
+      "items": [
+        {
+          "titulo": "Correr en segundo plano con nombre y puerto",
+          "codigo": "docker run -d --name web -p 8080:80 nginx:alpine"
+        },
+        {
+          "titulo": "Correr y borrar al terminar",
+          "codigo": "docker run --rm alpine echo hola"
+        },
+        {
+          "titulo": "Listar (corriendo / todos)",
+          "codigo": "docker ps\ndocker ps -a"
+        },
+        {
+          "titulo": "Frenar, arrancar, borrar",
+          "codigo": "docker stop web\ndocker start web\ndocker rm web        # -f si está corriendo"
+        },
+        {
+          "titulo": "Logs",
+          "codigo": "docker logs -f --tail 100 web"
+        },
+        {
+          "titulo": "Entrar a un contenedor",
+          "codigo": "docker exec -it web sh",
+          "nota": "Si la imagen no trae sh, usá los logs."
+        },
+        {
+          "titulo": "Ver configuración y estado",
+          "codigo": "docker inspect web\ndocker inspect --format \"{{.State.Status}}\" web"
+        }
+      ]
+    },
+    {
+      "titulo": "Imágenes",
+      "items": [
+        {
+          "titulo": "Descargar y listar",
+          "codigo": "docker pull mysql:8.4\ndocker images"
+        },
+        {
+          "titulo": "Construir",
+          "codigo": "docker build -t tareas-api:1.0 .",
+          "nota": "El punto es el contexto: la carpeta que ve COPY."
+        },
+        {
+          "titulo": "Etiquetar y publicar",
+          "codigo": "docker tag tareas-api:1.0 ghcr.io/equipo/tareas-api:1.0\ndocker login ghcr.io\ndocker push ghcr.io/equipo/tareas-api:1.0"
+        },
+        {
+          "titulo": "Borrar",
+          "codigo": "docker rmi tareas-api:1.0\ndocker image prune      # colgadas\ndocker image prune -a   # todas las que no se usan"
+        }
+      ]
+    },
+    {
+      "titulo": "Dockerfile",
+      "items": [
+        {
+          "titulo": "API Spring Boot (multi-stage)",
+          "codigo": "FROM maven:3.9-eclipse-temurin-21 AS build\nWORKDIR /app\nCOPY pom.xml .\nRUN mvn dependency:go-offline\nCOPY src ./src\nRUN mvn package -DskipTests\n\nFROM eclipse-temurin:21-jre\nWORKDIR /app\nRUN useradd --system --uid 1001 app\nCOPY --from=build --chown=app /app/target/*.jar app.jar\nUSER app\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]"
+        },
+        {
+          "titulo": "Front Angular (multi-stage)",
+          "codigo": "FROM node:24-alpine AS build\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci\nCOPY . .\nRUN npx ng build\n\nFROM nginx:alpine\nCOPY nginx.conf /etc/nginx/conf.d/default.conf\nCOPY --from=build /app/dist/tablero/browser /usr/share/nginx/html"
+        },
+        {
+          "titulo": ".dockerignore",
+          "codigo": "node_modules\ndist\n.angular\ntarget\n.git\n.env\n*.log"
+        }
+      ]
+    },
+    {
+      "titulo": "Volúmenes y redes",
+      "items": [
+        {
+          "titulo": "Volumen con nombre",
+          "codigo": "docker volume create datos-mysql\ndocker run -d -v datos-mysql:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=secreta mysql:8.4"
+        },
+        {
+          "titulo": "Carpeta de tu PC (bind mount)",
+          "codigo": "docker run -d -p 8080:80 -v ./sitio:/usr/share/nginx/html nginx:alpine"
+        },
+        {
+          "titulo": "Red propia (DNS por nombre)",
+          "codigo": "docker network create tareas-red\ndocker run -d --name db --network tareas-red -e MYSQL_ROOT_PASSWORD=secreta mysql:8.4\ndocker run -d --name api --network tareas-red -p 8080:8080 tareas-api:1.0",
+          "nota": "La API encuentra a la base como db."
+        }
+      ]
+    },
+    {
+      "titulo": "Compose",
+      "items": [
+        {
+          "titulo": "Comandos de todos los días",
+          "codigo": "docker compose up -d --build\ndocker compose ps\ndocker compose logs -f api\ndocker compose exec db sh\ndocker compose down        # -v borra también los volúmenes\ndocker compose config      # el compose con las variables resueltas"
+        },
+        {
+          "titulo": "Base con healthcheck y API que la espera",
+          "codigo": "services:\n  db:\n    image: mysql:8.4\n    environment:\n      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}\n      MYSQL_DATABASE: tareas\n    volumes:\n      - datos-mysql:/var/lib/mysql\n    healthcheck:\n      test: [\"CMD\", \"mysqladmin\", \"ping\", \"-h\", \"localhost\"]\n      interval: 5s\n      retries: 10\n\n  api:\n    build: ./api\n    ports:\n      - \"8080:8080\"\n    environment:\n      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/tareas\n      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}\n    depends_on:\n      db:\n        condition: service_healthy\n    restart: unless-stopped\n\nvolumes:\n  datos-mysql:"
+        }
+      ]
+    },
+    {
+      "titulo": "Limpieza y diagnóstico",
+      "items": [
+        {
+          "titulo": "Cuánto ocupa Docker",
+          "codigo": "docker system df"
+        },
+        {
+          "titulo": "Borrar lo que no se usa",
+          "codigo": "docker system prune            # no toca volúmenes\ndocker system prune --volumes  # también volúmenes sin uso: cuidado"
+        },
+        {
+          "titulo": "Método cuando algo no arranca",
+          "codigo": "docker ps -a            # ¿está corriendo? ¿Exited?\ndocker logs api         # ¿qué dijo antes de caerse?\ndocker inspect api      # ¿con qué configuración arrancó?\ndocker exec -it api sh  # ¿qué ve desde adentro?"
+        }
+      ]
+    }
+  ]
+}
