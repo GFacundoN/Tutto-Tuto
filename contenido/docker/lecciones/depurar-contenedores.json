@@ -1,0 +1,80 @@
+{
+  "id": "depurar-contenedores",
+  "titulo": "Cuando un contenedor no arranca",
+  "minutos": 12,
+  "objetivo": "seguir un método para encontrar por qué un contenedor se cae o no responde, y liberar espacio en disco.",
+  "explicacion": [
+    { "tipo": "texto", "md": "\"No levanta\" puede ser muchas cosas. En vez de probar al azar, seguí siempre el mismo orden:" },
+    { "tipo": "lista", "ordenada": true, "items": [
+      "**¿Está corriendo?** `docker ps -a` (o `docker compose ps`). Si dice `Exited (1)`, se cayó; si dice `Restarting`, se cae una y otra vez.",
+      "**¿Qué dijo antes de caerse?** `docker logs nombre`. El 90 % de las veces la respuesta está en las últimas líneas: un error de conexión, una variable faltante, un puerto ocupado.",
+      "**¿Con qué configuración arrancó?** `docker inspect nombre`: variables, puertos, volúmenes, el código de salida y si lo mató la falta de memoria (`OOMKilled`).",
+      "**¿Qué ve desde adentro?** Si corre pero no responde, `docker exec -it nombre sh` y probá desde ahí (¿existe el archivo?, ¿llega a `db`?)."
+    ] },
+    { "tipo": "texto", "md": "Los errores que más se repiten:" },
+    { "tipo": "lista", "items": [
+      "`port is already allocated`: el puerto de tu PC está usado (otro contenedor, o tu propia app corriendo con `mvn spring-boot:run`).",
+      "`Exited (137)`: lo mataron. Si `inspect` dice `OOMKilled: true`, se quedó sin memoria.",
+      "`Exited (1)` con `Communications link failure`: la API no llegó a la base (¿healthcheck?, ¿nombre del servicio?, ¿misma red?).",
+      "`exec format error`: la imagen es de otra arquitectura (por ejemplo, construida en una Mac con chip ARM y corrida en un servidor x86).",
+      "`no space left on device`: Docker llenó el disco con imágenes y caches viejos."
+    ] },
+    { "tipo": "texto", "md": "Para el disco: `docker system df` te dice cuánto ocupa cada cosa, y `docker system prune` borra contenedores frenados, redes sin uso, imágenes colgadas y cache de build. **No toca volúmenes** salvo que agregues `--volumes`." },
+    { "tipo": "comando", "comando": "docker system df", "salida": "TYPE            TOTAL     ACTIVE    SIZE      RECLAIMABLE\nImages          23        4         8.4GB     6.9GB (82%)\nContainers      11        3         210MB     180MB (85%)\nLocal Volumes   6         2         2.1GB     1.4GB (66%)\nBuild Cache     140       0         3.2GB     3.2GB" },
+    { "tipo": "nota", "variante": "dato", "md": "Docker Desktop tiene todo esto en la interfaz (pestañas Containers, Images, Volumes, con logs y una terminal), pero aprenderlo por comandos te sirve en el servidor, donde no hay interfaz." }
+  ],
+  "recursos": {
+    "docs": [
+      { "titulo": "docs.docker.com: docker container inspect", "url": "https://docs.docker.com/reference/cli/docker/container/inspect/" },
+      { "titulo": "docs.docker.com: Limpiar recursos sin uso (prune)", "url": "https://docs.docker.com/engine/manage-resources/pruning/" },
+      { "titulo": "docs.docker.com: docker system df", "url": "https://docs.docker.com/reference/cli/docker/system/df/" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "La API (`api`) no responde en el 8080. Seguí el método hasta encontrar la causa.",
+    "pasos": [
+      { "consigna": "Fijate si está corriendo, mirando también los contenedores frenados.", "soluciones": ["docker ps -a"], "salida": "CONTAINER ID   IMAGE            STATUS                     NAMES\n7c1d2e3f4a5b   tareas-api:2.0   Exited (1) 8 seconds ago   api\n1a2b3c4d5e6f   mysql:8.4        Up 2 minutes               db" },
+      { "consigna": "Se cayó. Mirá sus logs.", "soluciones": ["docker logs api"], "salida": "...\nCaused by: java.net.UnknownHostException: base\n...\nAPPLICATION FAILED TO START" },
+      { "consigna": "Busca un host llamado `base`. Mostrá con qué variables arrancó: `docker inspect --format \"{{.Config.Env}}\" api`.", "soluciones": ["docker inspect --format \"{{.Config.Env}}\" api", "docker inspect -f \"{{.Config.Env}}\" api"], "salida": "[SPRING_DATASOURCE_URL=jdbc:mysql://base:3306/tareas JAVA_HOME=/opt/java/openjdk ...]\n\n→ El contenedor de la base se llama db, no base. Hay que corregir la URL." },
+      { "consigna": "Ya que estás, mirá cuánto disco ocupa Docker.", "soluciones": ["docker system df"], "salida": "TYPE         TOTAL   ACTIVE   SIZE    RECLAIMABLE\nImages       23      4        8.4GB   6.9GB (82%)\nBuild Cache  140     0        3.2GB   3.2GB" }
+    ],
+    "pistas": [
+      "El orden es: `docker ps -a` para ver el estado, `docker logs` para ver qué pasó.",
+      "El comando de inspect está en la consigna. El del disco es del grupo `system`: `docker system df`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Provocá un error a propósito: `docker run -d --name roto -e MYSQL_DATABASE=x mysql:8.4` (sin contraseña de root)." },
+        { "tipo": "texto", "md": "Seguí el método: `docker ps -a`, `docker logs roto`. Al terminar, `docker rm roto`." }
+      ],
+      "resultadoEsperado": "El log dice que falta especificar MYSQL_ROOT_PASSWORD (u otra opción equivalente), y el contenedor aparece como Exited (1)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "Un contenedor aparece como `Exited (1)`. ¿Cuál es el primer comando útil?",
+      "opciones": [
+        { "texto": "`docker logs nombre`, para ver qué dijo antes de caerse.", "correcta": true, "explicacion": "La causa casi siempre está en las últimas líneas del log." },
+        { "texto": "`docker rmi` de la imagen.", "correcta": false, "explicacion": "Borrar la imagen no te dice qué pasó." },
+        { "texto": "Reiniciar la PC.", "correcta": false, "explicacion": "El contenedor va a volver a fallar igual." }
+      ]
+    },
+    {
+      "pregunta": "`docker inspect` dice `\"OOMKilled\": true`. ¿Qué pasó?",
+      "opciones": [
+        { "texto": "El sistema mató al contenedor porque se quedó sin memoria.", "correcta": true, "explicacion": "OOM = Out Of Memory. Revisá el límite de memoria o lo que consume la app." },
+        { "texto": "Lo frenaste vos con docker stop.", "correcta": false, "explicacion": "En ese caso OOMKilled es false." },
+        { "texto": "La imagen está corrupta.", "correcta": false, "explicacion": "No tiene que ver con la imagen." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué borra `docker system prune` (sin opciones)?",
+      "opciones": [
+        { "texto": "Contenedores frenados, redes sin uso, imágenes colgadas y cache de build; los volúmenes no.", "correcta": true, "explicacion": "Para incluir volúmenes hay que pedirlo con --volumes." },
+        { "texto": "Todo, incluidos los volúmenes con datos.", "correcta": false, "explicacion": "Los volúmenes se conservan por defecto." },
+        { "texto": "Solo los contenedores corriendo.", "correcta": false, "explicacion": "Nunca borra nada que esté en uso." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "id": "servidores-y-puertos",
+  "titulo": "Servidores, localhost y puertos",
+  "minutos": 10,
+  "objetivo": "entender qué es un servidor, qué significa localhost y para qué sirve un puerto.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Una aplicación web tiene dos lados. El **cliente** (tu navegador) pide cosas; el **servidor** (un programa que queda corriendo) las responde. Una app típica tiene varios servidores: uno que entrega la página (front), uno con la lógica y los datos (la API) y la **base de datos**, donde se guarda todo." },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "Navegador ──pide la página──▶ Front (nginx)\nNavegador ──pide /api/tareas──▶ API (Spring Boot) ──consulta──▶ Base de datos (MySQL)" },
+    { "tipo": "texto", "md": "**localhost** es el nombre de *tu propia computadora*. Cuando abrís `http://localhost:8080`, el navegador le pide la página a un programa que corre en tu misma PC." },
+    { "tipo": "texto", "md": "Pero en una PC corren muchos programas que escuchan pedidos. ¿Cómo sabe la computadora a cuál va cada uno? Por el **puerto**: un número del 1 al 65535. Es como el número de departamento en un edificio: la dirección (localhost) es la misma, el departamento cambia." },
+    { "tipo": "lista", "items": [
+      "`80`: el puerto estándar de las páginas web (por eso no hace falta escribirlo).",
+      "`443`: páginas web seguras (https).",
+      "`8080`: el que usa Spring Boot por defecto.",
+      "`4200`: el de `ng serve` en Angular.",
+      "`3306`: MySQL."
+    ] },
+    { "tipo": "texto", "md": "Dos programas **no pueden** escuchar en el mismo puerto de la misma máquina. Si lo intentás, el segundo falla con un error tipo *port already in use*. Esto lo vas a ver mucho con Docker." },
+    { "tipo": "nota", "variante": "dato", "md": "Con Docker cada contenedor tiene sus propios puertos \"adentro\". Para que tu navegador llegue a uno, lo conectás con un puerto de tu PC. Ya lo vas a hacer con `-p 8080:80`." }
+  ],
+  "recursos": {
+    "docs": [
+      { "titulo": "MDN: ¿Cómo funciona la web?", "url": "https://developer.mozilla.org/es/docs/Learn_web_development/Getting_started/Web_standards/How_the_web_works" },
+      { "titulo": "MDN: ¿Qué es un servidor web?", "url": "https://developer.mozilla.org/es/docs/Learn_web_development/Howto/Web_mechanics/What_is_a_web_server" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "ordenar",
+    "enunciado": "Ordená lo que pasa cuando abrís la lista de tareas de una app en el navegador.",
+    "lenguaje": "text",
+    "lineas": [
+      "Escribís http://localhost:4200 en el navegador",
+      "El front, que escucha en el puerto 4200, le devuelve la página",
+      "La página le pide las tareas a la API en localhost:8080",
+      "La API consulta la base de datos en el puerto 3306",
+      "La API le responde las tareas y la página las muestra"
+    ],
+    "pistas": [
+      "Todo empieza en el navegador y termina en el navegador.",
+      "La base de datos nunca habla con el navegador: solo la API habla con ella."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Abrí http://localhost:8080 en el navegador ahora mismo. Si no hay nada corriendo en ese puerto, vas a ver un error de conexión: no hay ningún programa \"en ese departamento\"." }
+      ],
+      "resultadoEsperado": "El navegador dice que no se puede conectar (todavía no levantaste ningún servidor)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué es `localhost`?",
+      "opciones": [
+        { "texto": "Tu propia computadora.", "correcta": true, "explicacion": "Un pedido a localhost no sale de tu máquina." },
+        { "texto": "Un servidor de Google.", "correcta": false, "explicacion": "No sale a internet." },
+        { "texto": "La base de datos.", "correcta": false, "explicacion": "La base puede estar en localhost, pero localhost es la máquina." }
+      ]
+    },
+    {
+      "pregunta": "¿Para qué sirve el puerto en `localhost:8080`?",
+      "opciones": [
+        { "texto": "Para indicar a qué programa de esa computadora va el pedido.", "correcta": true, "explicacion": "Cada programa servidor escucha en su puerto." },
+        { "texto": "Para indicar la velocidad de la conexión.", "correcta": false, "explicacion": "Los puertos no tienen que ver con la velocidad." },
+        { "texto": "Es la contraseña del servidor.", "correcta": false, "explicacion": "No es un secreto: es un número de \"departamento\"." }
+      ]
+    },
+    {
+      "pregunta": "Querés correr dos programas que usan el puerto 8080 en la misma PC. ¿Qué pasa?",
+      "opciones": [
+        { "texto": "El segundo falla porque el puerto ya está en uso.", "correcta": true, "explicacion": "Un puerto, un programa. Hay que cambiarle el puerto a uno." },
+        { "texto": "Se reparten los pedidos.", "correcta": false, "explicacion": "No: el segundo ni siquiera arranca a escuchar." },
+        { "texto": "Funcionan los dos sin problema.", "correcta": false, "explicacion": "Dos programas no comparten puerto en la misma máquina." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "id": "terminal-basica",
+  "titulo": "La terminal, sin miedo",
+  "minutos": 12,
+  "objetivo": "moverte entre carpetas, listar y crear archivos y entender cómo se arma un comando.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Docker se usa casi todo desde la **terminal**: una ventana donde escribís órdenes en vez de hacer clic. En Windows abrí **PowerShell** (o la terminal integrada de VS Code, con Ctrl+ñ). Vas a ver algo así:" },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "PS C:\\Users\\vos>" },
+    { "tipo": "texto", "md": "Eso es el **prompt**: te dice en qué carpeta estás parado y espera una orden. Escribís el comando, apretás **Enter** y la terminal responde." },
+    { "tipo": "texto", "md": "Todos los comandos tienen la misma forma: **programa**, después **opciones** (empiezan con `-` o `--`) y **argumentos** (sobre qué actúa):" },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "docker   run   -d   -p 8080:80   nginx\n└─┬──┘   └┬┘   └┬┘  └────┬────┘  └─┬─┘\nprograma acción opción  opción     argumento\n               (sin valor)(con valor)" },
+    { "tipo": "texto", "md": "Los comandos para moverte (funcionan en PowerShell, Mac y Linux):" },
+    { "tipo": "lista", "items": [
+      "`pwd`: muestra en qué carpeta estás.",
+      "`ls`: lista lo que hay en la carpeta.",
+      "`cd proyectos`: entra a la carpeta `proyectos`. `cd ..` vuelve a la de arriba.",
+      "`mkdir tareas`: crea una carpeta.",
+      "`code .`: abre la carpeta actual en VS Code (el punto significa \"esta carpeta\")."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "Con la tecla **Tab** la terminal completa nombres de carpetas y archivos, y con la **flecha arriba** recuperás los comandos anteriores. Te ahorran muchísimo tipeo." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Si una carpeta tiene espacios en el nombre, poné la ruta entre comillas: `cd \"Mis proyectos\"`. Sin comillas, la terminal entiende que son dos argumentos distintos." }
+  ],
+  "recursos": {
+    "docs": [
+      { "titulo": "Microsoft Learn: Introducción a PowerShell", "url": "https://learn.microsoft.com/es-es/powershell/scripting/overview" },
+      { "titulo": "MDN (en inglés): Curso intensivo de línea de comandos", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Command_line" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Prepará la carpeta donde vas a hacer el curso.",
+    "pasos": [
+      { "consigna": "Mostrá en qué carpeta estás.", "soluciones": ["pwd"], "salida": "Path\n----\nC:\\Users\\vos" },
+      { "consigna": "Creá una carpeta llamada `curso-docker`.", "soluciones": ["mkdir curso-docker"], "salida": "Mode   LastWriteTime   Name\nd----  22/11/2026      curso-docker" },
+      { "consigna": "Entrá a esa carpeta.", "soluciones": ["cd curso-docker"], "salida": "" },
+      { "consigna": "Listá lo que hay adentro (todavía nada).", "soluciones": ["ls", "dir"], "salida": "" }
+    ],
+    "pistas": [
+      "Son comandos de una palabra más su argumento: `pwd`, `mkdir nombre`, `cd nombre`, `ls`.",
+      "Para entrar a la carpeta se usa `cd` (de *change directory*) seguido del nombre."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Abrí PowerShell y hacé los mismos pasos. Al final escribí `code .` si tenés VS Code instalado." }
+      ],
+      "resultadoEsperado": "Tenés la carpeta curso-docker y la terminal está parada adentro (el prompt termina en curso-docker>)."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "En `docker run -d nginx`, ¿qué es `-d`?",
+      "opciones": [
+        { "texto": "Una opción: cambia cómo se comporta el comando.", "correcta": true, "explicacion": "Las opciones empiezan con - o --." },
+        { "texto": "El programa.", "correcta": false, "explicacion": "El programa es docker." },
+        { "texto": "El argumento.", "correcta": false, "explicacion": "El argumento es nginx: sobre qué actúa el comando." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué hace `cd ..`?",
+      "opciones": [
+        { "texto": "Sube a la carpeta de arriba.", "correcta": true, "explicacion": ".. significa la carpeta padre." },
+        { "texto": "Borra la carpeta actual.", "correcta": false, "explicacion": "cd nunca borra nada: solo te mueve." },
+        { "texto": "Lista las carpetas.", "correcta": false, "explicacion": "Eso es ls." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué significa el `.` en `code .`?",
+      "opciones": [
+        { "texto": "La carpeta actual.", "correcta": true, "explicacion": "Vas a ver el mismo punto en docker build ." },
+        { "texto": "Nada, es un error de tipeo.", "correcta": false, "explicacion": "Es muy común y significa \"acá\"." },
+        { "texto": "Todos los archivos de la PC.", "correcta": false, "explicacion": "Solo la carpeta donde estás." }
+      ]
+    }
+  ]
+}

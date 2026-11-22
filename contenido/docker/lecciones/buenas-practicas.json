@@ -1,0 +1,83 @@
+{
+  "id": "buenas-practicas",
+  "titulo": "Buenas prácticas para producción",
+  "minutos": 13,
+  "objetivo": "aplicar las prácticas que se esperan de un Dockerfile y un compose en un equipo.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Lo que ya sabés hacer funciona. Esto es lo que hace que funcione **bien** y sea seguro en un servidor:" },
+    { "tipo": "lista", "items": [
+      "**Versiones fijas**: `mysql:8.4`, `eclipse-temurin:21-jre`. Nunca `latest` en el proyecto.",
+      "**Imágenes chicas**: multi-stage y bases `-jre`, `alpine` o `slim`. Menos tamaño = menos tiempo de descarga y menos vulnerabilidades.",
+      "**Usuario sin privilegios**: por defecto el proceso corre como `root` dentro del contenedor. Si alguien explota la app, tiene más poder del necesario.",
+      "**Un proceso por contenedor**: la API en uno, la base en otro. No metas nginx, la API y MySQL juntos.",
+      "**Sin secretos en la imagen**: nada de contraseñas en el Dockerfile ni copiadas con el `.env`.",
+      "**Healthchecks y reinicio**: que Docker sepa si la app responde y la levante si se cae."
+    ] },
+    { "tipo": "codigo", "lenguaje": "dockerfile", "archivo": "api/Dockerfile (etapa final)", "codigo": "FROM eclipse-temurin:21-jre\nWORKDIR /app\nRUN useradd --system --uid 1001 app\nCOPY --from=build --chown=app /app/target/*.jar app.jar\nUSER app\nEXPOSE 8080\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]" },
+    { "tipo": "texto", "md": "En el compose de producción se suman la política de reinicio y límites de recursos:" },
+    { "tipo": "codigo", "lenguaje": "yaml", "archivo": "compose.yaml (servicio api)", "codigo": "  api:\n    image: ghcr.io/miequipo/tareas-api:1.4.0\n    restart: unless-stopped\n    env_file: .env\n    healthcheck:\n      test: [\"CMD-SHELL\", \"curl -fs http://localhost:8080/actuator/health || exit 1\"]\n      interval: 15s\n      retries: 3\n    deploy:\n      resources:\n        limits:\n          memory: 768M" },
+    { "tipo": "lista", "items": [
+      "`restart: unless-stopped`: si se cae (o se reinicia el servidor), Docker lo vuelve a levantar, salvo que lo hayas frenado vos.",
+      "`deploy.resources.limits.memory`: un tope para que una pérdida de memoria no tire abajo todo el servidor.",
+      "En producción se usa `image:` con versión (la que publicó CI), no `build:`."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Ese healthcheck usa `curl`: tiene que existir **dentro** de la imagen, y muchas imágenes mínimas no lo traen. Comprobalo con `docker exec api which curl`. Si no está, el contenedor queda *unhealthy* para siempre aunque la app ande." },
+    { "tipo": "nota", "variante": "dato", "md": "`docker scout quickview tareas-api:2.0` (incluido en Docker Desktop) analiza la imagen y te lista vulnerabilidades conocidas de lo que trae adentro." }
+  ],
+  "recursos": {
+    "video": { "id": "eh4YS9x9CDU", "titulo": "Puesta en producción, seguridad y buenas prácticas (Curso Docker 15)", "canal": "Pabpereza", "inicio": 278, "fin": 770, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Buenas prácticas para construir imágenes", "url": "https://docs.docker.com/build/building/best-practices/" },
+      { "titulo": "docs.docker.com: restart en Compose", "url": "https://docs.docker.com/reference/compose-file/services/#restart" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá la etapa final del Dockerfile para que la API no corra como root, y el compose para que se reinicie sola salvo que la frenes vos.",
+    "lenguaje": "dockerfile",
+    "archivo": "Dockerfile + compose.yaml",
+    "plantilla": "# Dockerfile (etapa final)\nFROM eclipse-temurin:21-jre\nWORKDIR /app\nRUN useradd --system --uid 1001 app\nCOPY --from=build --chown=app /app/target/*.jar app.jar\n{{0}} app\nENTRYPOINT [\"java\", \"-jar\", \"app.jar\"]\n\n# compose.yaml\n  api:\n    image: ghcr.io/miequipo/tareas-api:{{1}}\n    restart: {{2}}",
+    "huecos": [
+      { "respuestas": ["USER", "user"], "ancho": 5 },
+      { "respuestas": ["1.4.0"], "ancho": 6 },
+      { "respuestas": ["unless-stopped"], "ancho": 14 }
+    ],
+    "pistas": [
+      "La instrucción que cambia el usuario con el que corre el proceso se llama igual que *usuario* en inglés. En producción la imagen va con versión fija: la que publicó el equipo, `1.4.0`.",
+      "La política que reinicia siempre *salvo que lo hayas frenado* es `unless-stopped`."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Agregá el usuario a tu Dockerfile, reconstruí y comprobá con `docker exec api whoami` que ya no es root." },
+        { "tipo": "texto", "md": "Agregá `restart: unless-stopped`, levantá con Compose y matá el proceso desde Docker Desktop: vas a ver que vuelve solo." }
+      ],
+      "resultadoEsperado": "whoami responde app, y el contenedor se reinicia solo si se cae."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué no conviene que la app corra como root dentro del contenedor?",
+      "opciones": [
+        { "texto": "Si alguien explota una vulnerabilidad de la app, obtiene más permisos de los necesarios.", "correcta": true, "explicacion": "Mínimo privilegio: el proceso solo necesita leer su .jar y abrir un puerto." },
+        { "texto": "Porque root es más lento.", "correcta": false, "explicacion": "No cambia el rendimiento." },
+        { "texto": "Porque Docker no deja.", "correcta": false, "explicacion": "Lo deja, y es el comportamiento por defecto." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué hace `restart: unless-stopped`?",
+      "opciones": [
+        { "texto": "Reinicia el contenedor si se cae o si reinicia el servidor, salvo que lo hayas frenado a mano.", "correcta": true, "explicacion": "Es la política más usada para servicios." },
+        { "texto": "Reinicia el contenedor cada cierto tiempo.", "correcta": false, "explicacion": "No hay reinicios periódicos." },
+        { "texto": "Impide que se frene.", "correcta": false, "explicacion": "Lo podés frenar; justamente ahí deja de reiniciarlo." }
+      ]
+    },
+    {
+      "pregunta": "El healthcheck con `curl` deja el contenedor *unhealthy* aunque la API responde. ¿Qué puede pasar?",
+      "opciones": [
+        { "texto": "La imagen no trae curl, así que el comando del healthcheck falla siempre.", "correcta": true, "explicacion": "El healthcheck corre dentro del contenedor, con lo que tenga la imagen." },
+        { "texto": "Que el healthcheck corre en tu PC y no tenés curl.", "correcta": false, "explicacion": "Corre dentro del contenedor." },
+        { "texto": "Que falta EXPOSE.", "correcta": false, "explicacion": "El healthcheck usa localhost dentro del contenedor." }
+      ]
+    }
+  ]
+}

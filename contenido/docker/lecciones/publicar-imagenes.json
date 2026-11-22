@@ -1,0 +1,74 @@
+{
+  "id": "publicar-imagenes",
+  "titulo": "Publicar imágenes en un registro",
+  "minutos": 11,
+  "objetivo": "etiquetar una imagen con versión y subirla al registro del equipo.",
+  "explicacion": [
+    { "tipo": "texto", "md": "Para que el servidor (o un compañero) use tu imagen, la tenés que subir a un **registro**: Docker Hub, GitHub Container Registry (`ghcr.io`) o el de la nube de la empresa. El nombre de la imagen dice a dónde va:" },
+    { "tipo": "codigo", "lenguaje": "text", "codigo": "ghcr.io/miequipo/tareas-api:1.4.0\n└──┬──┘ └───┬───┘ └───┬────┘ └─┬─┘\nregistro  usuario   repositorio  etiqueta\n          u organización" },
+    { "tipo": "texto", "md": "`docker tag` le pone **otro nombre** a una imagen que ya tenés (no la copia: es la misma imagen con dos nombres). Después iniciás sesión y la subís:" },
+    { "tipo": "comando", "comando": "docker tag tareas-api:2.0 ghcr.io/miequipo/tareas-api:1.4.0\ndocker login ghcr.io\ndocker push ghcr.io/miequipo/tareas-api:1.4.0", "salida": "The push refers to repository [ghcr.io/miequipo/tareas-api]\n5f70bf18a086: Pushed\n...\n1.4.0: digest: sha256:9b1c… size: 1789" },
+    { "tipo": "lista", "items": [
+      "Etiquetá con **versiones** (`1.4.0`) o con el commit (`sha-3f2a1c9`), no solo `latest`. Así se sabe qué hay en producción y se puede volver atrás.",
+      "Una misma imagen puede tener varias etiquetas: `1.4.0` y `latest` a la vez.",
+      "Para Docker Hub el nombre es `usuario/repositorio:etiqueta`, sin registro adelante.",
+      "En `ghcr.io`, la contraseña de `docker login` es un **token** de GitHub con permiso `write:packages`, no tu contraseña."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "En los equipos casi nunca se hace `docker push` a mano: lo hace el pipeline de CI (GitHub Actions, GitLab CI) en cada merge a la rama principal. Pero entender estos tres comandos es lo que te permite leer y arreglar ese pipeline." },
+    { "tipo": "nota", "variante": "error-comun", "md": "`denied: requested access to the resource is denied`: o no hiciste `docker login` en ese registro, o el nombre no es tuyo (en Docker Hub tiene que empezar con tu usuario), o el token no tiene permiso de escritura." }
+  ],
+  "recursos": {
+    "video": { "id": "5CNQMeYUBPs", "titulo": "Gestión de imágenes: tag y push a Docker Hub (Curso Docker 9)", "canal": "Pabpereza", "inicio": 244, "fin": 483, "idioma": "es" },
+    "docs": [
+      { "titulo": "docs.docker.com: Construir, etiquetar y publicar una imagen", "url": "https://docs.docker.com/get-started/docker-concepts/building-images/build-tag-and-publish-an-image/" },
+      { "titulo": "docs.github.com: Trabajar con el registro de contenedores", "url": "https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "terminal",
+    "enunciado": "Publicá la versión 1.4.0 de la API en el registro de GitHub del equipo (`ghcr.io/miequipo`).",
+    "pasos": [
+      { "consigna": "Construí la imagen desde la carpeta actual con el nombre `ghcr.io/miequipo/tareas-api:1.4.0`.", "soluciones": ["docker build -t ghcr.io/miequipo/tareas-api:1.4.0 ."], "salida": "[+] Building 38.2s (14/14) FINISHED\n => => naming to ghcr.io/miequipo/tareas-api:1.4.0" },
+      { "consigna": "Agregale también la etiqueta `latest` a esa misma imagen.", "soluciones": ["docker tag ghcr.io/miequipo/tareas-api:1.4.0 ghcr.io/miequipo/tareas-api:latest"], "salida": "" },
+      { "consigna": "Iniciá sesión en `ghcr.io`.", "soluciones": ["docker login ghcr.io"], "salida": "Username: tu-usuario\nPassword: ********\nLogin Succeeded" },
+      { "consigna": "Subí la versión `1.4.0`.", "soluciones": ["docker push ghcr.io/miequipo/tareas-api:1.4.0"], "salida": "The push refers to repository [ghcr.io/miequipo/tareas-api]\n1.4.0: digest: sha256:9b1c4e… size: 1789" }
+    ],
+    "pistas": [
+      "El nombre completo va después de `-t` en `docker build`, y no te olvides del `.` del contexto. `docker tag` recibe el nombre que ya existe y el nuevo.",
+      "Para entrar al registro: `docker login` y el registro. Para subir: `docker push` y el nombre completo con la etiqueta."
+    ],
+    "local": {
+      "pasos": [
+        { "tipo": "texto", "md": "Si tenés cuenta en Docker Hub: `docker tag tareas-api:2.0 TU_USUARIO/tareas-api:0.1.0`, `docker login` y `docker push TU_USUARIO/tareas-api:0.1.0`." },
+        { "tipo": "texto", "md": "Después borrá la imagen local (`docker rmi TU_USUARIO/tareas-api:0.1.0`) y bajala con `docker pull` para comprobar que está en el registro." }
+      ],
+      "resultadoEsperado": "La imagen aparece en tu perfil de Docker Hub y se puede descargar desde cualquier máquina."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Qué hace `docker tag a:1 b:2`?",
+      "opciones": [
+        { "texto": "Le agrega el nombre b:2 a la misma imagen; no la copia ni la sube.", "correcta": true, "explicacion": "Las dos etiquetas apuntan al mismo id de imagen." },
+        { "texto": "Sube la imagen a un registro.", "correcta": false, "explicacion": "Eso es docker push." },
+        { "texto": "Renombra a:1 y la borra.", "correcta": false, "explicacion": "a:1 sigue existiendo." }
+      ]
+    },
+    {
+      "pregunta": "¿Por qué no alcanza con publicar solo `latest`?",
+      "opciones": [
+        { "texto": "Porque no sabés qué versión está corriendo ni podés volver a una anterior.", "correcta": true, "explicacion": "latest se pisa con cada push." },
+        { "texto": "Porque los registros no aceptan latest.", "correcta": false, "explicacion": "Lo aceptan; el problema es la trazabilidad." },
+        { "texto": "Porque latest pesa más.", "correcta": false, "explicacion": "El tamaño no depende de la etiqueta." }
+      ]
+    },
+    {
+      "pregunta": "`docker push` responde *denied: requested access to the resource is denied*. ¿Qué revisás primero?",
+      "opciones": [
+        { "texto": "Que hiciste `docker login` en ese registro y que el nombre de la imagen corresponde a tu usuario u organización.", "correcta": true, "explicacion": "Es casi siempre un problema de permisos o del nombre." },
+        { "texto": "Que la imagen tenga EXPOSE.", "correcta": false, "explicacion": "No tiene que ver con los permisos." },
+        { "texto": "Reinstalar Docker.", "correcta": false, "explicacion": "Es un rechazo del registro, no un problema local." }
+      ]
+    }
+  ]
+}
