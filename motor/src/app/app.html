@@ -104,3 +104,58 @@
   <!-- router-outlet: acá se dibuja el componente de la ruta actual. -->
   <router-outlet />
 </main>
+
+<footer class="pie no-imprimir">
+  <div class="pie-interior">
+    <div class="pie-marca">
+      <a class="marca" routerLink="/" aria-label="Tutto-Tuto, ir al inicio">
+        <span class="marca-logo" aria-hidden="true">tt</span>
+        <span>Tutto-Tuto</span>
+      </a>
+      <p>
+        Cursos interactivos en español para aprender las herramientas de un equipo de desarrollo, en lecciones de 10
+        minutos.
+      </p>
+    </div>
+
+    <nav class="pie-columna" aria-label="Cursos">
+      <h2>Cursos</h2>
+      <ul>
+        @for (c of indiceCursos(); track c.id) {
+          <li>
+            @if (c.estado === 'proximamente') {
+              <span class="pronto">{{ c.titulo }} <small>Pronto</small></span>
+            } @else {
+              <a [routerLink]="['/', c.id]">{{ c.titulo }}</a>
+            }
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <nav class="pie-columna" aria-label="Explorar">
+      <h2>Explorar</h2>
+      <ul>
+        <li><button type="button" (click)="irASeccion('seccion-cursos')">Todos los cursos</button></li>
+        <li><button type="button" (click)="irASeccion('seccion-areas')">Áreas</button></li>
+        <li><button type="button" (click)="irASeccion('seccion-como')">Cómo es cada lección</button></li>
+      </ul>
+    </nav>
+
+    <div class="pie-columna">
+      <h2>Proyecto</h2>
+      <ul>
+        <li><a href="https://github.com/GFacundoN/Tutto-Tuto" target="_blank" rel="noopener">Código en GitHub</a></li>
+        <li><a href="https://gfacundon.dev" target="_blank" rel="noopener">Hecho por GFacundoN</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pie-legal">
+    <p>Tu progreso se guarda solo en este navegador. Gratis y sin registrarte.</p>
+    <button type="button" class="arriba" (click)="volverArriba()">
+      Volver arriba
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" /></svg>
+    </button>
+  </div>
+</footer>

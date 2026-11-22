@@ -1,8 +1,10 @@
+import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { claveDe, leer } from './core/almacenamiento';
+import { CursoResumen } from './core/contenido/modelos';
 import { CursoActual } from './core/curso-actual';
 import { Progreso } from './core/progreso/progreso';
 import { SelectorTema } from './shared/selector-tema/selector-tema';
@@ -46,6 +48,10 @@ export class App {
 
   protected readonly menuAbierto = signal(false);
 
+  /** Índice de cursos para el footer. httpResource: una petición GET expuesta como signal. */
+  private readonly indice = httpResource<CursoResumen[]>(() => 'contenido/cursos.json');
+  protected readonly indiceCursos = computed(() => (this.indice.hasValue() ? this.indice.value() : []));
+
   constructor() {
     effect(() => {
       const id = this.cursoActual.cursoId();
@@ -62,6 +68,12 @@ export class App {
 
   protected saltarAlContenido(): void {
     document.getElementById('contenido-principal')?.focus();
+  }
+
+  protected volverArriba(): void {
+    const reducir = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reducir ? 'auto' : 'smooth' });
+    document.getElementById('contenido-principal')?.focus({ preventScroll: true });
   }
 
   /**

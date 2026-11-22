@@ -313,6 +313,18 @@ main:focus {
   }
 }
 
+/* Tablet dentro de un curso: la barra tiene más cosas, así que se acorta antes. */
+@media (max-width: 860px) {
+  .con-curso .marca-texto,
+  .con-curso .separador,
+  .con-curso .largo {
+    display: none;
+  }
+  .con-curso .corto {
+    display: inline;
+  }
+}
+
 /* Celular: se esconden el texto de la marca, el nombre del curso y el XP para que entre todo. */
 @media (max-width: 600px) {
   .barra-interior {
@@ -350,4 +362,121 @@ main:focus {
   .hamburguesa span::after {
     transition: none !important;
   }
+}
+
+/* Footer: mismo vidrio oscuro que la barra, con un foco de luz tenue arriba. */
+.pie {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--borde);
+  background: color-mix(in oklab, var(--superficie) 55%, transparent);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.pie::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(40% 80% at 15% 0%, var(--luz-2), transparent 70%);
+}
+.pie-interior,
+.pie-legal {
+  position: relative;
+  max-width: calc(var(--ancho-pagina) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+.pie-interior {
+  display: grid;
+  gap: 32px;
+  padding-block: 48px 32px;
+}
+@media (min-width: 760px) {
+  .pie-interior {
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+  }
+}
+.pie-marca p {
+  margin: 8px 0 0;
+  max-width: 36ch;
+  color: var(--tinta-suave);
+  font-size: 0.95rem;
+}
+.pie-columna h2 {
+  margin: 0 0 8px;
+  font: 500 0.78rem var(--fuente-codigo);
+  color: var(--tinta-suave);
+}
+.pie-columna ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pie-columna a,
+.pie-columna button,
+.pronto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--tinta);
+  font: 500 0.95rem var(--fuente-texto);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+}
+.pie-columna a:hover,
+.pie-columna button:hover {
+  color: var(--acento);
+}
+.pronto {
+  color: var(--tinta-suave);
+  cursor: default;
+}
+.pronto small {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--borde);
+  font: 500 0.7rem var(--fuente-codigo);
+}
+.pie-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 16px 24px;
+  border-top: 1px solid var(--borde);
+}
+.pie-legal p {
+  margin: 0;
+  color: var(--tinta-suave);
+  font-size: 0.88rem;
+}
+.arriba {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--borde-control);
+  background: none;
+  color: var(--tinta);
+  font: 500 0.9rem var(--fuente-texto);
+  cursor: pointer;
+}
+.arriba:hover {
+  background: color-mix(in oklab, var(--tinta) 6%, transparent);
+}
+.arriba path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
