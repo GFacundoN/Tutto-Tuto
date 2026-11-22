@@ -1,0 +1,86 @@
+{
+  "id": "reactive-forms",
+  "titulo": "Reactive Forms con validaciones",
+  "minutos": 15,
+  "objetivo": "armar un formulario con Reactive Forms, validarlo y mostrar los errores al usuario.",
+  "explicacion": [
+    { "tipo": "texto", "md": "**Reactive Forms** es la forma de hacer formularios que más vas a ver en empresas: el formulario se define en TypeScript (tipado) y el template solo lo conecta." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "nueva-tarea.ts", "codigo": "import { Component, inject } from '@angular/core';\nimport { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-nueva-tarea',\n  imports: [ReactiveFormsModule],\n  templateUrl: './nueva-tarea.html',\n})\nexport class NuevaTarea {\n  private readonly fb = inject(NonNullableFormBuilder);\n\n  readonly form = this.fb.group({\n    titulo: ['', [Validators.required, Validators.minLength(3)]],\n    responsable: ['', Validators.required],\n    prioridad: ['media'],\n  });\n\n  guardar() {\n    if (this.form.invalid) {\n      this.form.markAllAsTouched();   // muestra todos los errores\n      return;\n    }\n    const tarea = this.form.getRawValue();   // { titulo: string, responsable: string, prioridad: string }\n    console.log('Enviar a la API', tarea);\n    this.form.reset();\n  }\n}" },
+    { "tipo": "codigo", "lenguaje": "html", "archivo": "nueva-tarea.html", "codigo": "<form [formGroup]=\"form\" (ngSubmit)=\"guardar()\">\n  <label>\n    Título\n    <input formControlName=\"titulo\" />\n  </label>\n  @let titulo = form.controls.titulo;\n  @if (titulo.touched && titulo.hasError('required')) {\n    <small>El título es obligatorio.</small>\n  } @else if (titulo.touched && titulo.hasError('minlength')) {\n    <small>Escribí al menos 3 letras.</small>\n  }\n\n  <label>Responsable <input formControlName=\"responsable\" /></label>\n  <button type=\"submit\">Crear tarea</button>\n</form>" },
+    { "tipo": "lista", "items": [
+      "`[formGroup]` conecta el `<form>` con el grupo; `formControlName` conecta cada input con su control.",
+      "`Validators`: `required`, `minLength`, `maxLength`, `email`, `pattern`, `min`, `max`. También podés escribir los tuyos.",
+      "Estados de cada control: `valid`/`invalid`, `touched` (lo tocó y salió), `dirty` (cambió el valor).",
+      "`NonNullableFormBuilder` hace que `reset()` vuelva al valor inicial en vez de `null`, y los tipos quedan sin `| null`."
+    ] },
+    { "tipo": "nota", "variante": "error-comun", "md": "Mostrá errores solo después de `touched` (o al intentar enviar con `markAllAsTouched`). Si los mostrás de entrada, el formulario aparece lleno de rojo antes de que la persona escriba algo." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Si ves *\"Can't bind to 'formGroup' since it isn't a known property of 'form'\"*, te falta `ReactiveFormsModule` en los `imports` del componente." },
+    { "tipo": "nota", "variante": "dato", "md": "Para listas dinámicas (por ejemplo, subtareas que se agregan con un botón) existe `FormArray`. El video muestra un ejemplo." }
+  ],
+  "recursos": {
+    "video": { "id": "f8BNyadsB7Q", "titulo": "Reactive Forms en Angular: FormGroup, FormArray y FormControl", "canal": "CodeScript", "inicio": 53, "fin": 490, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Reactive forms", "url": "https://angular.dev/guide/forms/reactive-forms" },
+      { "titulo": "angular.dev: Validar formularios", "url": "https://angular.dev/guide/forms/form-validation" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "proyecto",
+    "enunciado": "Armá el formulario de nueva tarea con Reactive Forms: `titulo` obligatorio y con mínimo 3 caracteres. Mostrá \"El título es obligatorio.\" cuando esté vacío y tocado, y que al enviar con errores se marquen todos como tocados.",
+    "archivos": {
+      "src/app/app.ts": "import { Component } from '@angular/core';\n\n@Component({\n  selector: 'app-root',\n  imports: [],\n  template: `\n    <h1>Nueva tarea</h1>\n    <form>\n      <label>Título <input /></label>\n      <button type=\"submit\">Crear tarea</button>\n    </form>\n    <p>Enviado: {{ enviado }}</p>\n  `,\n})\nexport class App {\n  enviado = '';\n\n  // TODO: form con titulo obligatorio y minLength(3)\n\n  guardar() {\n    // TODO: si es inválido, markAllAsTouched() y salir; si no, guardar el título en enviado\n  }\n}\n"
+    },
+    "abrirArchivo": "src/app/app.ts",
+    "verificaciones": [
+      { "archivo": "src/app/app.ts", "patron": "imports\\s*:\\s*\\[[^\\]]*ReactiveFormsModule", "mensaje": "App importa ReactiveFormsModule." },
+      { "archivo": "src/app/app.ts", "patron": "Validators\\.required", "mensaje": "titulo usa Validators.required." },
+      { "archivo": "src/app/app.ts", "patron": "Validators\\.minLength\\(\\s*3\\s*\\)", "mensaje": "titulo usa Validators.minLength(3)." },
+      { "archivo": "src/app/app.ts", "patron": "\\[formGroup\\]\\s*=", "mensaje": "El <form> tiene [formGroup]." },
+      { "archivo": "src/app/app.ts", "patron": "\\(ngSubmit\\)\\s*=\\s*\"guardar\\(\\)\"", "mensaje": "El <form> llama a guardar() con (ngSubmit)." },
+      { "archivo": "src/app/app.ts", "patron": "formControlName\\s*=\\s*\"titulo\"", "mensaje": "El input tiene formControlName=\"titulo\"." },
+      { "archivo": "src/app/app.ts", "patron": "markAllAsTouched\\(\\)", "mensaje": "guardar() llama a markAllAsTouched() si el form es inválido." },
+      { "archivo": "src/app/app.ts", "patron": "hasError\\(\\s*['\"]required['\"]\\s*\\)", "mensaje": "El template muestra el error de required." },
+      { "archivo": "src/app/app.ts", "patron": "touched", "mensaje": "El error se muestra solo si el campo fue tocado." }
+    ],
+    "pistas": [
+      "Importá `ReactiveFormsModule`, `Validators` y `FormControl`/`FormGroup` (o `NonNullableFormBuilder`) de `@angular/forms`. Ejemplo: `form = new FormGroup({ titulo: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }) });`.",
+      "Template: `<form [formGroup]=\"form\" (ngSubmit)=\"guardar()\">`, `<input formControlName=\"titulo\" />` y `@if (form.controls.titulo.touched && form.controls.titulo.hasError('required')) { <small>El título es obligatorio.</small> }`."
+    ],
+    "solucion": {
+      "src/app/app.ts": "import { Component } from '@angular/core';\nimport { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';\n\n@Component({\n  selector: 'app-root',\n  imports: [ReactiveFormsModule],\n  template: `\n    <h1>Nueva tarea</h1>\n    <form [formGroup]=\"form\" (ngSubmit)=\"guardar()\">\n      <label>Título <input formControlName=\"titulo\" /></label>\n      @let titulo = form.controls.titulo;\n      @if (titulo.touched && titulo.hasError('required')) {\n        <small>El título es obligatorio.</small>\n      } @else if (titulo.touched && titulo.hasError('minlength')) {\n        <small>Escribí al menos 3 letras.</small>\n      }\n      <button type=\"submit\">Crear tarea</button>\n    </form>\n    <p>Enviado: {{ enviado }}</p>\n  `,\n})\nexport class App {\n  enviado = '';\n\n  readonly form = new FormGroup({\n    titulo: new FormControl('', {\n      nonNullable: true,\n      validators: [Validators.required, Validators.minLength(3)],\n    }),\n  });\n\n  guardar() {\n    if (this.form.invalid) {\n      this.form.markAllAsTouched();\n      return;\n    }\n    this.enviado = this.form.getRawValue().titulo;\n    this.form.reset();\n  }\n}\n"
+    },
+    "local": {
+      "pasos": [
+        { "tipo": "comando", "comando": "ng g c nueva-tarea" },
+        { "tipo": "texto", "md": "Armá el formulario en ese componente, mostralo en `app.html` con `<app-nueva-tarea />` y probalo: enviá vacío, escribí 2 letras, escribí 5." }
+      ],
+      "resultadoEsperado": "Enviando vacío aparece \"El título es obligatorio.\"; con 2 letras, el mensaje de mínimo; con 5 letras se envía y el campo se vacía."
+    }
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Por qué conviene mostrar el error solo si el control está `touched`?",
+      "opciones": [
+        { "texto": "Para no mostrar errores antes de que la persona haya interactuado con el campo.", "correcta": true, "explicacion": "Un formulario recién abierto lleno de rojo es mala experiencia." },
+        { "texto": "Porque antes de touched no hay validación.", "correcta": false, "explicacion": "La validación corre siempre; lo que decidís es cuándo mostrarla." },
+        { "texto": "Por rendimiento.", "correcta": false, "explicacion": "Es una decisión de experiencia de usuario." }
+      ]
+    },
+    {
+      "pregunta": "Error: *\"Can't bind to 'formGroup' since it isn't a known property of 'form'\"*. ¿Qué falta?",
+      "opciones": [
+        { "texto": "`ReactiveFormsModule` en los imports del componente.", "correcta": true, "explicacion": "Las directivas `formGroup` y `formControlName` vienen de ahí." },
+        { "texto": "`FormsModule`.", "correcta": false, "explicacion": "Ese es para template-driven (`ngModel`)." },
+        { "texto": "`provideForms()` en app.config.ts.", "correcta": false, "explicacion": "No existe; los formularios se importan en el componente." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué hace `markAllAsTouched()` al intentar enviar un formulario inválido?",
+      "opciones": [
+        { "texto": "Marca todos los controles como tocados para que se vean todos los errores juntos.", "correcta": true, "explicacion": "Si no, los campos que la persona nunca tocó no muestran su error." },
+        { "texto": "Valida el formulario.", "correcta": false, "explicacion": "La validación ya corrió; esto solo cambia el estado touched." },
+        { "texto": "Envía el formulario igual.", "correcta": false, "explicacion": "No envía nada." }
+      ]
+    }
+  ]
+}

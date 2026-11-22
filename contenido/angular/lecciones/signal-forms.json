@@ -1,0 +1,58 @@
+{
+  "id": "signal-forms",
+  "titulo": "Signal Forms (lo nuevo de Angular 22)",
+  "minutos": 10,
+  "objetivo": "reconocer y escribir un formulario simple con Signal Forms, la API de formularios basada en signals que pasó a estable en Angular 22.",
+  "explicacion": [
+    { "tipo": "texto", "md": "**Signal Forms** parte de otra idea: el modelo de datos es un **signal** y el formulario se arma \"encima\" de él con un esquema de validaciones. No hay `FormGroup` ni `FormControl`: cada campo es un signal con su estado." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "nueva-tarea.ts", "codigo": "import { Component, signal } from '@angular/core';\nimport { form, FormField, minLength, required } from '@angular/forms/signals';\n\n@Component({\n  selector: 'app-nueva-tarea',\n  imports: [FormField],\n  template: `\n    <input [formField]=\"tareaForm.titulo\" />\n    @if (tareaForm.titulo().touched() && tareaForm.titulo().invalid()) {\n      @for (e of tareaForm.titulo().errors(); track e.kind) {\n        <small>{{ e.message }}</small>\n      }\n    }\n    <button (click)=\"guardar()\" [disabled]=\"tareaForm().invalid()\">Crear</button>\n  `,\n})\nexport class NuevaTarea {\n  readonly modelo = signal({ titulo: '', responsable: '' });\n\n  readonly tareaForm = form(this.modelo, (campo) => {\n    required(campo.titulo, { message: 'El título es obligatorio.' });\n    minLength(campo.titulo, 3, { message: 'Escribí al menos 3 letras.' });\n  });\n\n  guardar() {\n    console.log(this.modelo());   // el modelo YA tiene lo que se escribió\n  }\n}" },
+    { "tipo": "lista", "items": [
+      "`form(modelo, esquema)`: crea el formulario sobre un signal. Escribir en el input actualiza el signal `modelo`.",
+      "`[formField]=\"tareaForm.titulo\"`: conecta un input con un campo (directiva `FormField`).",
+      "Cada campo se lee como signal: `tareaForm.titulo().value()`, `.invalid()`, `.touched()`, `.errors()`.",
+      "Validadores como funciones: `required`, `minLength`, `email`, `pattern`, y `validate`/`validateHttp` para los propios."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "¿Cuál usar en el trabajo? Lo que use el proyecto. Hoy la gran mayoría del código existente usa **Reactive Forms**, y vas a seguir viéndolos por años. Signal Forms es la dirección a futuro y conviene reconocerlo." },
+    { "tipo": "nota", "variante": "version", "md": "Signal Forms apareció como experimental en Angular 21 y es estable en Angular 22. En la versión experimental la directiva se llamaba `[field]` (`Field`); en la estable es `[formField]` (`FormField`). Si ves `[field]` en un tutorial, es de la 21." }
+  ],
+  "recursos": {
+    "video": { "id": "-K1oTI9YFUk", "titulo": "Signal Forms en Angular 21: ¿El fin de Reactive Forms? (en el video la directiva es [field]; en Angular 22 es [formField])", "canal": "Carlos Codea", "inicio": 70, "fin": 657, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Signal Forms", "url": "https://angular.dev/guide/forms/signals/overview" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá un formulario con Signal Forms: el modelo es un signal, el form se crea sobre él con el título obligatorio, y el input se conecta al campo.",
+    "lenguaje": "typescript",
+    "plantilla": "readonly modelo = {{0}}({ titulo: '' });\n\nreadonly tareaForm = {{1}}(this.modelo, (campo) => {\n  {{2}}(campo.titulo, { message: 'El título es obligatorio.' });\n});\n\n// template:\n<input [{{3}}]=\"tareaForm.titulo\" />",
+    "huecos": [
+      { "respuestas": ["signal"], "ancho": 7 },
+      { "respuestas": ["form"], "ancho": 5 },
+      { "respuestas": ["required"], "ancho": 9 },
+      { "respuestas": ["formField"], "ancho": 10 }
+    ],
+    "pistas": [
+      "El modelo es un signal común. La función que crea el formulario se llama igual que la etiqueta HTML. La directiva del input es la de Angular 22, no la experimental.",
+      "Las respuestas son `signal`, `form`, `required` y `formField`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "En Signal Forms, ¿dónde queda lo que la persona escribe en el input?",
+      "opciones": [
+        { "texto": "En el signal del modelo que pasaste a `form()`.", "correcta": true, "explicacion": "El formulario escribe directamente en ese signal." },
+        { "texto": "En un FormGroup interno que hay que leer con getRawValue().", "correcta": false, "explicacion": "Eso es Reactive Forms." },
+        { "texto": "En localStorage.", "correcta": false, "explicacion": "No; está en memoria, en el signal." }
+      ]
+    },
+    {
+      "pregunta": "Entrás a una empresa y el proyecto usa Reactive Forms. ¿Qué hacés con un formulario nuevo?",
+      "opciones": [
+        { "texto": "Seguís el estándar del proyecto (Reactive Forms) salvo que el equipo decida migrar.", "correcta": true, "explicacion": "La consistencia del código del equipo pesa más que usar lo último." },
+        { "texto": "Lo hacés con Signal Forms porque es más nuevo.", "correcta": false, "explicacion": "Mezclar enfoques sin acordarlo complica el mantenimiento." },
+        { "texto": "Lo hacés con ngModel.", "correcta": false, "explicacion": "Tampoco sería el estándar del proyecto." }
+      ]
+    }
+  ]
+}

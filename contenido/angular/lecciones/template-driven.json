@@ -1,0 +1,55 @@
+{
+  "id": "template-driven",
+  "titulo": "ngModel y formularios template-driven",
+  "minutos": 7,
+  "objetivo": "reconocer y usar [(ngModel)] para formularios simples, y saber cuándo no conviene.",
+  "explicacion": [
+    { "tipo": "texto", "md": "En los formularios **template-driven** el formulario se arma en el HTML con `[(ngModel)]`, que conecta un input con una propiedad en las dos direcciones. Es rápido para cosas chicas (un buscador, un filtro) y muy común en código viejo." },
+    { "tipo": "codigo", "lenguaje": "typescript", "archivo": "filtro-tareas.ts", "codigo": "import { Component, signal } from '@angular/core';\nimport { FormsModule } from '@angular/forms';\n\n@Component({\n  selector: 'app-filtro-tareas',\n  imports: [FormsModule],\n  template: `\n    <input [(ngModel)]=\"texto\" placeholder=\"Filtrar\" />\n    <label><input type=\"checkbox\" [(ngModel)]=\"soloMias\" /> Solo mías</label>\n    <p>Buscando \"{{ texto() }}\"</p>\n  `,\n})\nexport class FiltroTareas {\n  readonly texto = signal('');\n  readonly soloMias = signal(false);\n}" },
+    { "tipo": "lista", "items": [
+      "Necesita `FormsModule` en los imports.",
+      "`[(ngModel)]` funciona con propiedades comunes y también con signals (como en el ejemplo).",
+      "Se pueden validar con atributos (`required`, `minlength`) y leer el estado con `#titulo=\"ngModel\"`, pero se vuelve difícil de seguir en formularios grandes."
+    ] },
+    { "tipo": "nota", "variante": "dato", "md": "Regla práctica: `ngModel` para 1 o 2 campos sin validaciones complejas; Reactive Forms (o Signal Forms) para formularios de verdad." },
+    { "tipo": "nota", "variante": "error-comun", "md": "Error típico: *\"Can't bind to 'ngModel' since it isn't a known property of 'input'\"*. Falta `FormsModule` en `imports`." }
+  ],
+  "recursos": {
+    "video": { "id": "2NWc1x-VLcM", "titulo": "ngModel en Angular 17 y 18 - Two way data binding", "canal": "AMazaing Code", "inicio": 0, "fin": 289, "idioma": "es" },
+    "docs": [
+      { "titulo": "angular.dev: Template-driven forms", "url": "https://angular.dev/guide/forms/template-driven-forms" }
+    ]
+  },
+  "ejercicio": {
+    "tipo": "completar",
+    "enunciado": "Completá el filtro: importá lo necesario y conectá el input al signal `texto` en las dos direcciones.",
+    "lenguaje": "typescript",
+    "plantilla": "@Component({\n  selector: 'app-filtro',\n  imports: [{{0}}],\n  template: `<input {{1}}=\"texto\" />`,\n})\nexport class Filtro {\n  readonly texto = signal('');\n}",
+    "huecos": [
+      { "respuestas": ["FormsModule"], "ancho": 12 },
+      { "respuestas": ["[(ngModel)]"], "ancho": 12 }
+    ],
+    "pistas": [
+      "`ngModel` no viene con ReactiveFormsModule sino con el otro módulo de formularios. El binding de dos vías usa corchetes y paréntesis.",
+      "Las respuestas son `FormsModule` y `[(ngModel)]`."
+    ]
+  },
+  "quiz": [
+    {
+      "pregunta": "¿Cuándo conviene `[(ngModel)]` en vez de Reactive Forms?",
+      "opciones": [
+        { "texto": "Para uno o dos campos simples, como un filtro de búsqueda.", "correcta": true, "explicacion": "Para formularios con validaciones y lógica, Reactive (o Signal) Forms es más mantenible." },
+        { "texto": "Siempre, porque es más corto.", "correcta": false, "explicacion": "En formularios grandes la lógica queda dispersa en el HTML." },
+        { "texto": "Nunca, está deprecado.", "correcta": false, "explicacion": "No está deprecado; sigue siendo válido." }
+      ]
+    },
+    {
+      "pregunta": "¿Qué import necesitás para usar `[(ngModel)]`?",
+      "opciones": [
+        { "texto": "`FormsModule`", "correcta": true, "explicacion": "Ahí está la directiva NgModel." },
+        { "texto": "`ReactiveFormsModule`", "correcta": false, "explicacion": "Ese trae formGroup/formControlName." },
+        { "texto": "Ninguno", "correcta": false, "explicacion": "Sin FormsModule, el compilador no reconoce ngModel." }
+      ]
+    }
+  ]
+}
