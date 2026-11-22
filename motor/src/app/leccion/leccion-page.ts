@@ -1,0 +1,131 @@
+import { httpResource } from '@angular/common/http';
+import { Component, computed, inject, input, linkedSignal, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { aplicarVariante, urlLeccion } from '../core/contenido/contenido-cursos';
+import { Leccion } from '../core/contenido/modelos';
+import { CursoActual } from '../core/curso-actual';
+import { estaDesbloqueada } from '../core/progreso/calculos';
+import { Progreso, XP } from '../core/progreso/progreso';
+import { CompletarCodigo } from '../ejercicios/completar-codigo/completar-codigo';
+import { OrdenarLineas } from '../ejercicios/ordenar-lineas/ordenar-lineas';
+import { PracticaProyecto } from '../ejercicios/practica-proyecto/practica-proyecto';
+import { ResultadoEjercicio } from '../ejercicios/resultado';
+import { Pregunta } from '../quiz/pregunta/pregunta';
+import { Bloques } from '../shared/bloques/bloques';
+import { VideoYoutube } from '../shared/video-youtube/video-youtube';
+
+/** Los pasos de toda lección, en orden. */
+export const PASOS = [
+  { id: 'aprender', titulo: 'Aprender' },
+  { id: 'ver', titulo: 'Ver' },
+  { id: 'practicar', titulo: 'Practicar' },
+  { id: 'quiz', titulo: 'Quiz' },
+] as const;
+
+@Component({
+  selector: 'app-leccion-page',
+  imports: [RouterLink, Bloques, VideoYoutube, CompletarCodigo, OrdenarLineas, PracticaProyecto, Pregunta],
+  templateUrl: './leccion-page.html',
+  styleUrl: './leccion-page.css',
+})
+export class LeccionPage {
+  // Llegan desde la URL gracias a withComponentInputBinding() (ver app.config.ts).
+  readonly cursoId = input.required<string>();
+  readonly leccionId = input.required<string>();
+
+  protected readonly cursoActual = inject(CursoActual);
+  private readonly progreso = inject(Progreso);
+  protected readonly pasos = PASOS;
+
+  private readonly recurso = httpResource<Leccion>(() => urlLeccion(this.cursoId(), this.leccionId()));
+
+  /** La lección con los reemplazos de la versión elegida ya aplicados. */
+  protected readonly leccion = computed(() => {
+    // hasValue() evita leer value() cuando el pedido falló (leerlo en error tira excepción).
+    if (!this.recurso.hasValue()) return undefined;
+    return aplicarVariante(this.recurso.value(), this.cursoActual.preferencias()?.versionId);
+  });
+  protected readonly cargando = this.recurso.isLoading;
+  protected readonly error = this.recurso.error;
+
+  /** Archivos base para los ejercicios de proyecto (solo se piden si hacen falta). */
+  private readonly plantilla = httpResource<Record<string, string>>(() => {
+    const ruta = this.cursoActual.datos()?.plantillaProyecto;
+    return ruta && this.leccion()?.ejercicio.tipo === 'proyecto' ? `contenido/${this.cursoId()}/${ruta}` : undefined;
+  });
+  protected readonly archivosPlantilla = computed(() => (this.plantilla.hasValue() ? this.plantilla.value() : {}));
+
+  protected readonly camino = computed(() => this.cursoActual.preferencias()?.camino ?? 'navegador');
+
+  private readonly orden = this.cursoActual.ordenLecciones;
+  protected readonly posicion = computed(() => this.orden().indexOf(this.leccionId()));
+  protected readonly desbloqueada = computed(() =>
+    estaDesbloqueada(this.orden(), this.leccionId(), this.progreso.completadas()),
+  );
+  protected readonly yaCompletada = computed(() => this.progreso.completadas().has(this.leccionId()));
+  protected readonly siguiente = computed(() => this.orden()[this.posicion() + 1] ?? null);
+
+  // Estado del recorrido por la lección. linkedSignal: vuelve a 0 al cambiar de lección.
+  protected readonly paso = linkedSignal({ source: this.leccionId, computation: () => 0 });
+  protected readonly terminada = linkedSignal({ source: this.leccionId, computation: () => false });
+  protected readonly ejercicioHecho = linkedSignal({ source: this.leccionId, computation: () => false });
+  protected readonly preguntaActual = linkedSignal({ source: this.leccionId, computation: () => 0 });
+  protected readonly preguntaRespondida = linkedSignal({ source: this.leccionId, computation: () => false });
+  protected readonly aciertos = linkedSignal({ source: this.leccionId, computation: () => 0 });
+  protected readonly xpGanada = signal(0);
+
+  protected readonly puedeAvanzar = computed(() => {
+    switch (PASOS[this.paso()].id) {
+      case 'practicar':
+        return this.ejercicioHecho();
+      case 'quiz':
+        return this.preguntaRespondida();
+      default:
+        return true;
+    }
+  });
+
+  protected irAPaso(indice: number): void {
+    this.paso.set(indice);
+    // Mover el foco al título del paso para que teclado y lectores de pantalla sigan el cambio.
+    queueMicrotask(() => document.getElementById('titulo-paso')?.focus());
+  }
+
+  protected alResolverEjercicio(resultado: ResultadoEjercicio): void {
+    this.ejercicioHecho.set(true);
+    if (resultado.sinAyuda && !this.yaCompletada()) this.sumar(XP.ejercicioSinPistas);
+  }
+
+  protected alResponder(correcta: boolean): void {
+    this.preguntaRespondida.set(true);
+    if (correcta) {
+      this.aciertos.update((a) => a + 1);
+      if (!this.yaCompletada()) this.sumar(XP.respuestaQuiz);
+    }
+  }
+
+  protected avanzar(): void {
+    const leccion = this.leccion();
+    if (!leccion) return;
+    if (PASOS[this.paso()].id === 'quiz' && this.preguntaActual() < leccion.quiz.length - 1) {
+      this.preguntaActual.update((p) => p + 1);
+      this.preguntaRespondida.set(false);
+      return;
+    }
+    if (this.paso() < PASOS.length - 1) {
+      this.irAPaso(this.paso() + 1);
+      return;
+    }
+    if (!this.yaCompletada()) {
+      this.progreso.completarLeccion(leccion.id);
+      this.xpGanada.update((x) => x + XP.leccion);
+    }
+    this.terminada.set(true);
+    queueMicrotask(() => document.getElementById('titulo-fin')?.focus());
+  }
+
+  private sumar(xp: number): void {
+    this.progreso.sumarXp(xp);
+    this.xpGanada.update((x) => x + xp);
+  }
+}

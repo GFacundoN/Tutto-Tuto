@@ -1,0 +1,188 @@
+:host {
+  display: block;
+  padding-top: 20px;
+}
+
+.cabecera {
+  margin-bottom: 24px;
+}
+.volver {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+}
+.volver::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  rotate: 45deg;
+  margin-right: 10px;
+}
+.meta {
+  margin: 4px 0 2px;
+  font-size: 0.9rem;
+}
+
+/* Pasos: una mini línea de subte horizontal. */
+.pasos {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  counter-reset: paso;
+}
+.pasos li {
+  position: relative;
+  counter-increment: paso;
+  padding-top: 26px;
+  font-size: 0.85rem;
+  color: var(--tinta-suave);
+  text-align: center;
+}
+.pasos li::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--borde);
+}
+.pasos li::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  translate: -50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--superficie);
+  border: 3px solid var(--borde);
+}
+.pasos li.hecho::before,
+.pasos li.actual::before {
+  background: var(--linea);
+}
+.pasos li.hecho::after {
+  background: var(--linea);
+  border-color: var(--linea);
+}
+.pasos li.actual::after {
+  border-color: var(--linea);
+}
+.pasos li.actual {
+  color: var(--tinta);
+  font-weight: 700;
+}
+.pasos button {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  min-height: 32px;
+}
+
+.paso {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  padding: clamp(16px, 4vw, 28px);
+}
+.paso h2:focus {
+  outline: none;
+}
+.objetivo {
+  font-size: var(--t-2);
+  border-left: 4px solid var(--linea);
+  padding-left: 12px;
+  margin-bottom: 16px;
+}
+.docs-titulo {
+  margin-top: 20px;
+}
+.docs {
+  padding-left: 1.2em;
+}
+.docs li {
+  margin-bottom: 6px;
+}
+.en-pc {
+  margin-top: 20px;
+  border-top: 1px solid var(--borde);
+  padding-top: 12px;
+}
+.en-pc summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.pie {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, var(--fondo) 30%);
+  margin-top: 8px;
+}
+.pista-avance {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.aviso,
+.fin {
+  text-align: center;
+  padding: 48px 0;
+}
+.fin h1:focus {
+  outline: none;
+}
+.sello {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: var(--linea);
+  position: relative;
+  animation: sello 420ms var(--ease-salida) both;
+}
+.sello::after {
+  content: '';
+  position: absolute;
+  left: 25px;
+  top: 18px;
+  width: 16px;
+  height: 30px;
+  border-right: 5px solid var(--linea-tinta);
+  border-bottom: 5px solid var(--linea-tinta);
+  rotate: 45deg;
+}
+@keyframes sello {
+  from {
+    scale: 0.6;
+    opacity: 0;
+  }
+}
+.resumen {
+  font-size: var(--t-2);
+}
+.fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
