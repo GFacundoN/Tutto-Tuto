@@ -1,14 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Contenedores apilados: el ícono del curso (dibujo propio, no es la marca de Docker). -->
-  <defs>
-    <linearGradient id="g" x1="8" y1="8" x2="56" y2="58" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#4c8dff"/><stop offset="1" stop-color="#1d63ed"/>
-    </linearGradient>
-  </defs>
-  <rect x="6" y="34" width="24" height="22" rx="4" fill="url(#g)"/>
-  <rect x="34" y="34" width="24" height="22" rx="4" fill="url(#g)"/>
-  <rect x="20" y="8" width="24" height="22" rx="4" fill="url(#g)"/>
-  <g stroke="#fff" stroke-opacity=".55" stroke-width="2.4" stroke-linecap="round">
-    <path d="M12 40v10M18 40v10M24 40v10M40 40v10M46 40v10M52 40v10M26 14v10M32 14v10M38 14v10"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2504 2009.78" role="img" aria-label="Docker">
+  <!-- Símbolo oficial de Docker (docker.com/company/newsroom/media-resources), colorway "Ether on Base":
+       símbolo #101010 sobre #6172FF, con el margen mínimo de 0,5x del ancho del símbolo. Sin modificaciones. -->
+  <rect width="2504" height="2009.78" fill="#6172FF"/>
+  <path transform="translate(626 626)" fill="#101010" d="m1077.76 0c-75.81 0-137.27 61.46-137.27 137.27-.01-75.81-61.47-137.27-137.28-137.27h-173.98v110.51c0 84.77 68.72 153.49 153.49 153.49h86.97v82.26h-84.37c-131.59 0-238.28-106.66-238.28-238.25v-108.01h-323.58c-123.42 0-223.46 100.03-223.46 223.43v307.8c0 123.4 100.04 223.43 223.46 223.43h561.87c123.42 0 223.46-100.03 223.46-223.43v-267.23h89.46c84.77 0 153.49-68.72 153.49-153.49v-110.51z"/>
 </svg>
