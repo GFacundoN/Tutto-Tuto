@@ -1,0 +1,43 @@
+<!-- (ngSubmit) no hace falta: con (submit) + preventDefault alcanza y no necesitamos FormsModule. -->
+<form (submit)="$event.preventDefault(); comprobar()">
+  @if (ejercicio().archivo) {
+    <p class="archivo">{{ ejercicio().archivo }}</p>
+  }
+  <pre class="plantilla" [class.con-archivo]="ejercicio().archivo"><code>@for (s of segmentos(); track $index) {@if (s.tipo === 'texto') {<span>{{ s.texto }}</span>} @else {<input
+      type="text"
+      class="hueco"
+      [class.ok]="correccion()?.[s.indice] === true"
+      [class.mal]="correccion()?.[s.indice] === false"
+      [style.width.ch]="(ejercicio().huecos[s.indice].ancho ?? 10) + 2"
+      [value]="respuestas()[s.indice]"
+      (input)="escribir(s.indice, $any($event.target).value)"
+      [disabled]="completo()"
+      [attr.aria-label]="'Hueco ' + (s.indice + 1) + ' de ' + ejercicio().huecos.length"
+      [attr.aria-invalid]="correccion()?.[s.indice] === false"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />}}</code></pre>
+
+  @if (!completo()) {
+    <div class="fila-acciones">
+      <button type="submit" class="boton boton-principal">Comprobar</button>
+    </div>
+  }
+</form>
+
+<!-- aria-live: los lectores de pantalla anuncian el cambio de este texto sin mover el foco. -->
+<p class="veredicto" aria-live="polite">
+  @if (completo()) {
+    <span class="ok">Bien. Todos los huecos son correctos.</span>
+  } @else if (correccion()) {
+    <span class="mal">Hay huecos marcados en rojo. Revisalos y volvé a comprobar.</span>
+  }
+</p>
+
+<app-pistas
+  [pistas]="ejercicio().pistas"
+  [(reveladas)]="reveladas"
+  [resuelto]="completo()"
+  (verSolucion)="mostrarSolucion()"
+/>

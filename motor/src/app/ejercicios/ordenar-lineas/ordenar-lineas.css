@@ -1,0 +1,59 @@
+.lineas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.lineas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--codigo-fondo);
+  color: var(--codigo-tinta);
+  border-radius: var(--radio-chico);
+  padding: 6px 6px 6px 12px;
+  min-height: 52px;
+}
+
+.numero {
+  font: 600 0.8rem var(--fuente-codigo);
+  opacity: 0.6;
+  min-width: 1.5ch;
+}
+
+.lineas code {
+  flex: 1;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.mover {
+  display: flex;
+  gap: 4px;
+}
+
+.flecha {
+  width: 44px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radio-chico);
+  border: 1px solid color-mix(in oklab, var(--codigo-tinta) 30%, transparent);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.flecha:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.completo li {
+  outline: 2px solid var(--exito);
+}

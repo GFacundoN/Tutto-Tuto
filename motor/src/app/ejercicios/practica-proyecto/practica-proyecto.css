@@ -1,0 +1,88 @@
+.editor-envoltorio {
+  border-radius: var(--radio);
+  overflow: hidden;
+  border: 1px solid var(--borde);
+  margin-bottom: 12px;
+}
+/* El contenedor existe siempre (viewChild lo necesita), pero no se ve hasta abrir el editor. */
+.editor-envoltorio.oculto {
+  display: none;
+}
+.editor-envoltorio :is(div, iframe) {
+  display: block;
+  width: 100%;
+  min-height: 560px;
+  border: 0;
+}
+
+.tarjeta-abrir {
+  background: var(--superficie-2);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio);
+  padding: 16px;
+}
+.tarjeta-abrir.error {
+  background: var(--error-fondo);
+  border-style: solid;
+  border-color: var(--error);
+}
+.tarjeta-abrir p {
+  margin: 0;
+}
+
+.local {
+  margin-bottom: 12px;
+}
+.esperado {
+  background: var(--exito-fondo);
+  border-radius: var(--radio-chico);
+  padding: 10px 14px;
+}
+
+.pegar {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+textarea {
+  width: 100%;
+  font: 0.9rem/1.5 var(--fuente-codigo);
+  background: var(--codigo-fondo);
+  color: var(--codigo-tinta);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-chico);
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.resultados {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 6px;
+}
+.resultados li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 12px;
+  border-radius: var(--radio-chico);
+  background: var(--error-fondo);
+}
+.resultados li.ok {
+  background: var(--exito-fondo);
+}
+.icono {
+  font-weight: 700;
+}
+.resultados li .icono {
+  color: var(--error);
+}
+.resultados li.ok .icono {
+  color: var(--exito);
+}
+
+.solucion {
+  margin-top: 16px;
+}

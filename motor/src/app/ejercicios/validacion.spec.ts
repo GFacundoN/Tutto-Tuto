@@ -117,6 +117,12 @@ describe('verificarArchivos', () => {
     expect(r[1].ok).toBe(false);
   });
 
+  it('acepta archivos alternativos separados por |', () => {
+    const v = [{ archivo: 'a.ts|a.html', patron: '<x-y', mensaje: 'usa x-y' }];
+    expect(verificarArchivos(v, { 'a.ts': 'nada', 'a.html': '<x-y />' })[0].ok).toBe(true);
+    expect(verificarArchivos(v, { 'a.ts': 'nada' })[0].ok).toBe(false);
+  });
+
   it('avisa si falta el archivo', () => {
     const r = verificarArchivos(verificaciones, {});
     expect(r[0].ok).toBe(false);

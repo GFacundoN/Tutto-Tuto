@@ -106,13 +106,23 @@ export interface ResultadoVerificacion {
   mensaje: string;
 }
 
+/**
+ * Lee un archivo del proyecto. Admite alternativas separadas por | (ej. "app.ts|app.html"
+ * para un template que puede estar inline o en un archivo aparte): junta las que existan.
+ */
+function leerArchivo(archivos: Record<string, string>, ruta: string): string | undefined {
+  if (archivos[ruta] !== undefined) return archivos[ruta];
+  const encontrados = ruta.split('|').filter((r) => archivos[r] !== undefined);
+  return encontrados.length ? encontrados.map((r) => archivos[r]).join('\n') : undefined;
+}
+
 /** Corre las verificaciones de un ejercicio de proyecto contra los archivos dados. */
 export function verificarArchivos(
   verificaciones: Verificacion[],
   archivos: Record<string, string>,
 ): ResultadoVerificacion[] {
   return verificaciones.map((v) => {
-    const contenido = archivos[v.archivo];
+    const contenido = leerArchivo(archivos, v.archivo);
     if (contenido === undefined) {
       return { ok: false, mensaje: `No encuentro el archivo ${v.archivo}. ¿Lo borraste o lo renombraste?` };
     }

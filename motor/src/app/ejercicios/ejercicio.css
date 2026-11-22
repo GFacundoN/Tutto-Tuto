@@ -1,0 +1,65 @@
+/* Estilos compartidos por los distintos tipos de ejercicio. */
+
+.archivo {
+  margin: 0;
+  font: 0.85rem var(--fuente-codigo);
+  background: color-mix(in oklab, var(--codigo-fondo) 85%, white);
+  color: var(--codigo-tinta);
+  padding: 6px 14px;
+  border-radius: var(--radio-chico) var(--radio-chico) 0 0;
+}
+
+.plantilla.con-archivo {
+  border-radius: 0 0 var(--radio-chico) var(--radio-chico);
+}
+
+.plantilla {
+  white-space: pre-wrap;
+  line-height: 2.1;
+}
+
+.hueco {
+  font: inherit;
+  color: var(--codigo-tinta);
+  background: color-mix(in oklab, var(--codigo-fondo) 75%, white);
+  border: 0;
+  border-bottom: 2px solid var(--linea);
+  border-radius: 4px 4px 0 0;
+  padding: 2px 6px;
+  min-width: 4ch;
+  max-width: 100%;
+}
+.hueco:focus-visible {
+  outline: 2px solid var(--foco);
+  outline-offset: 1px;
+}
+.hueco.ok {
+  border-bottom-color: var(--exito);
+  background: color-mix(in oklab, var(--exito) 25%, var(--codigo-fondo));
+}
+.hueco.mal {
+  border-bottom-color: var(--error);
+  background: color-mix(in oklab, var(--error) 30%, var(--codigo-fondo));
+}
+.hueco:disabled {
+  opacity: 1;
+}
+
+.fila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.veredicto {
+  margin: 12px 0 0;
+  font-weight: 600;
+  min-height: 1.6em;
+}
+.veredicto .ok {
+  color: var(--exito);
+}
+.veredicto .mal {
+  color: var(--error);
+}

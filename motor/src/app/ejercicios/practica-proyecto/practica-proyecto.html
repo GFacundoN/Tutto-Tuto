@@ -1,0 +1,119 @@
+@if (camino() === 'navegador') {
+  <div class="editor-envoltorio" [class.oculto]="estadoEditor() === 'cerrado' || modoPegar()">
+    <!-- #editor: variable de referencia de template. viewChild('editor') la busca. -->
+    <div #editor></div>
+  </div>
+
+  @switch (estadoEditor()) {
+    @case ('cerrado') {
+      @if (!modoPegar()) {
+        <div class="tarjeta-abrir">
+          <p>
+            Vas a abrir un proyecto Angular real en <strong>StackBlitz</strong>: corre <code>ng serve</code> dentro
+            de tu navegador. La primera vez tarda entre 30 y 60 segundos en instalar dependencias.
+          </p>
+          <div class="fila-acciones">
+            <button type="button" class="boton boton-principal" (click)="abrirEditor()">Abrir el proyecto</button>
+            <button type="button" class="boton boton-secundario" (click)="modoPegar.set(true)">
+              Prefiero hacerlo en mi PC
+            </button>
+          </div>
+        </div>
+      }
+    }
+    @case ('cargando') {
+      <p class="tinta-suave" role="status">Cargando el editor…</p>
+    }
+    @case ('error') {
+      @if (!modoPegar()) {
+        <div class="tarjeta-abrir error" role="alert">
+          <p>
+            El editor no cargó. Puede pasar si tu navegador bloquea cookies de terceros o si StackBlitz está caído.
+          </p>
+          <div class="fila-acciones">
+            <button type="button" class="boton boton-principal" (click)="abrirEnPestana()">
+              Abrir en una pestaña nueva
+            </button>
+            <button type="button" class="boton boton-secundario" (click)="modoPegar.set(true)">
+              Pegar mis archivos para corregir
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+}
+
+@if (modoPegar()) {
+  @if (camino() === 'local' && ejercicio().local; as local) {
+    <div class="local">
+      <h3>En tu PC</h3>
+      <app-bloques [bloques]="local.pasos" />
+      <p class="esperado"><strong>Si salió bien:</strong> {{ local.resultadoEsperado }}</p>
+    </div>
+  } @else if (camino() === 'navegador') {
+    <p class="tinta-suave">
+      Hacé los cambios en StackBlitz (o en tu PC) y pegá acá el contenido de los archivos para corregirlos.
+      <button type="button" class="boton boton-texto" (click)="modoPegar.set(false)">Volver al editor</button>
+    </p>
+  }
+
+  @for (archivo of archivosAVerificar(); track archivo) {
+    <label class="pegar">
+      <span>Pegá el contenido de <code>{{ archivo.split('|').join(' o ') }}</code></span>
+      <textarea
+        rows="8"
+        spellcheck="false"
+        autocapitalize="off"
+        [value]="pegados()[archivo] ?? ''"
+        (input)="pegar(archivo, $any($event.target).value)"
+        [disabled]="completo()"
+      ></textarea>
+    </label>
+  }
+}
+
+@if (!completo() && (estadoEditor() === 'listo' || modoPegar())) {
+  <div class="fila-acciones">
+    <button type="button" class="boton boton-principal" (click)="comprobar()" [disabled]="comprobando()">
+      {{ comprobando() ? 'Comprobando…' : 'Comprobar mi código' }}
+    </button>
+  </div>
+}
+
+@if (resultados(); as lista) {
+  <ul class="resultados" aria-live="polite" aria-label="Resultado de la corrección">
+    @for (r of lista; track $index) {
+      <li [class.ok]="r.ok">
+        <span class="icono" aria-hidden="true">{{ r.ok ? '✓' : '✗' }}</span>
+        <span class="solo-lectores">{{ r.ok ? 'Correcto:' : 'Falta:' }}</span>
+        {{ r.mensaje }}
+      </li>
+    }
+  </ul>
+}
+
+<p class="veredicto" aria-live="polite">
+  @if (completo()) {
+    <span class="ok">Bien. El proyecto cumple todo lo pedido.</span>
+  }
+</p>
+
+@if (solucionVisible() && !completo()) {
+  <div class="solucion">
+    <h3>Solución</h3>
+    @for (par of solucion(); track par[0]) {
+      <app-codigo-copiable [archivo]="par[0]" [codigo]="par[1]" />
+    }
+    <button type="button" class="boton boton-secundario" (click)="continuarConSolucion()">
+      Ya la apliqué, seguir
+    </button>
+  </div>
+}
+
+<app-pistas
+  [pistas]="ejercicio().pistas"
+  [(reveladas)]="reveladas"
+  [resuelto]="completo() || solucionVisible()"
+  (verSolucion)="mostrarSolucion()"
+/>
