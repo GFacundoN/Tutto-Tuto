@@ -391,63 +391,9 @@ progress::-moz-progress-bar {
   }
 }
 
-/* Cómo es cada lección: es una secuencia real, por eso va como lista ordenada. */
-.pasos {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-.pasos li {
-  display: grid;
-  gap: 6px;
-  padding: 20px;
-  align-content: start;
-}
-.pasos strong {
-  font-size: 1.1rem;
-}
-.icono-paso {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 6px;
-  border-radius: 12px;
-  background: var(--acento-suave);
-  color: var(--acento);
-}
-/* Las tarjetas entran en cascada la primera vez que se ven (la directiva agrega .dibujar). */
-.pasos li {
-  opacity: 0;
-}
-.pasos.dibujar li {
-  animation: subir 500ms var(--ease-salida) both;
-}
-.pasos.dibujar li:nth-child(2) {
-  animation-delay: 90ms;
-}
-.pasos.dibujar li:nth-child(3) {
-  animation-delay: 180ms;
-}
-.pasos.dibujar li:nth-child(4) {
-  animation-delay: 270ms;
-}
-@keyframes subir {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .pasos li {
-    opacity: 1;
-  }
+/* Cómo es cada lección */
+.como {
+  margin-bottom: 64px;
 }
 
 .aviso {

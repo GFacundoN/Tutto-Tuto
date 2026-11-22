@@ -1,0 +1,99 @@
+<div class="recorrido">
+  <div class="pestanas" role="tablist" aria-label="Partes de una lección" aria-orientation="vertical" (keydown)="alTeclear($event)">
+    @for (p of pasos; track p.tipo; let i = $index) {
+      <button
+        type="button"
+        role="tab"
+        class="pestana"
+        [id]="'pestana-' + i"
+        [class.activa]="activo() === i"
+        [attr.aria-selected]="activo() === i"
+        [attr.tabindex]="activo() === i ? 0 : -1"
+        aria-controls="vista-paso"
+        (click)="activo.set(i)"
+      >
+        <span class="icono"><app-icono-paso [tipo]="p.tipo" [tamano]="22" /></span>
+        <span class="texto">
+          <span class="nombre">{{ p.nombre }}</span>
+          <strong>{{ p.titulo }}</strong>
+          <span class="detalle">{{ p.texto }}</span>
+        </span>
+      </button>
+    }
+  </div>
+
+  <!-- Ventana de ejemplo: es decorativa, por eso el contenido simulado no es interactivo. -->
+  <div class="ventana" id="vista-paso" role="tabpanel" [attr.aria-labelledby]="'pestana-' + activo()">
+    <div class="barra-ventana" aria-hidden="true">
+      <span class="luces"><i></i><i></i><i></i></span>
+      <span class="ruta">Ejemplo · Lección «Signals»</span>
+    </div>
+    <div class="pasos-ventana" aria-hidden="true">
+      @for (p of pasos; track p.tipo; let i = $index) {
+        <span [class.hecho]="i < activo()" [class.actual]="i === activo()">{{ p.nombre }}</span>
+      }
+    </div>
+
+    <div class="escena">
+      @switch (activo()) {
+        @case (0) {
+          <div class="vista" animate.enter="entrar">
+            <h3>Signals: valores que avisan cuando cambian</h3>
+            <p>
+              Un <code>signal</code> guarda un valor. Cuando cambia, Angular actualiza solo lo que lo usa: sin
+              recorrer toda la pantalla.
+            </p>
+            <pre><code><span class="c-k">contador</span> = signal(<span class="c-n">0</span>);
+<span class="c-k">doble</span> = computed(() =&gt; <span class="c-k">this</span>.contador() * <span class="c-n">2</span>);</code></pre>
+            <p class="nota"><strong>En el trabajo:</strong> el total de un carrito que se recalcula al sumar productos.</p>
+          </div>
+        }
+        @case (1) {
+          <div class="vista" animate.enter="entrar">
+            <div class="reproductor">
+              <span class="play"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M8 5v14l11-7z" /></svg></span>
+              <div class="linea">
+                <span class="tramo"></span>
+                <span class="cabezal"></span>
+              </div>
+              <span class="tiempos"><span>2:14</span><span>Solo este tramo</span><span>4:30</span></span>
+            </div>
+            <p class="enlace-doc"><span class="dato">Documentación oficial</span> angular.dev · Signals</p>
+          </div>
+        }
+        @case (2) {
+          <div class="vista" animate.enter="entrar">
+            <p class="consigna">Completá para que <code>doble</code> se recalcule solo:</p>
+            <pre><code><span class="c-k">doble</span> = <span class="hueco">computed</span>(() =&gt; <span class="c-k">this</span>.contador() * <span class="c-n">2</span>);</code></pre>
+            <div class="fila">
+              <span class="pista">Pista 1 de 2</span>
+              <span class="ok">
+                <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3.5 8.5l3 3 6-7" /></svg>
+                ¡Correcto! +10 XP
+              </span>
+            </div>
+          </div>
+        }
+        @case (3) {
+          <div class="vista" animate.enter="entrar">
+            <p class="consigna">Después de <code>contador.set(3)</code>, ¿cuánto vale <code>doble()</code>?</p>
+            <ul class="opciones">
+              <li>0</li>
+              <li class="correcta">
+                6
+                <svg viewBox="0 0 16 16" width="16" height="16"><path d="M3.5 8.5l3 3 6-7" /></svg>
+              </li>
+              <li>3</li>
+            </ul>
+            <p class="nota">computed se vuelve a calcular cuando cambia un signal que lee: 3 × 2 = 6.</p>
+          </div>
+        }
+      }
+    </div>
+
+    <div class="pie-ventana" aria-hidden="true">
+      <span class="barra-avance"><span [style.width.%]="((activo() + 1) / pasos.length) * 100"></span></span>
+      <span class="dato">≈ 10 min</span>
+    </div>
+  </div>
+</div>

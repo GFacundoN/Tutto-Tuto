@@ -5,10 +5,9 @@ import { RouterLink } from '@angular/router';
 import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
 import { Curso, CursoResumen } from '../core/contenido/modelos';
 import { CursoActual } from '../core/curso-actual';
-import { AlAparecer } from '../shared/al-aparecer';
-import { IconoPaso } from '../shared/ilustraciones/icono-paso';
 import { IlustracionHero } from '../shared/ilustraciones/ilustracion-hero';
 import { PanelesModulos } from './paneles-modulos/paneles-modulos';
+import { RecorridoLeccion } from './recorrido-leccion/recorrido-leccion';
 import { armarTarjeta } from './tarjeta-curso';
 
 /**
@@ -18,7 +17,7 @@ import { armarTarjeta } from './tarjeta-curso';
  */
 @Component({
   selector: 'app-catalogo-page',
-  imports: [RouterLink, IlustracionHero, IconoPaso, AlAparecer, PanelesModulos],
+  imports: [RouterLink, IlustracionHero, PanelesModulos, RecorridoLeccion],
   templateUrl: './catalogo-page.html',
   styleUrl: './catalogo-page.css',
 })
