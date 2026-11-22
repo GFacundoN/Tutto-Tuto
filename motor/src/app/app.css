@@ -1,15 +1,6 @@
 :host {
   display: block;
-  --linea: var(--color-curso, #c8235f);
-}
-
-@media (prefers-color-scheme: dark) {
-  :host-context(:root:not([data-theme='light'])) {
-    --linea: color-mix(in oklab, var(--color-curso, #c8235f) 65%, white);
-  }
-}
-:host-context(:root[data-theme='dark']) {
-  --linea: color-mix(in oklab, var(--color-curso, #c8235f) 65%, white);
+  min-height: 100dvh;
 }
 
 .saltar {
@@ -26,8 +17,8 @@
   position: sticky;
   top: 0;
   z-index: 5;
-  background: color-mix(in oklab, var(--fondo) 88%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in oklab, var(--superficie) 85%, transparent);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--borde);
   padding-top: env(safe-area-inset-top);
 }
@@ -35,52 +26,71 @@
 .barra-interior {
   display: flex;
   align-items: center;
-  gap: 14px;
-  max-width: 1100px;
+  gap: 16px;
+  max-width: calc(var(--ancho-pagina) + 2 * var(--gutter));
   margin-inline: auto;
   padding: 8px var(--gutter);
-  min-height: 56px;
+  min-height: 60px;
 }
 
 .marca {
-  font-family: var(--fuente-titulo);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 800;
-  font-size: var(--t-2);
-  text-decoration: none;
+  font-size: 1.1rem;
   letter-spacing: -0.02em;
+  text-decoration: none;
+  min-height: 44px;
+}
+.marca-logo {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--acento);
+  color: var(--acento-tinta);
+  font: 700 0.8rem var(--fuente-codigo);
+}
+
+.separador {
+  width: 1px;
+  height: 24px;
+  background: var(--borde);
 }
 
 .curso {
-  position: relative;
   font-weight: 600;
+  color: var(--tinta-suave);
   text-decoration: none;
-  padding: 3px 12px;
-  border-radius: 999px;
-  background: var(--linea);
-  color: var(--linea-tinta);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
-
-/* Área táctil de 44px sin agrandar la píldora visible. */
-.curso::after {
-  content: '';
-  position: absolute;
-  inset: -8px 0;
+.curso:hover {
+  color: var(--tinta);
 }
 
 .stats {
   display: flex;
-  gap: 14px;
+  gap: 8px;
   margin: 0 0 0 auto;
 }
 .stats div {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  line-height: 1.2;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  background: var(--superficie-2);
 }
 .stats dt {
-  font-size: var(--t-0);
+  font: 500 0.72rem var(--fuente-codigo);
   color: var(--tinta-suave);
 }
 .stats dd {
@@ -89,7 +99,7 @@
   font-variant-numeric: tabular-nums;
 }
 .stats dd.activa {
-  color: var(--linea);
+  color: var(--exito);
 }
 
 app-selector-tema {
@@ -106,11 +116,13 @@ main:focus {
   outline: none;
 }
 
-@media (max-width: 420px) {
-  .marca {
-    font-size: var(--t-1);
-  }
-  .curso {
+@media (max-width: 560px) {
+  .curso,
+  .separador,
+  .marca-texto {
     display: none;
+  }
+  .stats div {
+    padding: 4px 10px;
   }
 }

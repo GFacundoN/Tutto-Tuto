@@ -15,9 +15,6 @@ import { SelectorTema } from './shared/selector-tema/selector-tema';
   imports: [RouterOutlet, RouterLink, SelectorTema],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  // host: atributos y estilos que se aplican a la propia etiqueta <app-root>.
-  // Acá pasamos el color del curso como variable CSS para que todo lo use.
-  host: { '[style.--color-curso]': 'colorCurso()' },
 })
 export class App {
   protected readonly cursoActual = inject(CursoActual);
@@ -25,7 +22,6 @@ export class App {
 
   // "protected": el template puede leerlo, pero no queda expuesto como API pública de la clase.
   protected readonly curso = computed(() => (this.cursoActual.cursoId() ? this.cursoActual.datos() : undefined));
-  protected readonly colorCurso = computed(() => this.curso()?.color ?? null);
 
   protected saltarAlContenido(): void {
     document.getElementById('contenido-principal')?.focus();

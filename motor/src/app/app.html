@@ -7,7 +7,10 @@
 <header class="barra no-imprimir">
   <div class="barra-interior">
     <!-- routerLink: navega sin recargar la página (como <Link> en React Router). -->
-    <a class="marca" routerLink="/">Tutto-Tuto</a>
+    <a class="marca" routerLink="/" aria-label="Tutto-Tuto, ver todos los cursos">
+      <span class="marca-logo" aria-hidden="true">tt</span>
+      <span class="marca-texto">Tutto-Tuto</span>
+    </a>
 
     <!--
       @if: control flow de Angular 17+. Muestra el bloque solo si la condición es verdadera.
@@ -16,6 +19,7 @@
     -->
     @if (curso(); as curso) {
       <!-- [propiedad]="expresión": property binding. Evalúa TypeScript y lo asigna (acá, un array de ruta). -->
+      <span class="separador" aria-hidden="true"></span>
       <a class="curso" [routerLink]="['/', curso.id]">{{ curso.titulo }}</a>
       <dl class="stats" aria-label="Tu progreso">
         <div>
