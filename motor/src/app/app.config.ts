@@ -1,6 +1,6 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withHashLocation, withInMemoryScrolling, withRouterConfig } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withHashLocation, withInMemoryScrolling, withNavigationErrorHandler, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 
 // ApplicationConfig: la configuración global de la app (lo que antes iba en AppModule).
@@ -22,6 +22,15 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
       // Las rutas hijas también reciben los parámetros del padre (el :cursoId).
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+      // Después de publicar una versión nueva, una pestaña abierta puede pedir un archivo
+      // (chunk) que ya no existe. En ese caso recargamos una sola vez para traer la versión nueva.
+      withNavigationErrorHandler((error) => {
+        const esChunkViejo = String(error.error).includes('dynamically imported module');
+        if (esChunkViejo && !sessionStorage.getItem('tutto-tuto:recargado')) {
+          sessionStorage.setItem('tutto-tuto:recargado', '1');
+          location.reload();
+        }
+      }),
     ),
   ],
 };
