@@ -15,7 +15,7 @@ const validacionTs = fileURLToPath(new URL('../src/app/ejercicios/validacion.ts'
 
 // Compilamos validacion.ts al vuelo para usar exactamente el mismo código que la app.
 const { outputFiles } = await build({ entryPoints: [validacionTs], bundle: true, format: 'esm', write: false });
-const { validarHuecos, validarOrden, verificarArchivos } = await import(
+const { validarHuecos, validarOrden, verificarArchivos, validarComando } = await import(
   'data:text/javascript;base64,' + Buffer.from(outputFiles[0].text).toString('base64')
 );
 
@@ -102,6 +102,22 @@ function validarEjercicio(donde, ej, plantilla) {
       if (!(archivo in inicio)) error(donde, `abrirArchivo apunta a "${archivo}", que no existe en el proyecto`);
     }
     if (Object.keys(plantilla).length === 0) error(donde, 'ejercicio de proyecto pero el curso no tiene plantilla-proyecto/');
+  } else if (ej.tipo === 'terminal') {
+    // Cada solución tiene que aprobar su propio paso, y un paso no puede resolverse con el comando de otro
+    // (si dos pasos aceptan lo mismo se avisa: puede ser a propósito, como repetir docker ps).
+    if (!Array.isArray(ej.pasos) || ej.pasos.length === 0) error(donde, 'terminal sin pasos');
+    ej.pasos?.forEach((paso, i) => {
+      const d = `${donde} paso ${i + 1}`;
+      if (!paso.consigna?.trim()) error(d, 'sin consigna');
+      if (!paso.soluciones?.length) return error(d, 'sin soluciones');
+      for (const sol of paso.soluciones) if (!validarComando(paso.soluciones, sol).ok) error(d, `la solución "${sol}" no se acepta`);
+      if (validarComando(paso.soluciones, '').ok) error(d, 'un comando vacío se acepta');
+      ej.pasos.forEach((otro, j) => {
+        if (j !== i && otro.soluciones?.some((sol) => validarComando(paso.soluciones, sol).ok)) {
+          avisos.push(`${d}: acepta la solución del paso ${j + 1} (¿es a propósito?)`);
+        }
+      });
+    });
   } else {
     error(donde, `tipo de ejercicio desconocido "${ej.tipo}"`);
   }

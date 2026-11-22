@@ -33,6 +33,8 @@ export interface Curso extends CursoResumen {
   referencia: SeccionReferencia[];
   /** JSON con los archivos base del proyecto StackBlitz (ruta relativa a la carpeta del curso). */
   plantillaProyecto?: string;
+  /** Cómo se practica en cada camino (texto de la pantalla de bienvenida). Si falta, se usa el de Angular. */
+  caminos?: { navegador: string; local: string };
 }
 
 /** Un mismo curso puede tener recorridos distintos (ej. "en una semana" y "desde cero"). */
@@ -158,7 +160,27 @@ export interface EjercicioProyecto extends EjercicioBase {
   solucion: Record<string, string>;
 }
 
-export type Ejercicio = EjercicioCompletar | EjercicioOrdenar | EjercicioProyecto;
+/**
+ * Terminal simulada: la persona escribe comandos (ej. de Docker) y el motor los corrige sin
+ * ejecutarlos. Se resuelve paso a paso; al acertar cada paso se muestra su salida simulada.
+ * La corrección acepta variantes equivalentes: opciones en cualquier orden, forma corta o
+ * larga (-d / --detach), opciones juntas (-it) y la forma larga del comando (docker container run).
+ */
+export interface EjercicioTerminal extends EjercicioBase {
+  tipo: 'terminal';
+  pasos: PasoTerminal[];
+}
+
+export interface PasoTerminal {
+  /** Qué hay que lograr con este comando (markdown corto). */
+  consigna: string;
+  /** Comandos que resuelven el paso. El primero es el que se muestra como solución. */
+  soluciones: string[];
+  /** Lo que "responde" la terminal cuando el comando es correcto. */
+  salida?: string;
+}
+
+export type Ejercicio = EjercicioCompletar | EjercicioOrdenar | EjercicioProyecto | EjercicioTerminal;
 
 export interface Verificacion {
   archivo: string;

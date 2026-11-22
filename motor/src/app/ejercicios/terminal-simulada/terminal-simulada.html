@@ -1,0 +1,72 @@
+<!-- Consignas: la actual resaltada, las resueltas tachadas con un check. -->
+<ol class="consignas">
+  @for (paso of ejercicio().pasos; track $index) {
+    <li [class.hecha]="$index < pasoActual()" [class.actual]="$index === pasoActual() && !completo()">
+      <span class="marca" aria-hidden="true">
+        @if ($index < pasoActual()) {
+          <svg viewBox="0 0 16 16" width="14" height="14"><path d="M3.5 8.5l3 3 6-7" /></svg>
+        } @else {
+          {{ $index + 1 }}
+        }
+      </span>
+      <span [innerHTML]="paso.consigna | textoMd"></span>
+      @if ($index < pasoActual()) {
+        <span class="solo-lectores">(resuelto)</span>
+      }
+    </li>
+  }
+</ol>
+
+<!-- La terminal: historial de comandos aceptados y, abajo, la línea para escribir. -->
+<div class="terminal" (click)="enfocar()">
+  <div class="barra" aria-hidden="true"><i></i><i></i><i></i><span>terminal</span></div>
+  <div class="pantalla">
+    @for (l of historial(); track $index) {
+      <p class="linea"><span class="prompt" aria-hidden="true">$</span> {{ l.comando }}</p>
+      @if (l.salida) {
+        <pre class="salida">{{ l.salida }}</pre>
+      }
+    }
+    @if (!completo()) {
+      <form (submit)="$event.preventDefault(); enviar()">
+        <label class="linea entrada-linea">
+          <span class="prompt" aria-hidden="true">$</span>
+          <span class="solo-lectores">Comando para el paso {{ pasoActual() + 1 }}</span>
+          <input
+            #entrada
+            type="text"
+            [value]="escrito()"
+            (input)="escribir($any($event.target).value)"
+            [attr.aria-invalid]="!!error()"
+            aria-describedby="error-terminal"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="Escribí el comando y apretá Enter"
+          />
+        </label>
+      </form>
+    }
+  </div>
+</div>
+
+@if (!completo()) {
+  <div class="fila-acciones">
+    <button type="button" class="boton boton-principal" (click)="enviar()">Ejecutar</button>
+  </div>
+}
+
+<p class="veredicto" id="error-terminal" aria-live="polite">
+  @if (completo()) {
+    <span class="ok">Bien. Todos los comandos son correctos.</span>
+  } @else if (error(); as e) {
+    <span class="mal">{{ e }}</span>
+  }
+</p>
+
+<app-pistas
+  [pistas]="ejercicio().pistas"
+  [(reveladas)]="reveladas"
+  [resuelto]="completo()"
+  (verSolucion)="mostrarSolucion()"
+/>

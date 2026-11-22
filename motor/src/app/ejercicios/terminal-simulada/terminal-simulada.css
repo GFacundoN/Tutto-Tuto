@@ -1,0 +1,143 @@
+/* Consignas del ejercicio de terminal */
+.consignas {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.consignas li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 12px;
+  border-radius: var(--radio-chico);
+  color: var(--tinta-suave);
+}
+.consignas li.actual {
+  background: var(--acento-suave);
+  color: var(--tinta);
+}
+.consignas li.hecha {
+  color: var(--tinta-suave);
+}
+.marca {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--borde-control);
+  font: 600 0.75rem var(--fuente-codigo);
+  transform: translateY(1px);
+}
+.actual .marca {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+.hecha .marca {
+  border-color: var(--exito);
+  color: var(--exito);
+}
+.marca path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* La terminal: siempre oscura, como una de verdad. */
+.terminal {
+  border-radius: var(--radio-chico);
+  overflow: hidden;
+  background: var(--codigo-fondo);
+  color: var(--codigo-tinta);
+  font-family: var(--fuente-codigo);
+  font-size: 0.9rem;
+  cursor: text;
+}
+.barra {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: color-mix(in oklab, var(--codigo-fondo) 85%, white);
+}
+.barra i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.25);
+}
+.barra span {
+  margin-left: 8px;
+  font-size: 0.75rem;
+  color: rgb(229 231 235 / 0.7);
+}
+.pantalla {
+  padding: 12px 14px 14px;
+  display: grid;
+  gap: 4px;
+}
+.linea {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.prompt {
+  color: #34d399;
+  user-select: none;
+}
+.salida {
+  margin: 0 0 6px;
+  padding: 0;
+  background: none;
+  color: rgb(229 231 235 / 0.72);
+  font: inherit;
+  white-space: pre-wrap;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  animation: aparecer-salida 220ms var(--ease-salida);
+}
+.entrada-linea {
+  align-items: center;
+}
+.entrada-linea input {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  caret-color: #34d399;
+}
+.entrada-linea input::placeholder {
+  color: rgb(229 231 235 / 0.4);
+}
+.entrada-linea input:focus-visible {
+  outline: none;
+}
+.terminal:has(input:focus-visible) {
+  outline: 2px solid var(--foco);
+  outline-offset: 2px;
+}
+.entrada-linea input[aria-invalid='true'] {
+  animation: sacudir 320ms ease-out;
+}
+@keyframes aparecer-salida {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .salida,
+  .entrada-linea input[aria-invalid='true'] {
+    animation: none;
+  }
+}

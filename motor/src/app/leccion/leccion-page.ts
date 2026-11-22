@@ -10,6 +10,7 @@ import { CompletarCodigo } from '../ejercicios/completar-codigo/completar-codigo
 import { OrdenarLineas } from '../ejercicios/ordenar-lineas/ordenar-lineas';
 import { PracticaProyecto } from '../ejercicios/practica-proyecto/practica-proyecto';
 import { ResultadoEjercicio } from '../ejercicios/resultado';
+import { TerminalSimulada } from '../ejercicios/terminal-simulada/terminal-simulada';
 import { Pregunta } from '../quiz/pregunta/pregunta';
 import { Bloques } from '../shared/bloques/bloques';
 import { VideoYoutube } from '../shared/video-youtube/video-youtube';
@@ -27,7 +28,7 @@ export const PASOS = [
 
 @Component({
   selector: 'app-leccion-page',
-  imports: [RouterLink, Bloques, VideoYoutube, CompletarCodigo, OrdenarLineas, PracticaProyecto, Pregunta, Confeti, IconoPaso],
+  imports: [RouterLink, Bloques, VideoYoutube, CompletarCodigo, OrdenarLineas, PracticaProyecto, TerminalSimulada, Pregunta, Confeti, IconoPaso],
   templateUrl: './leccion-page.html',
   styleUrl: './leccion-page.css',
 })

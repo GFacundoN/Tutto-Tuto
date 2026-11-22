@@ -4,6 +4,9 @@ import {
   mezclar,
   normalizarCodigo,
   quitarComentarios,
+  normalizarComando,
+  partirComando,
+  validarComando,
   validarHuecos,
   validarOrden,
   verificarArchivos,
@@ -127,5 +130,76 @@ describe('verificarArchivos', () => {
     const r = verificarArchivos(verificaciones, {});
     expect(r[0].ok).toBe(false);
     expect(r[0].mensaje).toContain('No encuentro');
+  });
+});
+
+describe('partirComando', () => {
+  it('respeta comillas y quita el prompt', () => {
+    expect(partirComando('$ docker run -e "A=b c" nginx')).toEqual(['docker', 'run', '-e', 'A=b c', 'nginx']);
+    expect(partirComando('PS C:\\proyecto> docker ps')).toEqual(['docker', 'ps']);
+  });
+
+  it('une las continuaciones de línea', () => {
+    expect(partirComando('docker run \\\n  -d nginx')).toEqual(['docker', 'run', '-d', 'nginx']);
+  });
+});
+
+describe('normalizarComando', () => {
+  it('separa subcomandos, opciones y argumentos', () => {
+    expect(normalizarComando('docker compose up -d --build')).toEqual({
+      programa: 'docker',
+      ruta: ['compose', 'up'],
+      opciones: ['--build', '-d'],
+      args: [],
+    });
+  });
+
+  it('lo que va después de la imagen en run es del comando de adentro', () => {
+    expect(normalizarComando('docker run --rm alpine ls -la').args).toEqual(['alpine', 'ls', '-la']);
+  });
+});
+
+describe('validarComando', () => {
+  const solucion = ['docker run -d -p 8080:80 --name web nginx'];
+
+  it('acepta opciones en otro orden, forma larga, juntas y el comando largo', () => {
+    for (const variante of [
+      'docker run --name web -p 8080:80 -d nginx',
+      'docker container run --detach --publish 8080:80 --name=web nginx',
+      'docker run -dp 8080:80 --name web nginx',
+      '$  docker   run -d -p "8080:80" --name web nginx',
+    ]) {
+      expect(validarComando(solucion, variante)).toEqual({ ok: true });
+    }
+  });
+
+  it('rechaza con el motivo más útil', () => {
+    expect(validarComando(solucion, '')).toEqual({ ok: false, motivo: 'vacio' });
+    expect(validarComando(solucion, 'podman run nginx')).toEqual({ ok: false, motivo: 'programa' });
+    expect(validarComando(solucion, 'docker start web')).toEqual({ ok: false, motivo: 'subcomando' });
+    expect(validarComando(solucion, 'docker run -d --name web nginx')).toEqual({ ok: false, motivo: 'opciones' });
+    expect(validarComando(solucion, 'docker run -d -p 80:8080 --name web nginx')).toEqual({ ok: false, motivo: 'opciones' });
+    expect(validarComando(solucion, 'docker run -d -p 8080:80 --name web httpd')).toEqual({
+      ok: false,
+      motivo: 'argumentos',
+    });
+  });
+
+  it('distingue -t según el comando (tty en run, tag en build)', () => {
+    expect(validarComando(['docker build -t api .'], 'docker build --tag api ./')).toEqual({ ok: true });
+    expect(validarComando(['docker exec -it db sh'], 'docker exec -i -t db sh')).toEqual({ ok: true });
+    expect(validarComando(['docker logs -f api'], 'docker logs --follow api')).toEqual({ ok: true });
+  });
+
+  it('avisa del docker-compose viejo', () => {
+    expect(validarComando(['docker compose up -d'], 'docker-compose up -d')).toEqual({
+      ok: false,
+      motivo: 'compose-viejo',
+    });
+  });
+
+  it('compose down -v es "volúmenes", no un valor', () => {
+    expect(validarComando(['docker compose down -v'], 'docker compose down --volumes')).toEqual({ ok: true });
+    expect(validarComando(['docker compose down -v'], 'docker compose down')).toEqual({ ok: false, motivo: 'opciones' });
   });
 });

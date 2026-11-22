@@ -154,6 +154,9 @@
                       @case ('ordenar') {
                         <app-ordenar-lineas [ejercicio]="ej" [semilla]="leccion.id" (resuelto)="alResolverEjercicio($event)" />
                       }
+                      @case ('terminal') {
+                        <app-terminal-simulada [ejercicio]="ej" (resuelto)="alResolverEjercicio($event)" />
+                      }
                       @case ('proyecto') {
                         <app-practica-proyecto
                           [ejercicio]="ej"
