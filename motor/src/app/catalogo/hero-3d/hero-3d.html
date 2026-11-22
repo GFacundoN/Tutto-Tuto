@@ -1,0 +1,12 @@
+<div class="marco" [class.lista]="estado() === 'lista'">
+  @if (estado() === 'sin-webgl') {
+    <!-- Sin WebGL queda la ilustración en SVG (ng-content: la pone el padre). -->
+    <ng-content />
+  } @else {
+    <canvas #lienzo aria-hidden="true"></canvas>
+    @if (etiqueta(); as e) {
+      <span class="etiqueta" aria-hidden="true" [style.left.px]="e.x" [style.top.px]="e.y">{{ e.texto }}</span>
+    }
+    <p class="ayuda" aria-hidden="true">Arrastrá para girar · clic en un curso para entrar</p>
+  }
+</div>

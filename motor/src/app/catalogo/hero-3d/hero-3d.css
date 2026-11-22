@@ -1,0 +1,73 @@
+:host {
+  display: block;
+}
+
+/* El lugar se reserva desde el principio (aspect-ratio): cuando carga Three.js no se mueve nada. */
+.marco {
+  position: relative;
+  aspect-ratio: 1 / 0.95;
+  width: 100%;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  /* En celular, el scroll vertical sigue funcionando; el arrastre horizontal gira la pila. */
+  touch-action: pan-y;
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 600ms var(--ease-salida),
+    transform 700ms var(--ease-salida);
+}
+.lista canvas {
+  opacity: 1;
+  transform: none;
+}
+canvas:active {
+  cursor: grabbing;
+}
+
+/* Sombra de contacto debajo de la pila: un óvalo difuso en CSS, más barato que sombras reales en 3D. */
+.marco::before {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 9%;
+  height: 9%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--tinta) 22%, transparent), transparent);
+  pointer-events: none;
+}
+
+.etiqueta {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--primario-fondo);
+  color: var(--primario-tinta);
+  font-weight: 600;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.ayuda {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  canvas {
+    transition: none;
+  }
+}
